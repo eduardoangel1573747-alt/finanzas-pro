@@ -1,0 +1,362 @@
+<!-- V1.0 -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Gestor Financiero Personal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-10 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-wallet text-emerald-400 text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">Finanzas Personales</h1>
+            </div>
+            <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-lg shadow-emerald-900/40">
+                <i class="fa-solid fa-calendar-check"></i> Cierre de Mes
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+        <!-- Dashboard / Summary Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400 uppercase font-medium">Balance Disponible</p>
+                <h3 id="netBalance" class="text-2xl font-bold text-emerald-400 mt-1">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400 uppercase font-medium">Ingresos Totales</p>
+                <h3 id="totalIncome" class="text-2xl font-bold text-blue-400 mt-1">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400 uppercase font-medium">Presupuesto Gastos</p>
+                <h3 id="totalBudget" class="text-2xl font-bold text-purple-400 mt-1">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400 uppercase font-medium">Total Ahorrado</p>
+                <h3 id="totalSavings" class="text-2xl font-bold text-amber-400 mt-1">$0.00</h3>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <p class="text-xs text-slate-400 uppercase font-medium">Deudas / Pendientes</p>
+                <h3 id="totalDebts" class="text-2xl font-bold text-rose-400 mt-1">$0.00</h3>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- 1. Presupuesto Mensual y Categorías -->
+            <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-purple-400"></i> Presupuesto por Categorías
+                    </h2>
+                </div>
+                
+                <form id="budgetForm" onsubmit="addCategory(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="catName" placeholder="Categoría (ej. Comida)" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
+                    <input type="number" id="catLimit" placeholder="Monto Máximo" required step="0.01" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition">Agregar</button>
+                </form>
+
+                <div id="categoryList" class="space-y-3 pt-2">
+                    <!-- Categorías inyectadas por JS -->
+                </div>
+            </section>
+
+            <!-- 2. Ingresos -->
+            <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-money-bill-trend-up text-blue-400"></i> Ingresos del Mes
+                </h2>
+
+                <form id="incomeForm" onsubmit="addIncome(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="incDesc" placeholder="Descripción" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+                    <input type="number" id="incAmount" placeholder="Monto" required step="0.01" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition">Registrar</button>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-700/50 text-slate-400 text-xs uppercase">
+                            <tr>
+                                <th class="p-2">Descripción</th>
+                                <th class="p-2">Monto</th>
+                                <th class="p-2 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incomeList" class="divide-y divide-slate-700">
+                            <!-- Ingresos inyectados por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. Ahorros e Inversiones -->
+            <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-piggy-bank text-amber-400"></i> Ahorros e Inversiones
+                </h2>
+
+                <form id="savingsForm" onsubmit="addSaving(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="savTitle" placeholder="Meta / Fondo" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    <input type="number" id="savAmount" placeholder="Monto Actual" required step="0.01" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition">Guardar</button>
+                </form>
+
+                <div id="savingsList" class="space-y-3 pt-2">
+                    <!-- Ahorros inyectados por JS -->
+                </div>
+            </section>
+
+            <!-- 4. Deudas y Pagos Pendientes -->
+            <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4">
+                <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-rose-400"></i> Deudas y Pagos Pendientes
+                </h2>
+
+                <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
+                    <input type="number" id="debtAmount" placeholder="Monto Pendiente" required step="0.01" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
+                    <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition">Añadir</button>
+                </form>
+
+                <div id="debtList" class="space-y-3 pt-2">
+                    <!-- Deudas inyectadas por JS -->
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal de Cierre de Mes -->
+    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <p class="text-sm text-slate-300">
+                Revisando tu balance actual, te han quedado: 
+                <span id="surplusAmount" class="font-bold text-emerald-400 text-lg">$0.00</span>
+            </p>
+
+            <p class="text-sm text-slate-400">¿Qué te gustaría hacer con este dinero sobrante?</p>
+
+            <div class="space-y-3">
+                <button onclick="handleSurplus('nextMonth')" class="w-full text-left bg-slate-700 hover:bg-slate-600 p-3 rounded-lg border border-slate-600 flex items-center justify-between transition">
+                    <div>
+                        <div class="font-semibold text-sm">Pasarlo al siguiente mes</div>
+                        <div class="text-xs text-slate-400">Se añadirá como un nuevo ingreso para el próximo periodo.</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-emerald-400"></i>
+                </button>
+
+                <button onclick="handleSurplus('savings')" class="w-full text-left bg-slate-700 hover:bg-slate-600 p-3 rounded-lg border border-slate-600 flex items-center justify-between transition">
+                    <div>
+                        <div class="font-semibold text-sm">Agregar al fondo de ahorro</div>
+                        <div class="text-xs text-slate-400">Se sumará al primer fondo de ahorro disponible.</div>
+                    </div>
+                    <i class="fa-solid fa-piggy-bank text-amber-400"></i>
+                </button>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="closeModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-lg text-sm transition">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Funcionalidad -->
+    <script>
+        // Cargar o inicializar estado desde localStorage
+        let state = JSON.parse(localStorage.getItem('finances')) || {
+            incomes: [],
+            categories: [],
+            savings: [],
+            debts: []
+        };
+
+        function saveData() {
+            localStorage.setItem('finances', JSON.stringify(state));
+            render();
+        }
+
+        // --- Funciones de Inserción ---
+        function addCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('catName').value;
+            const limit = parseFloat(document.getElementById('catLimit').value);
+            state.categories.push({ id: Date.now(), name, limit, spent: 0 });
+            document.getElementById('budgetForm').reset();
+            saveData();
+        }
+
+        function addIncome(e) {
+            e.preventDefault();
+            const desc = document.getElementById('incDesc').value;
+            const amount = parseFloat(document.getElementById('incAmount').value);
+            state.incomes.push({ id: Date.now(), desc, amount });
+            document.getElementById('incomeForm').reset();
+            saveData();
+        }
+
+        function addSaving(e) {
+            e.preventDefault();
+            const title = document.getElementById('savTitle').value;
+            const amount = parseFloat(document.getElementById('savAmount').value);
+            state.savings.push({ id: Date.now(), title, amount });
+            document.getElementById('savingsForm').reset();
+            saveData();
+        }
+
+        function addDebt(e) {
+            e.preventDefault();
+            const title = document.getElementById('debtTitle').value;
+            const amount = parseFloat(document.getElementById('debtAmount').value);
+            state.debts.push({ id: Date.now(), title, amount });
+            document.getElementById('debtForm').reset();
+            saveData();
+        }
+
+        // --- Borrado ---
+        function removeItem(type, id) {
+            state[type] = state[type].filter(item => item.id !== id);
+            saveData();
+        }
+
+        // --- Actualización de Gasto en Categoría ---
+        function updateSpent(id, amount) {
+            const cat = state.categories.find(c => c.id === id);
+            if (cat) {
+                cat.spent = parseFloat(amount) || 0;
+                saveData();
+            }
+        }
+
+        // --- Cierre de Mes ---
+        function openCloseMonthModal() {
+            const totalIncomes = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const surplus = totalIncomes - totalSpent;
+
+            document.getElementById('surplusAmount').innerText = `$${surplus.toFixed(2)}`;
+            document.getElementById('closeMonthModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('closeMonthModal').classList.add('hidden');
+        }
+
+        function handleSurplus(option) {
+            const totalIncomes = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const surplus = totalIncomes - totalSpent;
+
+            if (surplus <= 0) {
+                alert('No hay excedentes disponibles para mover este mes.');
+                closeModal();
+                return;
+            }
+
+            if (option === 'nextMonth') {
+                state.incomes = [{ id: Date.now(), desc: 'Sobrante del Mes Anterior', amount: surplus }];
+            } else if (option === 'savings') {
+                if (state.savings.length === 0) {
+                    state.savings.push({ id: Date.now(), title: 'Ahorro General', amount: surplus });
+                } else {
+                    state.savings[0].amount += surplus;
+                }
+                state.incomes = [];
+            }
+
+            // Reiniciar gastos del mes
+            state.categories.forEach(c => c.spent = 0);
+            closeModal();
+            saveData();
+            alert('¡El mes ha sido cerrado exitosamente!');
+        }
+
+        // --- Renderizado General ---
+        function render() {
+            // Totales
+            const totalInc = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalBud = state.categories.reduce((acc, c) => acc + c.limit, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const totalSav = state.savings.reduce((acc, s) => acc + s.amount, 0);
+            const totalDebt = state.debts.reduce((acc, d) => acc + d.amount, 0);
+
+            document.getElementById('totalIncome').innerText = `$${totalInc.toFixed(2)}`;
+            document.getElementById('totalBudget').innerText = `$${totalBud.toFixed(2)}`;
+            document.getElementById('totalSavings').innerText = `$${totalSav.toFixed(2)}`;
+            document.getElementById('totalDebts').innerText = `$${totalDebt.toFixed(2)}`;
+            document.getElementById('netBalance').innerText = `$${(totalInc - totalSpent).toFixed(2)}`;
+
+            // Categorías
+            const catList = document.getElementById('categoryList');
+            catList.innerHTML = state.categories.map(c => `
+                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
+                    <div class="flex justify-between items-center text-sm font-semibold">
+                        <span>${c.name}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400">$${c.spent} de $${c.limit}</span>
+                            <button onclick="removeItem('categories', ${c.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="number" value="${c.spent}" placeholder="Gastado" onchange="updateSpent(${c.id}, this.value)" class="w-full bg-slate-800 border border-slate-600 text-xs px-2 py-1 rounded text-slate-200">
+                    </div>
+                </div>
+            `).join('');
+
+            // Ingresos
+            const incList = document.getElementById('incomeList');
+            incList.innerHTML = state.incomes.map(i => `
+                <tr>
+                    <td class="p-2">${i.desc}</td>
+                    <td class="p-2 text-emerald-400 font-semibold">$${i.amount.toFixed(2)}</td>
+                    <td class="p-2 text-right">
+                        <button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Ahorros
+            const savList = document.getElementById('savingsList');
+            savList.innerHTML = state.savings.map(s => `
+                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 flex justify-between items-center text-sm">
+                    <div>
+                        <div class="font-semibold">${s.title}</div>
+                        <div class="text-xs text-amber-400 font-bold">$${s.amount.toFixed(2)}</div>
+                    </div>
+                    <button onclick="removeItem('savings', ${s.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+
+            // Deudas
+            const debtList = document.getElementById('debtList');
+            debtList.innerHTML = state.debts.map(d => `
+                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 flex justify-between items-center text-sm">
+                    <div>
+                        <div class="font-semibold">${d.title}</div>
+                        <div class="text-xs text-rose-400 font-bold">$${d.amount.toFixed(2)}</div>
+                    </div>
+                    <button onclick="removeItem('debts', ${d.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // Inicializar vista
+        render();
+    </script>
+</body>
+</html>

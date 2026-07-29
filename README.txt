@@ -1,0 +1,1 @@
+Copyright (c) 29 de Julio del 2026, Angel Eduardo Carias Blanco. Todos los derechos reservados.

@@ -1,0 +1,45 @@
+/* styles.css */
+
+/* Personalización de la barra de desplazamiento (Scrollbar) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a; /* slate-900 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155; /* slate-700 */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #10b981; /* emerald-500 */
+}
+
+/* Animaciones suaves para cambios de estado */
+.transition-all-custom {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Estilo para inputs enfocados */
+input:focus, select:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 640px) {
+    .container-custom {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Clase para ocultar elementos con transición */
+.hidden-fade {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}

@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas Personales Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300">
+
+    <!-- SECCIÓN DE AUTENTICACIÓN (LOGIN, REGISTRO Y RECUPERACIÓN) -->
+    <div id="authSection" class="min-h-screen flex items-center justify-center px-4 py-8">
+        <div class="bg-slate-800 p-6 sm:p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full space-y-6">
+            
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-emerald-500/10 rounded-full text-emerald-400 mb-1">
+                    <i class="fa-solid fa-wallet text-3xl"></i>
+                </div>
+                <h2 id="authTitle" class="text-2xl font-bold tracking-wide text-slate-100" data-i18n="loginTitle">Iniciar Sesión</h2>
+                <p id="authSubtitle" class="text-xs text-slate-400" data-i18n="loginSubtitle">Ingresa a tu panel de gestión financiera</p>
+            </div>
+
+            <!-- Alerta de éxito/notificación -->
+            <div id="authSuccess" class="hidden text-xs text-emerald-400 bg-emerald-950/50 border border-emerald-800/50 p-3 rounded-lg text-center font-medium"></div>
+
+            <!-- Formulario de LOGIN -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1" data-i18n="usernameLabel">Nombre de Usuario o Correo</label>
+                    <input type="text" id="loginUsername" required placeholder="Ej. juan123 o juan@correo.com" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-300 block" data-i18n="passwordLabel">Contraseña</label>
+                        <button type="button" onclick="showForgotPasswordStep1()" class="text-[11px] text-emerald-400 hover:underline">¿Olvidaste tu contraseña?</button>
+                    </div>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                </div>
+
+                <div id="loginError" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 p-2.5 rounded-lg text-center"></div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-lg shadow-emerald-900/30" data-i18n="enterBtn">
+                    Ingresar
+                </button>
+            </form>
+
+            <!-- Formulario de REGISTRO EXTENDIDO (Oculto por defecto) -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="hidden space-y-3">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="firstName">Nombres</label>
+                        <input type="text" id="regFirstName" required placeholder="Juan" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="lastName">Apellidos</label>
+                        <input type="text" id="regLastName" required placeholder="Pérez" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-2">
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="usernameLabel">Nombre de Usuario</label>
+                        <input type="text" id="regUsername" required placeholder="juan123" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="age">Edad</label>
+                        <input type="number" id="regAge" min="12" max="120" required placeholder="25" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="email">Correo Electrónico</label>
+                    <input type="email" id="regEmail" required placeholder="juan@correo.com" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                </div>
+
+                <!-- Pregunta y Respuesta de Seguridad -->
+                <div class="space-y-2 border-t border-slate-700/60 pt-2">
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1">Pregunta de Seguridad</label>
+                        <select id="regSecurityQuestion" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                            <option value="" disabled selected>Selecciona una pregunta...</option>
+                            <option value="mascota">¿Cuál es el nombre de tu primera mascota?</option>
+                            <option value="ciudad">¿En qué ciudad naciste?</option>
+                            <option value="colegio">¿Cuál es el nombre de tu primera escuela?</option>
+                            <option value="comida">¿Cuál es tu comida favorita?</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1">Respuesta de Seguridad</label>
+                        <input type="text" id="regSecurityAnswer" required placeholder="Tu respuesta secreta" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="passwordLabel">Contraseña</label>
+                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-semibold text-slate-300 block mb-1" data-i18n="confirmPassword">Confirmar Contraseña</label>
+                        <input type="password" id="regConfirmPassword" required placeholder="••••••••" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-xs focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-2 pt-1">
+                    <input type="checkbox" id="regTerms" required class="mt-0.5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-0 cursor-pointer">
+                    <label for="regTerms" class="text-[11px] text-slate-300 cursor-pointer">
+                        <span data-i18n="acceptTerms">Acepto los</span> <a href="#" onclick="alert('Términos y condiciones aceptados.'); return false;" class="text-emerald-400 underline" data-i18n="termsLink">términos y condiciones</a> <span data-i18n="termsEnd">de uso.</span>
+                    </label>
+                </div>
+
+                <div id="registerError" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 p-2 rounded-lg text-center"></div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg text-xs transition shadow-lg shadow-emerald-900/30" data-i18n="createAccBtn">
+                    Crear Cuenta
+                </button>
+            </form>
+
+            <!-- Formulario de RECUPERACIÓN DE CONTRASEÑA (Paso 1 y Paso 2) -->
+            <form id="forgotForm" onsubmit="handleForgotPassword(event)" class="hidden space-y-4">
+                <input type="hidden" id="recoveryTargetUser">
+                
+                <!-- Paso 1: Buscar Usuario o Correo -->
+                <div id="forgotStep1" class="space-y-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-300 block mb-1">Usuario o Correo Electrónico</label>
+                        <input type="text" id="forgotSearchInput" required placeholder="Ingresa tu usuario o correo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+                    <button type="button" onclick="verifyUserForRecovery()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg text-xs transition shadow-lg">
+                        Buscar Cuenta
+                    </button>
+                </div>
+
+                <!-- Paso 2: Pregunta de Seguridad y Nueva Contraseña -->
+                <div id="forgotStep2" class="hidden space-y-3">
+                    <div class="bg-slate-700/50 p-2.5 rounded-lg border border-slate-600">
+                        <label class="text-[11px] text-slate-400 block mb-0.5">Pregunta de Seguridad:</label>
+                        <p id="forgotQuestionLabel" class="text-xs font-semibold text-emerald-400"></p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-slate-300 block mb-1">Tu Respuesta de Seguridad</label>
+                        <input type="text" id="forgotAnswerInput" required placeholder="Ingresa tu respuesta" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-slate-300 block mb-1">Nueva Contraseña</label>
+                        <input type="password" id="forgotNewPassword" required placeholder="••••••••" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg text-xs transition shadow-lg">
+                        Restablecer Contraseña
+                    </button>
+                </div>
+
+                <div id="forgotError" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/50 p-2.5 rounded-lg text-center"></div>
+
+                <button type="button" onclick="cancelForgot()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2 rounded-lg text-xs transition">
+                    Volver al Inicio de Sesión
+                </button>
+            </form>
+
+            <div class="pt-3 border-t border-slate-700 text-center">
+                <p id="toggleAuthText" class="text-xs text-slate-400">
+                    <span data-i18n="noAccount">¿No tienes una cuenta?</span> 
+                    <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1" data-i18n="createAccount">Crear Cuenta</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN PRINCIPAL (OCULTA HASTA INICIAR SESIÓN) -->
+    <div id="appSection" class="hidden min-h-screen flex flex-col justify-between">
+        <div>
+            <!-- Header -->
+            <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-20 shadow-md">
+                <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <i class="fa-solid fa-wallet text-emerald-400 text-xl sm:text-2xl"></i>
+                        <h1 class="text-base sm:text-xl font-bold tracking-wide" data-i18n="appTitle">Finanzas Personales Pro</h1>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700 px-2.5 py-1 rounded-md border border-slate-600 hidden sm:inline-block">
+                            <i class="fa-solid fa-user text-emerald-400 mr-1"></i> Usuario
+                        </span>
+                        
+                        <!-- Botón de Configuración -->
+                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+
+                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-emerald-900/40">
+                            <i class="fa-solid fa-calendar-check"></i> <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span><span class="sm:hidden" data-i18n="closeShort">Cierre</span>
+                        </button>
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-8">
+                <!-- Dashboard Summary -->
+                <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- Balance Disponible -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow col-span-2 sm:col-span-1">
+                        <div class="flex items-center gap-1.5 text-emerald-400 mb-1">
+                            <i class="fa-solid fa-scale-balanced text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="netBalance">Balance Disponible</p>
+                        </div>
+                        <h3 id="netBalance" class="text-xl sm:text-2xl font-bold text-emerald-400 mt-0.5">$0.00</h3>
+                    </div>
+
+                    <!-- Ingresos Totales -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                        <div class="flex items-center gap-1.5 text-blue-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-up text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalIncome">Ingresos Totales</p>
+                        </div>
+                        <h3 id="totalIncome" class="text-xl sm:text-2xl font-bold text-blue-400 mt-0.5">$0.00</h3>
+                    </div>
+
+                    <!-- Gastos Acumulados -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                        <div class="flex items-center gap-1.5 text-purple-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-down text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalSpent">Gastos Acumulados</p>
+                        </div>
+                        <h3 id="totalSpent" class="text-xl sm:text-2xl font-bold text-purple-400 mt-0.5">$0.00</h3>
+                    </div>
+
+                    <!-- Total Ahorrado -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                        <div class="flex items-center gap-1.5 text-amber-400 mb-1">
+                            <i class="fa-solid fa-piggy-bank text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalSavings">Total Ahorrado</p>
+                        </div>
+                        <h3 id="totalSavings" class="text-xl sm:text-2xl font-bold text-amber-400 mt-0.5">$0.00</h3>
+                    </div>
+
+                    <!-- Te Deben A Ti -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                        <div class="flex items-center gap-1.5 text-cyan-400 mb-1">
+                            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalReceivables">Te Deben A Ti</p>
+                        </div>
+                        <h3 id="totalReceivables" class="text-xl sm:text-2xl font-bold text-cyan-400 mt-0.5">$0.00</h3>
+                    </div>
+
+                    <!-- Deudas Pendientes -->
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                        <div class="flex items-center gap-1.5 text-rose-400 mb-1">
+                            <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalDebts">Deudas Pendientes</p>
+                        </div>
+                        <h3 id="totalDebts" class="text-xl sm:text-2xl font-bold text-rose-400 mt-0.5">$0.00</h3>
+                    </div>
+                </section>
+
+                <!-- Registrar Transacción -->
+                <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow-lg">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="regTransactionTitle">
+                        <i class="fa-solid fa-right-left text-teal-400"></i> Registrar Transacción (Gasto / Ingreso)
+                    </h2>
+                    
+                    <form id="txForm" onsubmit="addTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+                        <select id="txType" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                            <option value="expense" data-i18n="optionExpense">Gasto (-)</option>
+                            <option value="income" data-i18n="optionIncome">Ingreso (+)</option>
+                        </select>
+                        <input type="text" id="txDesc" placeholder="Descripción" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="number" id="txAmount" placeholder="Monto" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="date" id="txDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400 text-slate-200">
+                        <input type="text" id="txCategoryInput" placeholder="Categoría" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+
+                        <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition lg:col-span-1 sm:col-span-2 flex items-center justify-center gap-1.5" data-i18n="saveBtn">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar
+                        </button>
+                    </form>
+
+                    <div class="pt-4 border-t border-slate-700">
+                        <h3 class="text-xs uppercase font-bold text-slate-400 mb-3 flex items-center gap-1.5" data-i18n="txHistory">
+                            <i class="fa-solid fa-list-check text-teal-400"></i> Historial de Registros
+                        </h3>
+                        <div id="transactionHistoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
+                    </div>
+                </section>
+
+                <!-- Rejilla de Módulos -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                    <!-- Categorías -->
+                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="budgetTitle">
+                            <i class="fa-solid fa-chart-pie text-purple-400"></i> Presupuesto por Categorías
+                        </h2>
+                        
+                        <form id="budgetForm" onsubmit="addCategory(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" id="catName" placeholder="Categoría" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
+                            <input type="number" id="catLimit" placeholder="Límite $" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="createCatBtn">
+                                <i class="fa-solid fa-plus"></i> Crear Categoría
+                            </button>
+                        </form>
+
+                        <div id="categoryList" class="space-y-3 pt-2"></div>
+                    </section>
+
+                    <!-- Ingresos -->
+                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="directIncomeTitle">
+                            <i class="fa-solid fa-money-bill-trend-up text-blue-400"></i> Ingresos Directos
+                        </h2>
+
+                        <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <input type="text" id="incDesc" placeholder="Descripción" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+                            <input type="number" id="incAmount" placeholder="Monto" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+                            <input type="date" id="incDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 text-slate-200">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="addBtn">
+                                <i class="fa-solid fa-plus"></i> Añadir
+                            </button>
+                        </form>
+
+                        <div class="overflow-x-auto max-h-60 rounded-lg border border-slate-700">
+                            <table class="w-full text-left text-sm text-slate-300">
+                                <thead class="bg-slate-700/50 text-slate-400 text-xs uppercase sticky top-0">
+                                    <tr>
+                                        <th class="p-2.5" data-i18n="thDate">Fecha</th>
+                                        <th class="p-2.5" data-i18n="thDesc">Descripción</th>
+                                        <th class="p-2.5" data-i18n="thAmount">Monto</th>
+                                        <th class="p-2.5 text-right" data-i18n="thAction">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incomeList" class="divide-y divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Cuentas por Cobrar -->
+                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="receivablesTitle">
+                            <i class="fa-solid fa-hand-holding-hand text-cyan-400"></i> Cuentas por Cobrar (Dinero que te deben)
+                        </h2>
+
+                        <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <input type="text" id="recPerson" placeholder="Nombre de la persona" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
+                            <input type="number" id="recAmount" placeholder="Monto Prestado" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
+                            <input type="date" id="recDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400 text-slate-200">
+                            <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="regLoanBtn">
+                                <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Préstamo
+                            </button>
+                        </form>
+
+                        <div id="receivablesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2"></div>
+                    </section>
+
+                    <!-- Deudas -->
+                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="debtsTitle">
+                            <i class="fa-solid fa-receipt text-rose-400"></i> Mis Deudas y Pagos Pendientes
+                        </h2>
+
+                        <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
+                            <input type="number" id="debtAmount" placeholder="Monto Pendiente" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
+                            <input type="date" id="debtDate" title="Fecha límite" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400 text-slate-200">
+                            <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="regDebtBtn">
+                                <i class="fa-solid fa-file-circle-plus"></i> Registrar Deuda
+                            </button>
+                        </form>
+
+                        <div id="debtList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2"></div>
+                    </section>
+
+                    <!-- Cajas de Ahorro -->
+                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="savingsTitle">
+                            <i class="fa-solid fa-piggy-bank text-amber-400"></i> Cajas de Ahorro y Microgestión
+                        </h2>
+
+                        <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-slate-700">
+                            <input type="text" id="boxTitle" placeholder="Nombre de la caja" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                            <input type="number" id="boxInitialAmount" placeholder="Monto Inicial" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                            <input type="date" id="boxDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 text-slate-200">
+                            <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> <span data-i18n="createBoxBtn">Crear Caja</span>
+                            </button>
+                        </form>
+
+                        <div id="savingsBoxesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"></div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        <!-- FOOTER / PIE DE PÁGINA -->
+        <footer class="bg-slate-800/90 border-t border-slate-700 mt-12 pt-8 pb-6 relative text-slate-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <!-- Línea Superior: Marca + Redes Sociales -->
+                <div class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-700 gap-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-emerald-400 text-2xl"></i>
+                        <span class="text-lg font-bold tracking-wide text-slate-100">Finanzas <span class="text-emerald-400">Pro</span> Academy</span>
+                    </div>
+                    
+                    <!-- Iconos Redes Sociales -->
+                    <div class="flex items-center space-x-3">
+                        <a href="https://youtube.com" target="_blank" rel="noopener" class="w-9 h-9 bg-slate-700 hover:bg-rose-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener" class="w-9 h-9 bg-slate-700 hover:bg-blue-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener" class="w-9 h-9 bg-slate-700 hover:bg-pink-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener" class="w-9 h-9 bg-slate-700 hover:bg-sky-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://x.com" target="_blank" rel="noopener" class="w-9 h-9 bg-slate-700 hover:bg-slate-900 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Secciones de Links -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 text-xs">
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftRec">Recursos Educativos</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="https://www.investopedia.com" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink1">Curso de Educación Financiera</a></li>
+                            <li><a href="https://www.khanacademy.org/college-careers-more/personal-finance" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink2">Guía de Inversiones e Inflación</a></li>
+                            <li><a href="https://www.consumerfinance.gov" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink3">Blog de Gestión de Deudas</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftTools">Herramientas & Calculadoras</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="https://www.calculator.net/financial-calculator.html" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink4">Calculadora de Interés Compuesto</a></li>
+                            <li><a href="https://www.bankrate.com" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink5">Simulador de Hipotecas y Préstamos</a></li>
+                            <li><a href="#" onclick="alert('Exportación CSV próximamente'); return false;" class="hover:text-emerald-400 transition" data-i18n="ftLink6">Exportar Reporte Financiero</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftSupport">Soporte & Comunidad</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="mailto:soporte@finanzaspro.com" class="hover:text-emerald-400 transition" data-i18n="ftLink7">Centro de Asistencia Técnica</a></li>
+                            <li><a href="#" onclick="alert('Preguntas frecuentes'); return false;" class="hover:text-emerald-400 transition" data-i18n="ftLink8">Preguntas Frecuentes (FAQ)</a></li>
+                            <li><a href="#" onclick="alert('Finanzas Pro v3.1 - 2026'); return false;" class="hover:text-emerald-400 transition" data-i18n="ftLink9">Acerca de Finanzas Pro</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2">
+                    <p>© 2026 Finanzas Personales Pro. <span data-i18n="rights">Todos los derechos reservados.</span></p>
+                    <p data-i18n="secureData">100% Privado y Seguro. Tus datos se guardan de forma local.</p>
+                </div>
+            </div>
+
+            <!-- Botón flotante para subir arriba -->
+            <button onclick="scrollToTop()" class="absolute bottom-6 right-6 bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-full shadow-xl transition transform hover:scale-110" title="Volver arriba">
+                <i class="fa-solid fa-arrow-up text-sm"></i>
+            </button>
+        </footer>
+    </div>
+
+    <!-- MODAL DE CONFIGURACIÓN Y OPCIONES -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-gear"></i> <span data-i18n="settingsTitle">Configuración del Sistema</span>
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Selección de Idioma -->
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block" data-i18n="selectLanguage">Idioma de la Aplicación</label>
+                    <select id="settingLanguage" onchange="changeLanguage(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                        <option value="es">Español 🇲🇽 / 🇪🇸</option>
+                        <option value="en">English 🇺🇸 / 🇬🇧</option>
+                    </select>
+                </div>
+
+                <!-- Selección de Moneda -->
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block" data-i18n="selectCurrency">Símbolo de Moneda</label>
+                    <select id="settingCurrency" onchange="changeCurrency(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                        <option value="$">Dólar / Peso ($)</option>
+                        <option value="€">Euro (€)</option>
+                        <option value="Q">Quetzal (Q)</option>
+                        <option value="£">Libra (£)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-700">
+                <button onclick="closeSettingsModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg text-sm transition" data-i18n="closeModalBtn">Aceptar y Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTROS MODALES DE LA APLICACIÓN -->
+    <div id="savingsMovementModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 id="savingsModalTitle" class="text-base sm:text-lg font-bold text-amber-400">Microgestión de Fondo</h3>
+                <button onclick="closeSavingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="savingsMovementForm" onsubmit="processSavingsMovement(event)" class="space-y-3">
+                <input type="hidden" id="modalBoxId">
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Acción</label>
+                    <select id="modalActionType" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-amber-400">
+                        <option value="add">Añadir Fondos (+)</option>
+                        <option value="subtract">Descontar / Consumo (-)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Fuente / Método de Fondos</label>
+                    <select id="modalSource" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-amber-400">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Tarjeta / Banco">Tarjeta / Cuenta de Banco</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Otro">Otro Aspecto</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Monto</label>
+                    <input type="number" id="modalAmount" step="1" min="0" required placeholder="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Fecha</label>
+                    <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-amber-400 text-slate-200">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Descripción / Motivo</label>
+                    <input type="text" id="modalReason" required placeholder="Ej. Gasto $200 en tarjeta" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-amber-400">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeSavingsModal()" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-lg text-sm transition">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-500 text-white font-medium py-2 rounded-lg text-sm transition">Guardar Movimiento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="receivableModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 id="receivableModalTitle" class="text-base sm:text-lg font-bold text-cyan-400">Registrar Cobro</h3>
+                <button onclick="closeReceivableModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
+                <input type="hidden" id="modalReceivableId">
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Monto Cobrado / Abono Recibido</label>
+                    <input type="number" id="recPayAmount" step="1" min="0" required placeholder="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-cyan-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Fecha de Pago</label>
+                    <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-cyan-400 text-slate-200">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Nota / Motivo</label>
+                    <input type="text" id="recPayReason" required placeholder="Ej. Abono a cuenta prestada" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-cyan-400">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeReceivableModal()" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-lg text-sm transition">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2 rounded-lg text-sm transition">Guardar Cobro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="debtPaymentModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 id="debtModalTitle" class="text-base sm:text-lg font-bold text-rose-400">Abonar a Deuda</h3>
+                <button onclick="closeDebtModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="debtPaymentForm" onsubmit="processDebtPayment(event)" class="space-y-3">
+                <input type="hidden" id="modalDebtId">
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Monto del Abono</label>
+                    <input type="number" id="debtPayAmount" step="1" min="0" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-rose-400">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Fecha de Pago</label>
+                    <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-rose-400 text-slate-200">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-1 block">Nota / Descripción</label>
+                    <input type="text" id="debtPayReason" required placeholder="Ej. Pago parcial" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-rose-400">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeDebtModal()" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-lg text-sm transition">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-rose-600 hover:bg-rose-500 text-white font-medium py-2 rounded-lg text-sm transition">Registrar Abono</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg sm:text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <p class="text-sm text-slate-300">
+                Balance libre sobrante: 
+                <span id="surplusAmount" class="font-bold text-emerald-400 text-lg">$0.00</span>
+            </p>
+            <div class="space-y-3">
+                <button onclick="handleSurplus('nextMonth')" class="w-full text-left bg-slate-700 hover:bg-slate-600 p-3 rounded-lg border border-slate-600 flex items-center justify-between transition">
+                    <div>
+                        <div class="font-semibold text-sm">Pasarlo al siguiente mes</div>
+                        <div class="text-xs text-slate-400">Se agregará como ingreso para el próximo ciclo.</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-emerald-400 ml-2"></i>
+                </button>
+                <button onclick="handleSurplus('savings')" class="w-full text-left bg-slate-700 hover:bg-slate-600 p-3 rounded-lg border border-slate-600 flex items-center justify-between transition">
+                    <div>
+                        <div class="font-semibold text-sm">Agregar a una Caja de Ahorro</div>
+                        <div class="text-xs text-slate-400">Se moverá a la primera caja de ahorro disponible.</div>
+                    </div>
+                    <i class="fa-solid fa-piggy-bank text-amber-400 ml-2"></i>
+                </button>
+            </div>
+            <div class="pt-2">
+                <button onclick="closeModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-lg text-sm transition">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Scripting -->
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            if (!input.hasAttribute('title')) input.value = today;
+        });
+
+        // --- MAPPING DE PREGUNTAS DE SEGURIDAD ---
+        const securityQuestionsMap = {
+            mascota: "¿Cuál es el nombre de tu primera mascota?",
+            ciudad: "¿En qué ciudad naciste?",
+            colegio: "¿Cuál es el nombre de tu primera escuela?",
+            comida: "¿Cuál es tu comida favorita?"
+        };
+
+        // --- SISTEMA DE TRADUCCIÓN E IDIOMAS ---
+        let currentLang = localStorage.getItem('finances_lang') || 'es';
+        let currencySymbol = localStorage.getItem('finances_currency') || '$';
+
+        const i18n = {
+            es: {
+                loginTitle: "Iniciar Sesión",
+                loginSubtitle: "Ingresa a tu panel de gestión financiera",
+                usernameLabel: "Nombre de Usuario o Correo",
+                passwordLabel: "Contraseña",
+                enterBtn: "Ingresar",
+                firstName: "Nombres",
+                lastName: "Apellidos",
+                age: "Edad",
+                email: "Correo Electrónico",
+                confirmPassword: "Confirmar Contraseña",
+                acceptTerms: "Acepto los",
+                termsLink: "términos y condiciones",
+                termsEnd: "de uso.",
+                createAccBtn: "Crear Cuenta",
+                noAccount: "¿No tienes una cuenta?",
+                createAccount: "Crear Cuenta",
+                appTitle: "Finanzas Personales Pro",
+                closeMonth: "Cierre de Mes",
+                closeShort: "Cierre",
+                netBalance: "Balance Disponible",
+                totalIncome: "Ingresos Totales",
+                totalSpent: "Gastos Acumulados",
+                totalSavings: "Total Ahorrado",
+                totalReceivables: "Te Deben A Ti",
+                totalDebts: "Deudas Pendientes",
+                regTransactionTitle: "Registrar Transacción (Gasto / Ingreso)",
+                optionExpense: "Gasto (-)",
+                optionIncome: "Ingreso (+)",
+                saveBtn: "Guardar",
+                txHistory: "Historial de Registros",
+                budgetTitle: "Presupuesto por Categorías",
+                createCatBtn: "Crear Categoría",
+                directIncomeTitle: "Ingresos Directos",
+                addBtn: "Añadir",
+                thDate: "Fecha",
+                thDesc: "Descripción",
+                thAmount: "Monto",
+                thAction: "Acción",
+                receivablesTitle: "Cuentas por Cobrar (Dinero que te deben)",
+                regLoanBtn: "Registrar Préstamo",
+                debtsTitle: "Mis Deudas y Pagos Pendientes",
+                regDebtBtn: "Registrar Deuda",
+                savingsTitle: "Cajas de Ahorro y Microgestión",
+                createBoxBtn: "Crear Caja",
+                settingsTitle: "Configuración del Sistema",
+                selectLanguage: "Idioma de la Aplicación",
+                selectCurrency: "Símbolo de Moneda",
+                closeModalBtn: "Aceptar y Cerrar",
+                ftRec: "Recursos Educativos",
+                ftLink1: "Curso de Educación Financiera",
+                ftLink2: "Guía de Inversiones e Inflación",
+                ftLink3: "Blog de Gestión de Deudas",
+                ftTools: "Herramientas & Calculadoras",
+                ftLink4: "Calculadora de Interés Compuesto",
+                ftLink5: "Simulador de Hipotecas y Préstamos",
+                ftLink6: "Exportar Reporte Financiero",
+                ftSupport: "Soporte & Comunidad",
+                ftLink7: "Centro de Asistencia Técnica",
+                ftLink8: "Preguntas Frecuentes (FAQ)",
+                ftLink9: "Acerca de Finanzas Pro",
+                rights: "Todos los derechos reservados.",
+                secureData: "100% Privado y Seguro. Tus datos se guardan de forma local."
+            },
+            en: {
+                loginTitle: "Log In",
+                loginSubtitle: "Access your financial management dashboard",
+                usernameLabel: "Username or Email",
+                passwordLabel: "Password",
+                enterBtn: "Log In",
+                firstName: "First Name",
+                lastName: "Last Name",
+                age: "Age",
+                email: "Email Address",
+                confirmPassword: "Confirm Password",
+                acceptTerms: "I agree to the",
+                termsLink: "terms and conditions",
+                termsEnd: "of use.",
+                createAccBtn: "Create Account",
+                noAccount: "Don't have an account?",
+                createAccount: "Register",
+                appTitle: "Personal Finance Pro",
+                closeMonth: "Month Close",
+                closeShort: "Close",
+                netBalance: "Available Balance",
+                totalIncome: "Total Income",
+                totalSpent: "Total Expenses",
+                totalSavings: "Total Saved",
+                totalReceivables: "Owed To You",
+                totalDebts: "Pending Debts",
+                regTransactionTitle: "Log Transaction (Expense / Income)",
+                optionExpense: "Expense (-)",
+                optionIncome: "Income (+)",
+                saveBtn: "Save",
+                txHistory: "Transaction History",
+                budgetTitle: "Category Budget",
+                createCatBtn: "Create Category",
+                directIncomeTitle: "Direct Income",
+                addBtn: "Add",
+                thDate: "Date",
+                thDesc: "Description",
+                thAmount: "Amount",
+                thAction: "Action",
+                receivablesTitle: "Accounts Receivable (Money owed to you)",
+                regLoanBtn: "Log Loan",
+                debtsTitle: "My Debts & Pending Payments",
+                regDebtBtn: "Log Debt",
+                savingsTitle: "Savings Boxes & Micro-management",
+                createBoxBtn: "Create Box",
+                settingsTitle: "System Settings",
+                selectLanguage: "Application Language",
+                selectCurrency: "Currency Symbol",
+                closeModalBtn: "Accept & Close",
+                ftRec: "Educational Resources",
+                ftLink1: "Financial Education Course",
+                ftLink2: "Investment & Inflation Guide",
+                ftLink3: "Debt Management Blog",
+                ftTools: "Tools & Calculators",
+                ftLink4: "Compound Interest Calculator",
+                ftLink5: "Mortgage & Loan Simulator",
+                ftLink6: "Export Financial Report",
+                ftSupport: "Support & Community",
+                ftLink7: "Technical Support Center",
+                ftLink8: "Frequently Asked Questions (FAQ)",
+                ftLink9: "About Finance Pro",
+                rights: "All rights reserved.",
+                secureData: "100% Private & Secure. Your data is stored locally."
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('finances_lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang] && i18n[lang][key]) {
+                    el.innerText = i18n[lang][key];
+                }
+            });
+            render();
+        }
+
+        function changeCurrency(sym) {
+            currencySymbol = sym;
+            localStorage.setItem('finances_currency', sym);
+            render();
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingLanguage').value = currentLang;
+            document.getElementById('settingCurrency').value = currencySymbol;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- AUTENTICACIÓN Y SESIONES ---
+        let isRegisterMode = false;
+        let currentUser = localStorage.getItem('finances_session_user') || null;
+        // Base de datos limpia iniciada vacía
+        let usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            const toggleText = document.getElementById('toggleAuthText');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const forgotForm = document.getElementById('forgotForm');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            const authSuccess = document.getElementById('authSuccess');
+
+            loginError.classList.add('hidden');
+            registerError.classList.add('hidden');
+            authSuccess.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            if (isRegisterMode) {
+                title.innerText = i18n[currentLang].createAccBtn;
+                subtitle.innerText = currentLang === 'es' ? 'Completa tus datos para registrarte' : 'Fill in your details to register';
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                toggleText.innerHTML = `${currentLang === 'es' ? '¿Ya tienes una cuenta?' : 'Already have an account?'} <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">${i18n[currentLang].loginTitle}</button>`;
+            } else {
+                title.innerText = i18n[currentLang].loginTitle;
+                subtitle.innerText = i18n[currentLang].loginSubtitle;
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                toggleText.innerHTML = `${i18n[currentLang].noAccount} <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">${i18n[currentLang].createAccount}</button>`;
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.classList.add('hidden');
+
+            // Buscar por usuario o correo
+            let foundKey = Object.keys(usersDB).find(u => u === inputVal || usersDB[u].email === inputVal);
+
+            if (!foundKey || usersDB[foundKey].password !== password) {
+                errorDiv.innerText = currentLang === 'es' ? 'Usuario/Correo o contraseña incorrectos.' : 'Invalid username/email or password.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            loginUser(foundKey);
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const age = parseInt(document.getElementById('regAge').value);
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const securityQuestion = document.getElementById('regSecurityQuestion').value;
+            const securityAnswer = document.getElementById('regSecurityAnswer').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const terms = document.getElementById('regTerms').checked;
+            const errorDiv = document.getElementById('registerError');
+
+            errorDiv.classList.add('hidden');
+
+            if (usersDB[username]) {
+                errorDiv.innerText = currentLang === 'es' ? 'El nombre de usuario ya está registrado.' : 'Username already exists.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (Object.values(usersDB).some(u => u.email === email)) {
+                errorDiv.innerText = currentLang === 'es' ? 'El correo electrónico ya está en uso.' : 'Email already in use.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (!securityQuestion || !securityAnswer) {
+                errorDiv.innerText = currentLang === 'es' ? 'Por favor completa la pregunta y respuesta de seguridad.' : 'Please fill in security question and answer.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorDiv.innerText = currentLang === 'es' ? 'Las contraseñas no coinciden.' : 'Passwords do not match.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (!terms) {
+                errorDiv.innerText = currentLang === 'es' ? 'Debes aceptar los términos y condiciones.' : 'You must accept the terms.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            usersDB[username] = {
+                firstName, lastName, age, email, password,
+                securityQuestion, securityAnswer,
+                state: { transactions: [], incomes: [], categories: [], savingsBoxes: [], debts: [], receivables: [] }
+            };
+
+            localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
+
+            document.getElementById('registerForm').reset();
+            toggleAuthMode();
+
+            const successDiv = document.getElementById('authSuccess');
+            successDiv.innerText = currentLang === 'es' ? '¡Cuenta creada con éxito! Por favor inicia sesión.' : 'Account created successfully! Please log in.';
+            successDiv.classList.remove('hidden');
+            document.getElementById('loginUsername').value = username;
+        }
+
+        // --- FLUJO DE RECUPERACIÓN DE CONTRASEÑA ---
+        function showForgotPasswordStep1() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('forgotForm').classList.remove('hidden');
+
+            document.getElementById('authTitle').innerText = 'Recuperar Contraseña';
+            document.getElementById('authSubtitle').innerText = 'Verifica tu cuenta mediante la respuesta de seguridad';
+
+            document.getElementById('forgotStep1').classList.remove('hidden');
+            document.getElementById('forgotStep2').classList.add('hidden');
+            document.getElementById('forgotError').classList.add('hidden');
+            document.getElementById('forgotForm').reset();
+        }
+
+        function cancelForgot() {
+            document.getElementById('forgotForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('authTitle').innerText = i18n[currentLang].loginTitle;
+            document.getElementById('authSubtitle').innerText = i18n[currentLang].loginSubtitle;
+        }
+
+        function verifyUserForRecovery() {
+            const searchVal = document.getElementById('forgotSearchInput').value.trim().toLowerCase();
+            const errorDiv = document.getElementById('forgotError');
+            errorDiv.classList.add('hidden');
+
+            let foundKey = Object.keys(usersDB).find(u => u === searchVal || usersDB[u].email === searchVal);
+
+            if (!foundKey) {
+                errorDiv.innerText = 'No se encontró ninguna cuenta registrada con ese usuario o correo.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            const userObj = usersDB[foundKey];
+            if (!userObj.securityQuestion || !userObj.securityAnswer) {
+                errorDiv.innerText = 'Esta cuenta no tiene configurada una pregunta de seguridad.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('recoveryTargetUser').value = foundKey;
+            document.getElementById('forgotQuestionLabel').innerText = securityQuestionsMap[userObj.securityQuestion] || userObj.securityQuestion;
+
+            document.getElementById('forgotStep1').classList.add('hidden');
+            document.getElementById('forgotStep2').classList.remove('hidden');
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            const targetUserKey = document.getElementById('recoveryTargetUser').value;
+            const answerVal = document.getElementById('forgotAnswerInput').value.trim().toLowerCase();
+            const newPassword = document.getElementById('forgotNewPassword').value;
+            const errorDiv = document.getElementById('forgotError');
+
+            errorDiv.classList.add('hidden');
+
+            const userObj = usersDB[targetUserKey];
+
+            if (userObj.securityAnswer !== answerVal) {
+                errorDiv.innerText = 'La respuesta de seguridad es incorrecta.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 4) {
+                errorDiv.innerText = 'La nueva contraseña debe tener al menos 4 caracteres.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Actualizar Contraseña
+            userObj.password = newPassword;
+            localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
+
+            cancelForgot();
+
+            const successDiv = document.getElementById('authSuccess');
+            successDiv.innerText = '¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.';
+            successDiv.classList.remove('hidden');
+            document.getElementById('loginUsername').value = targetUserKey;
+        }
+
+        function loginUser(username) {
+            currentUser = username;
+            localStorage.setItem('finances_session_user', currentUser);
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            
+            const userInfo = usersDB[currentUser];
+            const displayName = userInfo && userInfo.firstName ? `${userInfo.firstName}` : currentUser;
+            document.getElementById('currentUserLabel').innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${displayName}`;
+            
+            changeLanguage(currentLang);
+            loadState();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('finances_session_user');
+            document.getElementById('appSection').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+            document.getElementById('authSuccess').classList.add('hidden');
+        }
+
+        // --- ESTADO DE LA APLICACIÓN ---
+        let state = { transactions: [], incomes: [], categories: [], savingsBoxes: [], debts: [], receivables: [] };
+
+        function loadState() {
+            if (currentUser && usersDB[currentUser]) {
+                state = usersDB[currentUser].state || state;
+                render();
+            }
+        }
+
+        function saveData() {
+            if (currentUser && usersDB[currentUser]) {
+                usersDB[currentUser].state = state;
+                localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
+                render();
+            }
+        }
+
+        function isFutureDate(dateStr) {
+            return dateStr > today;
+        }
+
+        // --- LÓGICA DE NEGOCIO ---
+        function addTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('txType').value;
+            const desc = document.getElementById('txDesc').value;
+            const amount = parseFloat(document.getElementById('txAmount').value);
+            const date = document.getElementById('txDate').value;
+            const catName = document.getElementById('txCategoryInput').value.trim() || 'General';
+
+            const tx = { id: Date.now(), type, desc, amount, date, category: catName };
+            state.transactions.unshift(tx);
+
+            if (type === 'income') {
+                state.incomes.push({ id: Date.now(), desc, amount, date });
+            } else {
+                let category = state.categories.find(c => c.name.toLowerCase() === catName.toLowerCase());
+                if (!category) {
+                    category = { id: Date.now(), name: catName, limit: amount, spent: amount };
+                    state.categories.push(category);
+                } else {
+                    category.spent += amount;
+                }
+            }
+
+            document.getElementById('txForm').reset();
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                if (!input.hasAttribute('title')) input.value = today;
+            });
+            saveData();
+        }
+
+        function addCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('catName').value;
+            const limit = parseFloat(document.getElementById('catLimit').value);
+            state.categories.push({ id: Date.now(), name, limit, spent: 0 });
+            document.getElementById('budgetForm').reset();
+            saveData();
+        }
+
+        function addSpentManual(id, inputElement) {
+            const val = parseFloat(inputElement.value);
+            if (!isNaN(val) && val !== 0) {
+                const cat = state.categories.find(c => c.id === id);
+                if (cat) {
+                    cat.spent = Math.max(0, cat.spent + val);
+                    inputElement.value = '';
+                    saveData();
+                }
+            }
+        }
+
+        function addDirectIncome(e) {
+            e.preventDefault();
+            const desc = document.getElementById('incDesc').value;
+            const amount = parseFloat(document.getElementById('incAmount').value);
+            const date = document.getElementById('incDate').value;
+            state.incomes.push({ id: Date.now(), desc, amount, date });
+            document.getElementById('incomeForm').reset();
+            saveData();
+        }
+
+        function addReceivable(e) {
+            e.preventDefault();
+            const person = document.getElementById('recPerson').value;
+            const amount = parseFloat(document.getElementById('recAmount').value);
+            const date = document.getElementById('recDate').value;
+
+            state.receivables.push({ id: Date.now(), person, amount, initialAmount: amount, date, payments: [] });
+            document.getElementById('receivableForm').reset();
+            saveData();
+        }
+
+        function openReceivableModal(recId) {
+            const rec = state.receivables.find(r => r.id === recId);
+            if (!rec) return;
+            document.getElementById('modalReceivableId').value = rec.id;
+            document.getElementById('receivableModalTitle').innerText = `${currentLang === 'es' ? 'Registrar Cobro a' : 'Log Collection for'}: ${rec.person}`;
+            document.getElementById('recPayDate').value = today;
+            document.getElementById('receivableModal').classList.remove('hidden');
+        }
+
+        function closeReceivableModal() {
+            document.getElementById('receivableModal').classList.add('hidden');
+            document.getElementById('receivableFormModal').reset();
+        }
+
+        function processReceivablePayment(e) {
+            e.preventDefault();
+            const recId = parseInt(document.getElementById('modalReceivableId').value);
+            const amount = parseFloat(document.getElementById('recPayAmount').value);
+            const date = document.getElementById('recPayDate').value;
+            const reason = document.getElementById('recPayReason').value;
+
+            const rec = state.receivables.find(r => r.id === recId);
+            if (rec) {
+                if (amount > rec.amount) {
+                    alert('El valor cobrado no puede superar el saldo adeudado.');
+                    return;
+                }
+                rec.amount -= amount;
+                rec.payments.unshift({ id: Date.now(), amount, date, reason });
+                closeReceivableModal();
+                saveData();
+            }
+        }
+
+        function addDebt(e) {
+            e.preventDefault();
+            const title = document.getElementById('debtTitle').value;
+            const amount = parseFloat(document.getElementById('debtAmount').value);
+            const date = document.getElementById('debtDate').value || 'Sin Fecha';
+            state.debts.push({ id: Date.now(), title, amount, initialAmount: amount, date, payments: [] });
+            document.getElementById('debtForm').reset();
+            saveData();
+        }
+
+        function openDebtModal(debtId) {
+            const debt = state.debts.find(d => d.id === debtId);
+            if (!debt) return;
+            document.getElementById('modalDebtId').value = debt.id;
+            document.getElementById('debtModalTitle').innerText = `${currentLang === 'es' ? 'Abonar a' : 'Pay debt'}: ${debt.title}`;
+            document.getElementById('debtPayDate').value = today;
+            document.getElementById('debtPaymentModal').classList.remove('hidden');
+        }
+
+        function closeDebtModal() {
+            document.getElementById('debtPaymentModal').classList.add('hidden');
+            document.getElementById('debtPaymentForm').reset();
+        }
+
+        function processDebtPayment(e) {
+            e.preventDefault();
+            const debtId = parseInt(document.getElementById('modalDebtId').value);
+            const amount = parseFloat(document.getElementById('debtPayAmount').value);
+            const date = document.getElementById('debtPayDate').value;
+            const reason = document.getElementById('debtPayReason').value;
+
+            const debt = state.debts.find(d => d.id === debtId);
+            if (debt) {
+                if (amount > debt.amount) {
+                    alert('El abono no puede superar la deuda actual.');
+                    return;
+                }
+                debt.amount -= amount;
+                debt.payments.unshift({ id: Date.now(), amount, date, reason });
+                closeDebtModal();
+                saveData();
+            }
+        }
+
+        function createNewSavingsBox(e) {
+            e.preventDefault();
+            const title = document.getElementById('boxTitle').value;
+            const initialAmount = parseFloat(document.getElementById('boxInitialAmount').value) || 0;
+            const date = document.getElementById('boxDate').value;
+
+            const newBox = {
+                id: Date.now(),
+                title: title,
+                total: initialAmount,
+                history: [
+                    { id: Date.now() + 1, type: 'add', source: 'Aporte Inicial', amount: initialAmount, date: date, reason: 'Fondo Inicial' }
+                ]
+            };
+
+            state.savingsBoxes.push(newBox);
+            document.getElementById('savingsBoxForm').reset();
+            saveData();
+        }
+
+        function openSavingsModal(boxId) {
+            const box = state.savingsBoxes.find(b => b.id === boxId);
+            if (!box) return;
+            document.getElementById('modalBoxId').value = box.id;
+            document.getElementById('savingsModalTitle').innerText = `Microgestión: ${box.title}`;
+            document.getElementById('modalDate').value = today;
+            document.getElementById('savingsMovementModal').classList.remove('hidden');
+        }
+
+        function closeSavingsModal() {
+            document.getElementById('savingsMovementModal').classList.add('hidden');
+            document.getElementById('savingsMovementForm').reset();
+        }
+
+        function processSavingsMovement(e) {
+            e.preventDefault();
+            const boxId = parseInt(document.getElementById('modalBoxId').value);
+            const action = document.getElementById('modalActionType').value;
+            const source = document.getElementById('modalSource').value;
+            const amount = parseFloat(document.getElementById('modalAmount').value);
+            const date = document.getElementById('modalDate').value;
+            const reason = document.getElementById('modalReason').value;
+
+            const box = state.savingsBoxes.find(b => b.id === boxId);
+            if (box) {
+                if (action === 'subtract' && amount > box.total) {
+                    alert('No puedes retirar más dinero del saldo disponible.');
+                    return;
+                }
+                box.total = action === 'add' ? box.total + amount : box.total - amount;
+                box.history.unshift({ id: Date.now(), type: action, source, amount, date, reason });
+                closeSavingsModal();
+                saveData();
+            }
+        }
+
+        function removeItem(type, id) {
+            state[type] = state[type].filter(item => item.id !== id);
+            saveData();
+        }
+
+        function removeSavingsHistoryItem(boxId, historyId) {
+            const box = state.savingsBoxes.find(b => b.id === boxId);
+            if (box) {
+                box.history = box.history.filter(h => h.id !== historyId);
+                box.total = box.history.reduce((acc, curr) => curr.type === 'add' ? acc + curr.amount : acc - curr.amount, 0);
+                saveData();
+            }
+        }
+
+        function openCloseMonthModal() {
+            const totalIncomes = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const surplus = totalIncomes - totalSpent;
+            document.getElementById('surplusAmount').innerText = `${currencySymbol}${surplus.toFixed(2)}`;
+            document.getElementById('closeMonthModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('closeMonthModal').classList.add('hidden');
+        }
+
+        function handleSurplus(option) {
+            const totalIncomes = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const surplus = totalIncomes - totalSpent;
+
+            if (surplus <= 0) {
+                alert('No hay saldo sobrante disponible.');
+                closeModal();
+                return;
+            }
+
+            if (option === 'nextMonth') {
+                state.incomes = [{ id: Date.now(), desc: 'Sobrante Mes Anterior', amount: surplus, date: today }];
+            } else if (option === 'savings') {
+                if (state.savingsBoxes.length === 0) {
+                    state.savingsBoxes.push({
+                        id: Date.now(), title: 'Ahorro Acumulado', total: surplus,
+                        history: [{ id: Date.now(), type: 'add', source: 'Cierre de Mes', amount: surplus, date: today, reason: 'Excedente mensual' }]
+                    });
+                } else {
+                    const firstBox = state.savingsBoxes[0];
+                    firstBox.total += surplus;
+                    firstBox.history.unshift({ id: Date.now(), type: 'add', source: 'Cierre de Mes', amount: surplus, date: today, reason: 'Excedente mensual' });
+                }
+                state.incomes = [];
+            }
+
+            state.categories.forEach(c => c.spent = 0);
+            closeModal();
+            saveData();
+            alert('¡Cierre de mes realizado correctamente!');
+        }
+
+        // --- RENDERIZADO ---
+        function render() {
+            const totalInc = state.incomes.reduce((acc, i) => acc + i.amount, 0);
+            const totalSpent = state.categories.reduce((acc, c) => acc + c.spent, 0);
+            const totalSav = state.savingsBoxes.reduce((acc, s) => acc + s.total, 0);
+            const totalDebt = state.debts.reduce((acc, d) => acc + d.amount, 0);
+            const totalRec = state.receivables.reduce((acc, r) => acc + r.amount, 0);
+
+            document.getElementById('totalIncome').innerText = `${currencySymbol}${totalInc.toFixed(2)}`;
+            document.getElementById('totalSpent').innerText = `${currencySymbol}${totalSpent.toFixed(2)}`;
+            document.getElementById('totalSavings').innerText = `${currencySymbol}${totalSav.toFixed(2)}`;
+            document.getElementById('totalDebts').innerText = `${currencySymbol}${totalDebt.toFixed(2)}`;
+            document.getElementById('totalReceivables').innerText = `${currencySymbol}${totalRec.toFixed(2)}`;
+            document.getElementById('netBalance').innerText = `${currencySymbol}${(totalInc - totalSpent).toFixed(2)}`;
+
+            // Render Transacciones
+            const txList = document.getElementById('transactionHistoryList');
+            if (state.transactions.length === 0) {
+                txList.innerHTML = `<p class="text-xs text-slate-500 italic col-span-full">Sin registros.</p>`;
+            } else {
+                txList.innerHTML = state.transactions.map(t => {
+                    const future = isFutureDate(t.date);
+                    return `
+                    <div class="bg-slate-700/60 p-2.5 rounded-lg border ${future ? 'border-indigo-500/60 bg-indigo-950/20' : 'border-slate-600'} flex justify-between items-center text-xs">
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${t.type === 'income' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+                                    ${t.type === 'income' ? 'INGRESO' : 'GASTO'}
+                                </span>
+                                ${future ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/30 text-indigo-300 border border-indigo-400/40">PROGRAMADO</span>' : ''}
+                                <span class="font-bold text-slate-200">${t.category}</span>
+                            </div>
+                            <div class="text-slate-300">${t.desc}</div>
+                            <div class="text-[10px] text-slate-400">${t.date}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-sm ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
+                                ${t.type === 'income' ? '+' : '-'}${currencySymbol}${t.amount.toFixed(2)}
+                            </span>
+                            <button onclick="removeItem('transactions', ${t.id})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Render Categorías
+            const catList = document.getElementById('categoryList');
+            catList.innerHTML = state.categories.map(c => {
+                const percent = Math.min(100, Math.round((c.spent / c.limit) * 100)) || 0;
+                let colorClass = 'bg-purple-500';
+                if (percent > 80) colorClass = 'bg-amber-500';
+                if (percent >= 100) colorClass = 'bg-rose-500';
+
+                return `
+                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
+                    <div class="flex justify-between items-center text-sm font-semibold">
+                        <span>${c.name}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-300">${currencySymbol}${c.spent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span>
+                            <button onclick="removeItem('categories', ${c.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div class="${colorClass} h-full transition-all duration-300" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1">
+                        <span class="text-xs text-slate-400">Ajuste manual:</span>
+                        <input type="number" step="1" placeholder="+100 o -50" onchange="addSpentManual(${c.id}, this)" class="w-full bg-slate-800 border border-slate-600 text-xs px-2 py-1 rounded text-slate-200 focus:outline-none focus:border-purple-400">
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Render Ingresos
+            const incList = document.getElementById('incomeList');
+            incList.innerHTML = state.incomes.map(i => {
+                const future = isFutureDate(i.date);
+                return `
+                <tr class="${future ? 'bg-indigo-950/20' : ''}">
+                    <td class="p-2.5 text-xs text-slate-400">
+                        ${i.date} ${future ? '<span class="text-[9px] text-indigo-400 font-bold ml-1">(Prog.)</span>' : ''}
+                    </td>
+                    <td class="p-2.5">${i.desc}</td>
+                    <td class="p-2.5 text-emerald-400 font-semibold">${currencySymbol}${i.amount.toFixed(2)}</td>
+                    <td class="p-2.5 text-right">
+                        <button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Render Cuentas por Cobrar
+            const receivablesList = document.getElementById('receivablesList');
+            receivablesList.innerHTML = state.receivables.map(r => {
+                const future = isFutureDate(r.date);
+                return `
+                <div class="bg-slate-700/40 border ${future ? 'border-indigo-500/60' : 'border-slate-600'} rounded-xl p-4 space-y-3 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="font-bold text-slate-100">${r.person}</h3>
+                                ${future ? '<span class="text-[9px] bg-indigo-500/30 text-indigo-300 px-1 rounded">Prog.</span>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-400">Prestado el: ${r.date}</p>
+                            <p class="text-xl font-black text-cyan-400 mt-1">${currencySymbol}${r.amount.toFixed(2)}</p>
+                        </div>
+                        <button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <button onclick="openReceivableModal(${r.id})" class="w-full bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 font-medium py-1.5 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Cobro
+                    </button>
+
+                    <div class="pt-2 border-t border-slate-600/50 space-y-1.5">
+                        <span class="text-[11px] text-slate-400 font-semibold block">Cobros Realizados:</span>
+                        <div class="max-h-28 overflow-y-auto space-y-1 pr-1">
+                            ${(r.payments && r.payments.length > 0) ? r.payments.map(p => `
+                                <div class="bg-slate-800/80 p-1.5 rounded text-[11px] flex justify-between items-start border border-slate-700">
+                                    <div>
+                                        <div class="font-medium text-cyan-400">Cobrado: +${currencySymbol}${p.amount.toFixed(2)}</div>
+                                        <div class="text-slate-300">${p.reason}</div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">${p.date}</span>
+                                </div>
+                            `).join('') : '<span class="text-[10px] text-slate-500 italic">Sin cobros registrados</span>'}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Render Deudas
+            const debtList = document.getElementById('debtList');
+            debtList.innerHTML = state.debts.map(d => {
+                const future = isFutureDate(d.date);
+                return `
+                <div class="bg-slate-700/40 border ${future ? 'border-indigo-500/60' : 'border-slate-600'} rounded-xl p-4 space-y-3 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="font-bold text-slate-100">${d.title}</h3>
+                                ${future ? '<span class="text-[9px] bg-indigo-500/30 text-indigo-300 px-1 rounded">Prog.</span>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-400">Límite: ${d.date}</p>
+                            <p class="text-xl font-black text-rose-400 mt-1">${currencySymbol}${d.amount.toFixed(2)}</p>
+                        </div>
+                        <button onclick="removeItem('debts', ${d.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <button onclick="openDebtModal(${d.id})" class="w-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 font-medium py-1.5 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> Abonar a Deuda
+                    </button>
+
+                    <div class="pt-2 border-t border-slate-600/50 space-y-1.5">
+                        <span class="text-[11px] text-slate-400 font-semibold block">Historial de Abonos:</span>
+                        <div class="max-h-28 overflow-y-auto space-y-1 pr-1">
+                            ${(d.payments && d.payments.length > 0) ? d.payments.map(p => `
+                                <div class="bg-slate-800/80 p-1.5 rounded text-[11px] flex justify-between items-start border border-slate-700">
+                                    <div>
+                                        <div class="font-medium text-emerald-400">Abono: -${currencySymbol}${p.amount.toFixed(2)}</div>
+                                        <div class="text-slate-300">${p.reason}</div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">${p.date}</span>
+                                </div>
+                            `).join('') : '<span class="text-[10px] text-slate-500 italic">Sin abonos</span>'}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Render Cajas de Ahorro
+            const savingsContainer = document.getElementById('savingsBoxesContainer');
+            savingsContainer.innerHTML = state.savingsBoxes.map(box => `
+                <div class="bg-slate-700/40 border border-slate-600 rounded-xl p-4 space-y-3 relative shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-slate-100">${box.title}</h3>
+                            <p class="text-2xl font-black text-amber-400 mt-1">${currencySymbol}${box.total.toFixed(2)}</p>
+                        </div>
+                        <button onclick="removeItem('savingsBoxes', ${box.id})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+
+                    <button onclick="openSavingsModal(${box.id})" class="w-full bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 font-medium py-1.5 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> Microgestión / Ajustar Fondos
+                    </button>
+
+                    <div class="pt-2 border-t border-slate-600/50 space-y-1.5">
+                        <span class="text-[11px] text-slate-400 font-semibold block">Historial de Microgestiones:</span>
+                        <div class="max-h-40 overflow-y-auto space-y-1.5 pr-1">
+                            ${box.history.map(h => {
+                                const future = isFutureDate(h.date);
+                                return `
+                                <div class="bg-slate-800/80 p-2 rounded text-[11px] flex justify-between items-start border ${future ? 'border-indigo-500/50' : 'border-slate-700'}">
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="font-bold ${h.type === 'add' ? 'text-emerald-400' : 'text-rose-400'}">
+                                                ${h.type === 'add' ? '+ Entrada' : '- Consumo'}: ${currencySymbol}${h.amount.toFixed(2)}
+                                            </span>
+                                            <span class="px-1 rounded text-[9px] bg-slate-700 text-amber-300 border border-slate-600">${h.source || 'General'}</span>
+                                            ${future ? '<span class="text-[9px] bg-indigo-500/30 text-indigo-300 px-1 rounded">Prog.</span>' : ''}
+                                        </div>
+                                        <div class="text-slate-300 font-normal">${h.reason}</div>
+                                        <div class="text-[9px] text-slate-400">${h.date}</div>
+                                    </div>
+                                    <button onclick="removeSavingsHistoryItem(${box.id}, ${h.id})" class="text-rose-400 hover:text-rose-300 text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cargar sesión guardada si existe
+        if (currentUser && usersDB[currentUser]) {
+            loginUser(currentUser);
+        }
+    </script>
+</body>
+</html>
