@@ -1,10 +1,10 @@
-<!-- V3.1.2 -->
+<!-- V3.1.2 Mobile-Optimized -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas Personales Pro - Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fin Flow FPR - Dashboard</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -17,160 +17,187 @@
         }
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Corrección táctil y de Inputs para dispositivos móviles */
+        input, select, button {
+            touch-action: manipulation;
+        }
+        /* Previene zoom automático molesto en iOS al hacer focus */
+        @media (max-width: 640px) {
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            select {
+                font-size: 16px !important;
+            }
+        }
+        /* Scrollbar suave para móviles */
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
     <link rel="stylesheet" href="styles.css">
 
     <div id="appSection" class="min-h-screen flex flex-col justify-between">
         <div>
-            <!-- Header -->
-            <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-20 shadow-md">
-                <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <i class="fa-solid fa-wallet text-emerald-400 text-xl sm:text-2xl"></i>
-                        <h1 class="text-base sm:text-xl font-bold tracking-wide" data-i18n="appTitle">Fin Flow FPR</h1>
+            <!-- Header Móvil Optimizado -->
+            <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex justify-between items-center gap-2">
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
+                        <h1 class="text-sm sm:text-xl font-bold tracking-wide truncate max-w-[130px] xs:max-w-none" data-i18n="appTitle">Fin Flow FPR</h1>
                     </div>
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700 px-2.5 py-1 rounded-md border border-slate-600 hidden sm:inline-block">
+                    
+                    <div class="flex items-center gap-1.5 sm:gap-3">
+                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700/80 px-2 py-1 rounded-md border border-slate-600 hidden md:inline-block">
                             <i class="fa-solid fa-user text-emerald-400 mr-1"></i> Usuario
                         </span>
                         
-                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition">
+                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
                             <i class="fa-solid fa-gear"></i>
                         </button>
 
-                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-emerald-900/40">
-                            <i class="fa-solid fa-calendar-check"></i> <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span><span class="sm:hidden" data-i18n="closeShort">Cierre</span>
+                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-2.5 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 min-h-[36px]">
+                            <i class="fa-solid fa-calendar-check"></i> 
+                            <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span>
+                            <span class="sm:hidden" data-i18n="closeShort">Cierre</span>
                         </button>
                         
-                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition">
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </button>
                     </div>
                 </div>
             </header>
 
-            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-8">
+            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 sm:space-y-8">
                 <!-- Dashboard Summary -->
-                <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow col-span-2 sm:col-span-1">
+                <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow col-span-2 sm:col-span-1 flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-emerald-400 mb-1">
-                            <i class="fa-solid fa-scale-balanced text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="netBalance">Balance Disponible</p>
+                            <i class="fa-solid fa-scale-balanced text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider" data-i18n="netBalance">Balance Disponible</p>
                         </div>
-                        <h3 id="netBalance" class="text-xl sm:text-2xl font-bold text-emerald-400 mt-0.5">$0.00</h3>
+                        <h3 id="netBalance" class="text-xl sm:text-2xl font-black text-emerald-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
 
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-blue-400 mb-1">
-                            <i class="fa-solid fa-arrow-trend-up text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalIncome">Ingresos Totales</p>
+                            <i class="fa-solid fa-arrow-trend-up text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalIncome">Ingresos Totales</p>
                         </div>
-                        <h3 id="totalIncome" class="text-xl sm:text-2xl font-bold text-blue-400 mt-0.5">$0.00</h3>
+                        <h3 id="totalIncome" class="text-lg sm:text-2xl font-bold text-blue-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
 
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-purple-400 mb-1">
-                            <i class="fa-solid fa-arrow-trend-down text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalSpent">Gastos Acumulados</p>
+                            <i class="fa-solid fa-arrow-trend-down text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSpent">Gastos Acumulados</p>
                         </div>
-                        <h3 id="totalSpent" class="text-xl sm:text-2xl font-bold text-purple-400 mt-0.5">$0.00</h3>
+                        <h3 id="totalSpent" class="text-lg sm:text-2xl font-bold text-purple-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
 
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-amber-400 mb-1">
-                            <i class="fa-solid fa-piggy-bank text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalSavings">Total Ahorrado</p>
+                            <i class="fa-solid fa-piggy-bank text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSavings">Total Ahorrado</p>
                         </div>
-                        <h3 id="totalSavings" class="text-xl sm:text-2xl font-bold text-amber-400 mt-0.5">$0.00</h3>
+                        <h3 id="totalSavings" class="text-lg sm:text-2xl font-bold text-amber-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
 
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-cyan-400 mb-1">
-                            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalReceivables">Te Deben A Ti</p>
+                            <i class="fa-solid fa-hand-holding-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalReceivables">Te Deben A Ti</p>
                         </div>
-                        <h3 id="totalReceivables" class="text-xl sm:text-2xl font-bold text-cyan-400 mt-0.5">$0.00</h3>
+                        <h3 id="totalReceivables" class="text-lg sm:text-2xl font-bold text-cyan-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
 
-                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
                         <div class="flex items-center gap-1.5 text-rose-400 mb-1">
-                            <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
-                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-medium" data-i18n="totalDebts">Deudas Pendientes</p>
+                            <i class="fa-solid fa-file-invoice-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalDebts">Deudas Pendientes</p>
                         </div>
-                        <h3 id="totalDebts" class="text-xl sm:text-2xl font-bold text-rose-400 mt-0.5">$0.00</h3>
+                        <h3 id="totalDebts" class="text-lg sm:text-2xl font-bold text-rose-400 tracking-tight mt-0.5">$0.00</h3>
                     </div>
                 </section>
 
                 <!-- Registrar Transacción -->
-                <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow-lg">
-                    <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="regTransactionTitle">
+                <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow-lg">
+                    <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="regTransactionTitle">
                         <i class="fa-solid fa-scale-unbalanced text-teal-400"></i> Registrar Transacción (Gasto / Ingreso)
                     </h2>
                     
                     <form id="txForm" onsubmit="addTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
-                        <select id="txType" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <select id="txType" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
                             <option value="expense" data-i18n="optionExpense">Gasto (-)</option>
                             <option value="income" data-i18n="optionIncome">Ingreso (+)</option>
                         </select>
-                        <input type="text" id="txDesc" placeholder="Descripción" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-                        <input type="number" id="txAmount" placeholder="Monto" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-                        <input type="date" id="txDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400 text-slate-200">
-                        <input type="text" id="txCategoryInput" placeholder="Categoría" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="text" id="txDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
+                        <input type="number" id="txAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
+                        <input type="date" id="txDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400 text-slate-100 min-h-[42px]">
+                        <input type="text" id="txCategoryInput" placeholder="Categoría" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
 
-                        <button type="submit" class="bg-teal-600 hover:bg-teal-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition lg:col-span-1 sm:col-span-2 flex items-center justify-center gap-1.5" data-i18n="saveBtn">
+                        <button type="submit" class="w-full bg-teal-600 active:bg-teal-700 hover:bg-teal-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition lg:col-span-1 sm:col-span-2 flex items-center justify-center gap-2 min-h-[42px] shadow-md shadow-teal-950/30" data-i18n="saveBtn">
                             <i class="fa-solid fa-floppy-disk"></i> Guardar
                         </button>
                     </form>
 
-                    <div class="pt-4 border-t border-slate-700">
-                        <h3 class="text-xs uppercase font-bold text-slate-400 mb-3 flex items-center gap-1.5" data-i18n="txHistory">
+                    <div class="pt-3 border-t border-slate-700">
+                        <h3 class="text-xs uppercase font-bold text-slate-400 mb-2.5 flex items-center gap-1.5" data-i18n="txHistory">
                             <i class="fa-solid fa-list-check text-teal-400"></i> Historial de Registros
                         </h3>
-                        <div id="transactionHistoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
+                        <div id="transactionHistoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-1 custom-scroll"></div>
                     </div>
                 </section>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
                     <!-- Categorías -->
-                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="budgetTitle">
+                    <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
+                        <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="budgetTitle">
                             <i class="fa-solid fa-chart-pie text-purple-400"></i> Presupuesto por Categorías
                         </h2>
                         
-                        <form id="budgetForm" onsubmit="addCategory(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <input type="text" id="catName" placeholder="Categoría" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
-                            <input type="number" id="catLimit" placeholder="Límite $" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
-                            <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="createCatBtn">
+                        <form id="budgetForm" onsubmit="addCategory(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <input type="text" id="catName" placeholder="Categoría" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-400 min-h-[42px]">
+                            <input type="number" id="catLimit" placeholder="Límite $" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-purple-400 min-h-[42px]">
+                            <button type="submit" class="w-full bg-purple-600 active:bg-purple-700 hover:bg-purple-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="createCatBtn">
                                 <i class="fa-solid fa-plus"></i> Crear Categoría
                             </button>
                         </form>
 
-                        <div id="categoryList" class="space-y-3 pt-2"></div>
+                        <div id="categoryList" class="space-y-2.5 pt-1"></div>
                     </section>
 
-                    <!-- Ingresos -->
-                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="directIncomeTitle">
+                    <!-- Ingresos Directos -->
+                    <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow">
+                        <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="directIncomeTitle">
                             <i class="fa-solid fa-money-bill-trend-up text-blue-400"></i> Ingresos Directos
                         </h2>
 
-                        <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                            <input type="text" id="incDesc" placeholder="Descripción" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
-                            <input type="number" id="incAmount" placeholder="Monto" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
-                            <input type="date" id="incDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 text-slate-200">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="addBtn">
+                        <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                            <input type="text" id="incDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
+                            <input type="number" id="incAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
+                            <input type="date" id="incDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 text-slate-100 min-h-[42px]">
+                            <button type="submit" class="w-full bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="addBtn">
                                 <i class="fa-solid fa-plus"></i> Añadir
                             </button>
                         </form>
 
-                        <div class="overflow-x-auto max-h-60 rounded-lg border border-slate-700">
-                            <table class="w-full text-left text-sm text-slate-300">
-                                <thead class="bg-slate-700/50 text-slate-400 text-xs uppercase sticky top-0">
+                        <div class="overflow-x-auto max-h-60 rounded-lg border border-slate-700 custom-scroll">
+                            <table class="w-full text-left text-sm text-slate-300 min-w-[320px]">
+                                <thead class="bg-slate-700/60 text-slate-300 text-xs uppercase sticky top-0">
                                     <tr>
-                                        <th class="p-2.5" data-i18n="thDate">Fecha</th>
+                                        <th class="p-2.5 whitespace-nowrap" data-i18n="thDate">Fecha</th>
                                         <th class="p-2.5" data-i18n="thDesc">Descripción</th>
-                                        <th class="p-2.5" data-i18n="thAmount">Monto</th>
+                                        <th class="p-2.5 whitespace-nowrap" data-i18n="thAmount">Monto</th>
                                         <th class="p-2.5 text-right" data-i18n="thAction">Acción</th>
                                     </tr>
                                 </thead>
@@ -180,202 +207,203 @@
                     </section>
 
                     <!-- Cuentas por Cobrar -->
-                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="receivablesTitle">
+                    <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="receivablesTitle">
                             <i class="fa-solid fa-hand-holding-hand text-cyan-400"></i> Cuentas por Cobrar (Dinero que te deben)
                         </h2>
 
-                        <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                            <input type="text" id="recPerson" placeholder="Nombre de la persona" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
-                            <input type="number" id="recAmount" placeholder="Monto Prestado" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
-                            <input type="date" id="recDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400 text-slate-200">
-                            <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="regLoanBtn">
+                        <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                            <input type="text" id="recPerson" placeholder="Nombre de la persona" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
+                            <input type="number" id="recAmount" placeholder="Monto Prestado" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
+                            <input type="date" id="recDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-100 min-h-[42px]">
+                            <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 hover:bg-cyan-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regLoanBtn">
                                 <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Préstamo
                             </button>
                         </form>
 
-                        <div id="receivablesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2"></div>
+                        <div id="receivablesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1"></div>
                     </section>
 
                     <!-- Deudas -->
-                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="debtsTitle">
+                    <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="debtsTitle">
                             <i class="fa-solid fa-receipt text-rose-400"></i> Mis Deudas y Pagos Pendientes
                         </h2>
 
-                        <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-                            <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-                            <input type="number" id="debtAmount" placeholder="Monto Pendiente" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-                            <input type="date" id="debtDate" title="Fecha límite" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-400 text-slate-200">
-                            <button type="submit" class="bg-rose-600 hover:bg-rose-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5" data-i18n="regDebtBtn">
+                        <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                            <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
+                            <input type="number" id="debtAmount" placeholder="Monto Pendiente" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
+                            <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-rose-400 text-slate-100 min-h-[42px]">
+                            <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 hover:bg-rose-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regDebtBtn">
                                 <i class="fa-solid fa-file-circle-plus"></i> Registrar Deuda
                             </button>
                         </form>
 
-                        <div id="debtList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2"></div>
+                        <div id="debtList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1"></div>
                     </section>
 
                     <!-- Cajas de Ahorro -->
-                    <section class="bg-slate-800 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="savingsTitle">
+                    <section class="bg-slate-800 p-3.5 sm:p-6 rounded-xl border border-slate-700 space-y-4 shadow lg:col-span-2">
+                        <h2 class="text-sm sm:text-lg font-bold text-slate-200 flex items-center gap-2" data-i18n="savingsTitle">
                             <i class="fa-solid fa-piggy-bank text-amber-400"></i> Cajas de Ahorro y Microgestión
                         </h2>
 
-                        <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-slate-700">
-                            <input type="text" id="boxTitle" placeholder="Nombre de la caja" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
-                            <input type="number" id="boxInitialAmount" placeholder="Monto Inicial" step="1" min="0" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
-                            <input type="date" id="boxDate" required class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 text-slate-200">
-                            <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                        <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-slate-700">
+                            <input type="text" id="boxTitle" placeholder="Nombre de la caja" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
+                            <input type="number" id="boxInitialAmount" placeholder="Monto Inicial" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
+                            <input type="date" id="boxDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 text-slate-100 min-h-[42px]">
+                            <button type="submit" class="w-full bg-amber-600 active:bg-amber-700 hover:bg-amber-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2 min-h-[42px]">
                                 <i class="fa-solid fa-plus"></i> <span data-i18n="createBoxBtn">Crear Caja</span>
                             </button>
                         </form>
 
-                        <div id="savingsBoxesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2"></div>
+                        <div id="savingsBoxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"></div>
                     </section>
                 </div>
             </main>
         </div>
 
-        <!-- FOOTER -->
-        <footer class="bg-slate-800/90 border-t border-slate-700 mt-12 pt-8 pb-6 relative text-slate-300">
+        <!-- FOOTER MÓVIL ADAPTADO -->
+        <footer class="bg-slate-800/90 border-t border-slate-700 mt-8 pt-6 pb-6 relative text-slate-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6">
-                <div class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-700 gap-4">
+                <div class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-700 gap-4 text-center md:text-left">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-chart-line text-emerald-400 text-2xl"></i>
-                        <span class="text-lg font-bold tracking-wide text-slate-100">Finanzas <span class="text-emerald-400">Pro</span> Academy</span>
+                        <span class="text-base sm:text-lg font-bold tracking-wide text-slate-100">Fin <span class="text-emerald-400">Flow</span>  FPR</span>
                     </div>
                     
-                    <div class="flex items-center space-x-3">
-                        <a href="#" class="w-9 h-9 bg-slate-700 hover:bg-rose-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-youtube"></i></a>
-                        <a href="#" class="w-9 h-9 bg-slate-700 hover:bg-blue-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="w-9 h-9 bg-slate-700 hover:bg-pink-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-instagram"></i></a>
+                    <div class="flex items-center space-x-4">
+                        <a href="#" class="w-10 h-10 bg-slate-700 hover:bg-rose-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-700 hover:bg-blue-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-700 hover:bg-pink-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-instagram"></i></a>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 py-6 text-xs text-center sm:text-left">
                     <div class="space-y-2">
-                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftRec">Recursos Educativos</h4>
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftRec">Recursos Educativos</h4>
                         <ul class="space-y-2 text-slate-400">
                             <li><a href="#" class="hover:text-emerald-400 transition" data-i18n="ftLink1">Curso de Educación Financiera</a></li>
                             <li><a href="#" class="hover:text-emerald-400 transition" data-i18n="ftLink2">Guía de Inversiones e Inflación</a></li>
                         </ul>
                     </div>
                     <div class="space-y-2">
-                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftTools">Herramientas</h4>
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftTools">Herramientas</h4>
                         <ul class="space-y-2 text-slate-400">
                             <li><a href="#" class="hover:text-emerald-400 transition" data-i18n="ftLink4">Calculadora Interés Compuesto</a></li>
                         </ul>
                     </div>
                     <div class="space-y-2">
-                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-3" data-i18n="ftSupport">Soporte</h4>
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftSupport">Soporte</h4>
                         <ul class="space-y-2 text-slate-400">
                             <li><a href="#" class="hover:text-emerald-400 transition" data-i18n="ftLink7">Centro de Asistencia</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2">
+                <div class="pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2 text-center sm:text-left">
                     <p>© 2026 Finanzas Personales Pro. <span data-i18n="rights">Todos los derechos reservados.</span></p>
                     <p data-i18n="secureData">100% Privado y Seguro. Tus datos se guardan de forma local.</p>
                 </div>
             </div>
-            <button onclick="scrollToTop()" class="absolute bottom-6 right-6 bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-full shadow-xl transition transform hover:scale-110"><i class="fa-solid fa-arrow-up text-sm"></i></button>
+            <button onclick="scrollToTop()" class="fixed bottom-5 right-5 z-40 bg-emerald-600 active:bg-emerald-700 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition transform active:scale-95"><i class="fa-solid fa-arrow-up text-sm"></i></button>
         </footer>
     </div>
 
-    <!-- MODALES -->
-    <div id="settingsModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+    <!-- MODALES OPTIMIZADOS PARA CUALQUIER PANTALLA MÓVIL -->
+    <!-- MODAL CONFIGURACIÓN -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> <span data-i18n="settingsTitle">Configuración</span></h3>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Idioma</label>
-                    <select id="settingLanguage" onchange="changeLanguage(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                    <select id="settingLanguage" onchange="changeLanguage(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
                         <option value="es">Español 🇲🇽</option>
                         <option value="en">English 🇺🇸</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Moneda</label>
-                    <select id="settingCurrency" onchange="changeCurrency(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm focus:outline-none focus:border-emerald-400 text-slate-100">
+                    <select id="settingCurrency" onchange="changeCurrency(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
                         <option value="$">Dólar ($)</option>
                         <option value="€">Euro (€)</option>
                         <option value="Q">Quetzal (Q)</option>
                     </select>
                 </div>
             </div>
-            <button onclick="closeSettingsModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-lg text-sm transition">Cerrar</button>
+            <button onclick="closeSettingsModal()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition min-h-[42px]">Cerrar</button>
         </div>
     </div>
 
     <!-- MODAL AHORROS -->
-    <div id="savingsMovementModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+    <div id="savingsMovementModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center">
                 <h3 id="savingsModalTitle" class="text-base sm:text-lg font-bold text-amber-400">Microgestión</h3>
-                <button onclick="closeSavingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeSavingsModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form id="savingsMovementForm" onsubmit="processSavingsMovement(event)" class="space-y-3">
                 <input type="hidden" id="modalBoxId">
-                <select id="modalActionType" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
+                <select id="modalActionType" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                     <option value="add">Añadir (+)</option>
                     <option value="subtract">Descontar (-)</option>
                 </select>
-                <input type="number" id="modalAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="text" id="modalReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-lg text-sm">Guardar</button>
+                <input type="number" id="modalAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="text" id="modalReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <button type="submit" class="w-full bg-amber-600 active:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL COBRO (Cuentas por cobrar) -->
-    <div id="receivableModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+    <!-- MODAL COBRO -->
+    <div id="receivableModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center">
                 <h3 id="receivableModalTitle" class="text-base sm:text-lg font-bold text-cyan-400">Registrar Cobro</h3>
-                <button onclick="closeReceivableModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeReceivableModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
                 <input type="hidden" id="modalReceivableId">
-                <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <button type="submit" class="w-full bg-cyan-600 text-white py-2 rounded-lg text-sm">Guardar Cobro</button>
+                <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar Cobro</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL ABONO (Deudas) -->
-    <div id="debtPaymentModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4">
+    <!-- MODAL ABONO -->
+    <div id="debtPaymentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
             <div class="flex justify-between items-center">
                 <h3 id="debtModalTitle" class="text-base sm:text-lg font-bold text-rose-400">Abonar Deuda</h3>
-                <button onclick="closeDebtModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeDebtModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form id="debtPaymentForm" onsubmit="processDebtPayment(event)" class="space-y-3">
                 <input type="hidden" id="modalDebtId">
-                <input type="number" id="debtPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <input type="text" id="debtPayReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2 text-sm text-white">
-                <button type="submit" class="w-full bg-rose-600 text-white py-2 rounded-lg text-sm">Registrar Abono</button>
+                <input type="number" id="debtPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="text" id="debtPayReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Registrar Abono</button>
             </form>
         </div>
     </div>
 
     <!-- MODAL CIERRE DE MES -->
-    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4 text-center">
-            <h3 class="text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
-            <p class="text-sm text-slate-300">Balance sobrante: <span id="surplusAmount" class="font-bold text-emerald-400 text-lg">$0.00</span></p>
-            <div class="space-y-2">
-                <button onclick="handleSurplus('nextMonth')" class="w-full bg-slate-700 p-3 rounded-lg text-xs hover:bg-slate-600 transition text-white">Pasar al siguiente mes</button>
-                <button onclick="handleSurplus('savings')" class="w-full bg-slate-700 p-3 rounded-lg text-xs hover:bg-slate-600 transition text-white">Mover a Caja de Ahorro</button>
+    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 text-center my-auto">
+            <h3 class="text-lg sm:text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
+            <p class="text-xs sm:text-sm text-slate-300">Balance sobrante: <span id="surplusAmount" class="font-bold text-emerald-400 text-base sm:text-lg">$0.00</span></p>
+            <div class="space-y-2.5">
+                <button onclick="handleSurplus('nextMonth')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Pasar al siguiente mes</button>
+                <button onclick="handleSurplus('savings')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Mover a Caja de Ahorro</button>
             </div>
-            <button onclick="closeModal()" class="text-slate-400 text-xs">Cancelar</button>
+            <button onclick="closeModal()" class="text-slate-400 text-xs py-1">Cancelar</button>
         </div>
     </div>
 
@@ -393,8 +421,8 @@
         let state = usersDB[currentUser]?.state || { transactions: [], incomes: [], categories: [], savingsBoxes: [], debts: [], receivables: [] };
 
         const i18n = {
-            es: { appTitle: "Finanzas Personales Pro", closeMonth: "Cierre de Mes", netBalance: "Balance Disponible", totalIncome: "Ingresos Totales", totalSpent: "Gastos Acumulados", totalSavings: "Total Ahorrado", totalReceivables: "Te Deben", totalDebts: "Deudas", regTransactionTitle: "Nueva Transacción", saveBtn: "Guardar", txHistory: "Historial", budgetTitle: "Presupuesto", createCatBtn: "Crear", directIncomeTitle: "Ingresos", addBtn: "Añadir", receivablesTitle: "Préstamos Realizados", regLoanBtn: "Registrar Préstamo", debtsTitle: "Mis Deudas", regDebtBtn: "Nueva Deuda", savingsTitle: "Mis Ahorros", createBoxBtn: "Nueva Caja", settingsTitle: "Ajustes", closeModalBtn: "Cerrar" },
-            en: { appTitle: "Finance Pro", closeMonth: "Month Close", netBalance: "Available Balance", totalIncome: "Total Income", totalSpent: "Total Spent", totalSavings: "Total Savings", totalReceivables: "Owed to You", totalDebts: "My Debts", regTransactionTitle: "New Transaction", saveBtn: "Save", txHistory: "History", budgetTitle: "Budget", createCatBtn: "Create", directIncomeTitle: "Income", addBtn: "Add", receivablesTitle: "Loans Given", regLoanBtn: "Log Loan", debtsTitle: "Pending Debts", regDebtBtn: "Log Debt", savingsTitle: "Savings Boxes", createBoxBtn: "New Box", settingsTitle: "Settings", closeModalBtn: "Close" }
+            es: { appTitle: "Fin Flow FPR", closeMonth: "Cierre de Mes", closeShort: "Cierre", netBalance: "Balance Disponible", totalIncome: "Ingresos Totales", totalSpent: "Gastos Acumulados", totalSavings: "Total Ahorrado", totalReceivables: "Te Deben", totalDebts: "Deudas", regTransactionTitle: "Nueva Transacción", saveBtn: "Guardar", txHistory: "Historial", budgetTitle: "Presupuesto", createCatBtn: "Crear", directIncomeTitle: "Ingresos", addBtn: "Añadir", receivablesTitle: "Préstamos Realizados", regLoanBtn: "Registrar Préstamo", debtsTitle: "Mis Deudas", regDebtBtn: "Nueva Deuda", savingsTitle: "Mis Ahorros", createBoxBtn: "Nueva Caja", settingsTitle: "Ajustes", closeModalBtn: "Cerrar", optionExpense: "Gasto (-)", optionIncome: "Ingreso (+)", thDate: "Fecha", thDesc: "Descripción", thAmount: "Monto", thAction: "Acción", ftRec: "Recursos Educativos", ftTools: "Herramientas", ftSupport: "Soporte", ftLink1: "Curso de Educación Financiera", ftLink2: "Guía de Inversiones e Inflación", ftLink4: "Calculadora Interés Compuesto", ftLink7: "Centro de Asistencia", rights: "Todos los derechos reservados.", secureData: "100% Privado y Seguro. Tus datos se guardan de forma local." },
+            en: { appTitle: "Fin Flow FPR", closeMonth: "Month Close", closeShort: "Close", netBalance: "Available Balance", totalIncome: "Total Income", totalSpent: "Total Spent", totalSavings: "Total Savings", totalReceivables: "Owed to You", totalDebts: "My Debts", regTransactionTitle: "New Transaction", saveBtn: "Save", txHistory: "History", budgetTitle: "Budget", createCatBtn: "Create", directIncomeTitle: "Income", addBtn: "Add", receivablesTitle: "Loans Given", regLoanBtn: "Log Loan", debtsTitle: "Pending Debts", regDebtBtn: "Log Debt", savingsTitle: "Savings Boxes", createBoxBtn: "New Box", settingsTitle: "Settings", closeModalBtn: "Close", optionExpense: "Expense (-)", optionIncome: "Income (+)", thDate: "Date", thDesc: "Description", thAmount: "Amount", thAction: "Action", ftRec: "Educational Resources", ftTools: "Tools", ftSupport: "Support", ftLink1: "Financial Education Course", ftLink2: "Investment & Inflation Guide", ftLink4: "Compound Interest Calculator", ftLink7: "Help Center", rights: "All rights reserved.", secureData: "100% Private and Secure. Your data is stored locally." }
         };
 
         function saveData() {
@@ -415,7 +443,7 @@
             localStorage.setItem('finances_lang', lang);
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (i18n[lang][key]) el.innerText = i18n[lang][key];
+                if (i18n[lang] && i18n[lang][key]) el.innerText = i18n[lang][key];
             });
             render();
         }
@@ -451,6 +479,7 @@
                 else cat.spent += tx.amount;
             }
             document.getElementById('txForm').reset();
+            document.getElementById('txDate').value = today;
             saveData();
         }
 
@@ -465,6 +494,7 @@
             e.preventDefault();
             state.incomes.push({ id: Date.now(), desc: document.getElementById('incDesc').value, amount: parseFloat(document.getElementById('incAmount').value), date: document.getElementById('incDate').value });
             document.getElementById('incomeForm').reset();
+            document.getElementById('incDate').value = today;
             saveData();
         }
 
@@ -472,6 +502,7 @@
             e.preventDefault();
             state.receivables.push({ id: Date.now(), person: document.getElementById('recPerson').value, amount: parseFloat(document.getElementById('recAmount').value), date: document.getElementById('recDate').value, payments: [] });
             document.getElementById('receivableForm').reset();
+            document.getElementById('recDate').value = today;
             saveData();
         }
 
@@ -487,6 +518,7 @@
             const amt = parseFloat(document.getElementById('boxInitialAmount').value) || 0;
             state.savingsBoxes.push({ id: Date.now(), title: document.getElementById('boxTitle').value, total: amt, history: [{ id: Date.now(), type: 'add', source: 'Fondo Inicial', amount: amt, date: document.getElementById('boxDate').value, reason: 'Aporte Inicial' }] });
             document.getElementById('savingsBoxForm').reset();
+            document.getElementById('boxDate').value = today;
             saveData();
         }
 
@@ -580,54 +612,66 @@
 
             // Historial Transacciones
             document.getElementById('transactionHistoryList').innerHTML = state.transactions.map(t => `
-                <div class="bg-slate-700/60 p-2.5 rounded-lg border border-slate-600 flex justify-between items-center text-xs">
-                    <div><span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type.toUpperCase()}</span> - ${t.desc}</div>
-                    <div class="flex items-center gap-2"><b>${currencySymbol}${t.amount}</b><button onclick="removeItem('transactions', ${t.id})" class="text-rose-400"><i class="fa-solid fa-trash"></i></button></div>
+                <div class="bg-slate-700/60 p-2.5 rounded-lg border border-slate-600 flex justify-between items-center text-xs gap-2">
+                    <div class="truncate"><span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type.toUpperCase()}</span> - <span class="text-slate-200">${t.desc}</span></div>
+                    <div class="flex items-center gap-2 shrink-0"><b>${currencySymbol}${t.amount}</b><button onclick="removeItem('transactions', ${t.id})" class="text-rose-400 p-1 active:scale-125 transition"><i class="fa-solid fa-trash"></i></button></div>
                 </div>`).join('');
 
             // Categorías
             document.getElementById('categoryList').innerHTML = state.categories.map(c => `
                 <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600">
-                    <div class="flex justify-between text-xs mb-1"><span>${c.name}</span><span>${currencySymbol}${c.spent}/${c.limit}</span></div>
-                    <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"><div class="bg-purple-500 h-full" style="width:${Math.min(100, (c.spent/c.limit)*100)}%"></div></div>
+                    <div class="flex justify-between text-xs mb-1.5 font-medium"><span>${c.name}</span><span>${currencySymbol}${c.spent}/${c.limit}</span></div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-purple-500 h-full rounded-full" style="width:${Math.min(100, (c.spent/c.limit)*100)}%"></div></div>
                 </div>`).join('');
 
             // Ingresos tabla
             document.getElementById('incomeList').innerHTML = state.incomes.map(i => `
-                <tr class="text-xs border-b border-slate-700">
-                    <td class="p-2">${i.date}</td><td class="p-2">${i.desc}</td><td class="p-2 text-emerald-400">${currencySymbol}${i.amount}</td>
-                    <td class="p-2 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400"><i class="fa-solid fa-trash"></i></button></td>
+                <tr class="text-xs border-b border-slate-700/60">
+                    <td class="p-2.5 whitespace-nowrap">${i.date}</td><td class="p-2.5">${i.desc}</td><td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount}</td>
+                    <td class="p-2.5 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`).join('');
 
             // Préstamos (Receivables)
             document.getElementById('receivablesList').innerHTML = state.receivables.map(r => `
-                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                    <div class="flex justify-between font-bold text-sm"><span>${r.person}</span><button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>
-                    <div class="text-cyan-400 text-lg font-black my-1">${currencySymbol}${r.amount.toFixed(2)}</div>
-                    <button onclick="openReceivableModal(${r.id})" class="w-full bg-cyan-600/20 text-cyan-300 py-1 rounded text-[10px]">COBRAR</button>
+                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center font-bold text-sm">
+                        <span class="truncate">${r.person}</span>
+                        <button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="text-cyan-400 text-lg font-black my-1.5">${currencySymbol}${r.amount.toFixed(2)}</div>
+                    <button onclick="openReceivableModal(${r.id})" class="w-full bg-cyan-600/20 active:bg-cyan-600/40 text-cyan-300 py-2 rounded-lg text-xs font-semibold min-h-[36px]">COBRAR</button>
                 </div>`).join('');
 
             // Deudas
             document.getElementById('debtList').innerHTML = state.debts.map(d => `
-                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                    <div class="flex justify-between font-bold text-sm"><span>${d.title}</span><button onclick="removeItem('debts', ${d.id})" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>
-                    <div class="text-rose-400 text-lg font-black my-1">${currencySymbol}${d.amount.toFixed(2)}</div>
-                    <button onclick="openDebtModal(${d.id})" class="w-full bg-rose-600/20 text-rose-300 py-1 rounded text-[10px]">ABONAR</button>
+                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center font-bold text-sm">
+                        <span class="truncate">${d.title}</span>
+                        <button onclick="removeItem('debts', ${d.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="text-rose-400 text-lg font-black my-1.5">${currencySymbol}${d.amount.toFixed(2)}</div>
+                    <button onclick="openDebtModal(${d.id})" class="w-full bg-rose-600/20 active:bg-rose-600/40 text-rose-300 py-2 rounded-lg text-xs font-semibold min-h-[36px]">ABONAR</button>
                 </div>`).join('');
 
             // Cajas Ahorro
             document.getElementById('savingsBoxesContainer').innerHTML = state.savingsBoxes.map(b => `
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                    <div class="flex justify-between font-bold"><span>${b.title}</span><button onclick="removeItem('savingsBoxes', ${b.id})" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button></div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <div class="flex justify-between items-center font-bold">
+                        <span class="truncate">${b.title}</span>
+                        <button onclick="removeItem('savingsBoxes', ${b.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                     <div class="text-amber-400 text-2xl font-black my-2">${currencySymbol}${b.total.toFixed(2)}</div>
-                    <button onclick="openSavingsModal(${b.id})" class="w-full bg-amber-600/20 text-amber-300 py-1.5 rounded text-xs">GESTIONAR</button>
+                    <button onclick="openSavingsModal(${b.id})" class="w-full bg-amber-600/20 active:bg-amber-600/40 text-amber-300 py-2 rounded-lg text-xs font-semibold min-h-[36px]">GESTIONAR</button>
                 </div>`).join('');
         }
 
         // Inicializar
         if (currentUser) {
             const userInfo = usersDB[currentUser];
-            document.getElementById('currentUserLabel').innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${userInfo.firstName || currentUser}`;
+            const userLabel = document.getElementById('currentUserLabel');
+            if (userLabel) {
+                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${userInfo?.firstName || currentUser}`;
+            }
             changeLanguage(currentLang);
         }
     </script>
