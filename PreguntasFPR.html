@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte & FAQ | Fin Flow FPR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        // Configuración para que Tailwind detecte la clase 'dark' en el elemento <html>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #0d1326;
+        }
+        
+        /* Estilo de FAQ Acordeón */
+        details summary { list-style: none; cursor: pointer; }
+        details summary::-webkit-details-marker { display: none; }
+        
+        details[open] summary { border-bottom: 1px solid #e2e8f0; margin-bottom: 15px; padding-bottom: 15px; }
+        .dark details[open] summary { border-color: #334155; }
+
+        /* Sidebar Styles */
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; color: #cbd5e1; }
+        .sidebar-item:hover { background-color: rgba(255, 255, 255, 0.1); color: white; }
+        .sidebar-active { background-color: #6366f1; color: white; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
+
+        /* Ajuste de preguntas */
+        .faq-item { margin-bottom: 1rem; border-radius: 12px; overflow: hidden; transition: all 0.2s ease; }
+        .faq-item:hover { border-color: #6366f1; transform: translateY(-2px); }
+    </style>
+</head>
+
+<body class="bg-[#0d1326] text-slate-800 dark:text-slate-100 flex h-screen overflow-hidden">
+  <!-- Contenido Principal -->
+        <main class="flex-1 overflow-y-auto bg-[#0d1326] p-4 md:p-12">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Encabezado de Ayuda con Buscador -->
+                <div class="text-center mb-8 md:mb-12">
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 dark:text-white mb-4 tracking-tight">¿En qué podemos ayudarte?</h2>
+                    <div class="relative max-w-xl mx-auto">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="faqSearch" onkeyup="filtrarFAQ()" placeholder="Busca soluciones, errores o procesos..." 
+                               class="w-full pl-12 pr-4 py-3 md:py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm text-sm md:text-base">
+                    </div>
+                </div>
+
+                <!-- CARDS DE CONTACTO RÁPIDO (Desplazamiento horizontal fluido en móviles) -->
+                <div class="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-x-visible pb-4 md:pb-0 mb-8 md:mb-12 snap-x scrollbar-none">
+                    
+                    <div class="min-w-[240px] md:min-w-0 flex-1 snap-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-center hover:border-indigo-500 dark:hover:border-indigo-500 transition-all cursor-pointer shadow-sm">
+                        <i class="fas fa-key text-indigo-500 text-2xl mb-3"></i>
+                        <h3 class="font-bold text-sm mb-1 text-slate-800 dark:text-slate-200">Cuentas</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Accesos y contraseñas</p>
+                    </div>
+
+                    <div class="min-w-[240px] md:min-w-0 flex-1 snap-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-center hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer shadow-sm">
+                        <i class="fas fa-bug text-red-500 text-2xl mb-3"></i>
+                        <h3 class="font-bold text-sm mb-1 text-slate-800 dark:text-slate-200">Reportar Error</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Tickets para IT</p>
+                    </div>
+
+                    <a href="https://github.com/eduardoangel1573747-alt/finanzas-pro/blob/main/README.md#-finanzas-personales-pro" target="_blank" class="min-w-[240px] md:min-w-0 flex-1 snap-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-center hover:border-emerald-500 dark:hover:border-emerald-500 transition-all cursor-pointer shadow-sm block">
+                        <i class="fas fa-book text-emerald-500 text-2xl mb-3"></i>
+                        <h3 class="font-bold text-sm mb-1 text-slate-800 dark:text-slate-200">Manuales</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Guías de usuario</p>
+                    </a>
+
+                </div>
+
+                <!-- LISTA DE PREGUNTAS -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-400 dark:text-slate-500 uppercase text-xs tracking-widest mb-4">Preguntas Frecuentes</h3>
+
+                    <div class="faq-item bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 shadow-sm">
+                        <details class="p-5 md:p-6">
+                            <summary class="flex justify-between items-center font-semibold text-sm md:text-base text-slate-800 dark:text-slate-100">
+                                ¿Estan cifrados mis datos?
+                                <i class="fas fa-chevron-down text-xs text-slate-400 transition-transform"></i>
+                            </summary>
+                            <div class="mt-4 text-xs md:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                Sí, todos tus datos están cifrados y protegidos para garantizar tu privacidad.
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="faq-item bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 shadow-sm">
+                        <details class="p-5 md:p-6">
+                            <summary class="flex justify-between items-center font-semibold text-sm md:text-base text-slate-800 dark:text-slate-100">
+                                ¿Que pasa si no encuentro la mondea de mi pais?
+                                <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                            </summary>
+                            <div class="mt-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+                                Si no ecuentras la moneda de tu país, puedes seleccionar una moneda internacional como USD o EUR. Esto te permitirá realizar tus transacciones sin problemas.
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="faq-item bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 shadow-sm">
+                        <details class="p-5 md:p-6">
+                            <summary class="flex justify-between items-center font-semibold text-sm md:text-base text-slate-800 dark:text-slate-100">
+                                Soluciones Rápidas (Errores Comunes)
+                                <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                            </summary>
+                            <div class="mt-4 space-y-3">
+                                <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                                    <h4 class="font-bold text-[10px] text-indigo-500 dark:text-indigo-400 uppercase mb-1">No aparecen mis datos</h4>
+                                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Al ser Local Storage, al eliminar el historial de busqueda se eliminan las Cookies</p>
+                                </div>
+                                <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800/60">
+                                    <h4 class="font-bold text-[10px] text-indigo-500 dark:text-indigo-400 uppercase mb-1">No se guarda la información</h4>
+                                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Verifica que estés utilizando el navegador recomendado y que no tengas ninguna restricción de privacidad activa.</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Banner de Soporte Final (Optimizado para Flexión Móvil) -->
+                <div class="mt-10 md:mt-12 p-6 md:p-8 bg-indigo-600 rounded-3xl text-white flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 shadow-xl shadow-indigo-500/10">
+                    <div>
+                        <h4 class="text-lg md:text-xl font-bold">¿Problemas más complejos?</h4>
+                        <p class="opacity-80 text-xs md:text-sm mt-1">Nuestro equipo de IT está disponible de Lunes a Domingo.</p>
+                    </div>
+                    <button class="w-full md:w-auto bg-white text-indigo-600 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition-colors shadow-md text-sm">
+                        <li><a href="https://github.com/eduardoangel1573747-alt/finanzas-pro" target="_blank">Contactar Soporte</a></li>
+
+                    </button>
+                </div>
+            </div>
+        </main>
+</body>
+</html>
