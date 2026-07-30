@@ -142,7 +142,7 @@
                         </select>
                         <input type="text" id="txDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
                         <input type="number" id="txAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
-                        <input type="date" id="txDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400 text-slate-100 min-h-[42px]">
+                        <input type="date" id="txDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-teal-400 text-slate-100 min-h-[42px]">
                         <input type="text" id="txCategoryInput" placeholder="Categoría" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
 
                         <button type="submit" class="w-full bg-teal-600 active:bg-teal-700 hover:bg-teal-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition lg:col-span-1 sm:col-span-2 flex items-center justify-center gap-2 min-h-[42px] shadow-md shadow-teal-950/30" data-i18n="saveBtn">
@@ -185,7 +185,7 @@
                         <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="incDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
                             <input type="number" id="incAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
-                            <input type="date" id="incDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="incDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-blue-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="addBtn">
                                 <i class="fa-solid fa-plus"></i> Añadir
                             </button>
@@ -215,7 +215,7 @@
                         <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="recPerson" placeholder="Nombre de la persona" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
                             <input type="number" id="recAmount" placeholder="Monto Prestado" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
-                            <input type="date" id="recDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="recDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-cyan-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 hover:bg-cyan-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regLoanBtn">
                                 <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Préstamo
                             </button>
@@ -233,7 +233,7 @@
                         <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
                             <input type="number" id="debtAmount" placeholder="Monto Pendiente" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
-                            <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-rose-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-rose-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 hover:bg-rose-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regDebtBtn">
                                 <i class="fa-solid fa-file-circle-plus"></i> Registrar Deuda
                             </button>
@@ -251,7 +251,7 @@
                         <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-slate-700">
                             <input type="text" id="boxTitle" placeholder="Nombre de la caja" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
                             <input type="number" id="boxInitialAmount" placeholder="Monto Inicial" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
-                            <input type="date" id="boxDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="boxDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-amber-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-amber-600 active:bg-amber-700 hover:bg-amber-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2 min-h-[42px]">
                                 <i class="fa-solid fa-plus"></i> <span data-i18n="createBoxBtn">Crear Caja</span>
                             </button>
@@ -371,7 +371,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fecha</label>
-                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Motivo</label>
@@ -393,7 +393,7 @@
             <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
                 <input type="hidden" id="modalReceivableId">
                 <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
-                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
                 <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar Cobro</button>
             </form>
