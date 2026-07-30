@@ -1,4 +1,4 @@
-<!-- V3.1.3 All -->
+<!-- V3.1.4 All -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -142,7 +142,7 @@
                         </select>
                         <input type="text" id="txDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
                         <input type="number" id="txAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
-                        <input type="date" id="txDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-teal-400 text-slate-100 min-h-[42px]">
+                        <input type="date" id="txDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-teal-400 text-slate-100 min-h-[42px]">
                         <input type="text" id="txCategoryInput" placeholder="Categoría" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-teal-400 min-h-[42px]">
 
                         <button type="submit" class="w-full bg-teal-600 active:bg-teal-700 hover:bg-teal-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition lg:col-span-1 sm:col-span-2 flex items-center justify-center gap-2 min-h-[42px] shadow-md shadow-teal-950/30" data-i18n="saveBtn">
@@ -185,7 +185,7 @@
                         <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="incDesc" placeholder="Descripción" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
                             <input type="number" id="incAmount" placeholder="Monto" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-400 min-h-[42px]">
-                            <input type="date" id="incDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-blue-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="incDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="addBtn">
                                 <i class="fa-solid fa-plus"></i> Añadir
                             </button>
@@ -215,7 +215,7 @@
                         <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="recPerson" placeholder="Nombre de la persona" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
                             <input type="number" id="recAmount" placeholder="Monto Prestado" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 min-h-[42px]">
-                            <input type="date" id="recDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-cyan-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="recDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 hover:bg-cyan-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regLoanBtn">
                                 <i class="fa-solid fa-hand-holding-dollar"></i> Registrar Préstamo
                             </button>
@@ -233,7 +233,7 @@
                         <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
                             <input type="text" id="debtTitle" placeholder="Deuda / Servicio" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
                             <input type="number" id="debtAmount" placeholder="Monto Pendiente" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-rose-400 min-h-[42px]">
-                            <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-rose-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-rose-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 hover:bg-rose-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-1.5 min-h-[42px]" data-i18n="regDebtBtn">
                                 <i class="fa-solid fa-file-circle-plus"></i> Registrar Deuda
                             </button>
@@ -251,7 +251,7 @@
                         <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-slate-700">
                             <input type="text" id="boxTitle" placeholder="Nombre de la caja" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
                             <input type="number" id="boxInitialAmount" placeholder="Monto Inicial" step="1" min="0" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400 min-h-[42px]">
-                            <input type="date" id="boxDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-1 py-1 text-sm focus:outline-none focus:border-amber-400 text-slate-100 min-h-[42px]">
+                            <input type="date" id="boxDate" required class="w-full bg-slate-700/80 border border-slate-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-amber-400 text-slate-100 min-h-[42px]">
                             <button type="submit" class="w-full bg-amber-600 active:bg-amber-700 hover:bg-amber-500 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition flex items-center justify-center gap-2 min-h-[42px]">
                                 <i class="fa-solid fa-plus"></i> <span data-i18n="createBoxBtn">Crear Caja</span>
                             </button>
@@ -430,341 +430,8 @@
         </div>
     </div>
 
-    <!-- SCRIPTS DE LÓGICA -->
-    <script>
-        const today = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('input[type="date"]').forEach(input => { if (!input.hasAttribute('title')) input.value = today; });
+     <!-- Enlace al archivo de JavaScript externo -->
+    <script src="scrip.js"></script>
 
-        // SISTEMA DE ESTADO
-        let currentLang = localStorage.getItem('finances_lang') || 'es';
-        let currencySymbol = localStorage.getItem('finances_currency') || '$';
-        const currentUser = localStorage.getItem('finances_session_user');
-        const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
-        
-        let state = usersDB[currentUser]?.state || { transactions: [], incomes: [], categories: [], savingsBoxes: [], debts: [], receivables: [] };
-
-        const i18n = {
-            es: { appTitle: "Fin Flow FPR", closeMonth: "Cierre de Mes", closeShort: "Cierre", netBalance: "Balance Disponible", totalIncome: "Ingresos Totales", totalSpent: "Gastos Acumulados", totalSavings: "Total Ahorrado", totalReceivables: "Te Deben", totalDebts: "Deudas", regTransactionTitle: "Nueva Transacción", saveBtn: "Guardar", txHistory: "Historial", budgetTitle: "Presupuesto", createCatBtn: "Crear", directIncomeTitle: "Ingresos", addBtn: "Añadir", receivablesTitle: "Préstamos Realizados", regLoanBtn: "Registrar Préstamo", debtsTitle: "Mis Deudas", regDebtBtn: "Nueva Deuda", savingsTitle: "Mis Ahorros", createBoxBtn: "Nueva Caja", settingsTitle: "Ajustes", closeModalBtn: "Cerrar", optionExpense: "Gasto (-)", optionIncome: "Ingreso (+)", thDate: "Fecha", thDesc: "Descripción", thAmount: "Monto", thAction: "Action", ftRec: "Recursos Educativos", ftTools: "Herramientas", ftSupport: "Soporte", ftLink1: "Curso de Educación Financiera", ftLink2: "Guía de Inversiones e Inflación", ftLink4: "Calculadora Interés Compuesto", ftLink7: "Centro de Asistencia", rights: "Todos los derechos reservados.", secureData: "100% Privado y Seguro. Tus datos se guardan de forma local." },
-            en: { appTitle: "Fin Flow FPR", closeMonth: "Month Close", closeShort: "Close", netBalance: "Available Balance", totalIncome: "Total Income", totalSpent: "Total Spent", totalSavings: "Total Savings", totalReceivables: "Owed to You", totalDebts: "My Debts", regTransactionTitle: "New Transaction", saveBtn: "Save", txHistory: "History", budgetTitle: "Budget", createCatBtn: "Create", directIncomeTitle: "Income", addBtn: "Add", receivablesTitle: "Loans Given", regLoanBtn: "Log Loan", debtsTitle: "Pending Debts", regDebtBtn: "Log Debt", savingsTitle: "Savings Boxes", createBoxBtn: "New Box", settingsTitle: "Settings", closeModalBtn: "Close", optionExpense: "Expense (-)", optionIncome: "Income (+)", thDate: "Date", thDesc: "Description", thAmount: "Amount", thAction: "Action", ftRec: "Educational Resources", ftTools: "Tools", ftSupport: "Support", ftLink1: "Financial Education Course", ftLink2: "Investment & Inflation Guide", ftLink4: "Compound Interest Calculator", ftLink7: "Help Center", rights: "All rights reserved.", secureData: "100% Private and Secure. Your data is stored locally." }
-        };
-
-        function saveData() {
-            if (currentUser) {
-                usersDB[currentUser].state = state;
-                localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
-                render();
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('finances_session_user');
-            window.location.href = 'login.html';
-        }
-
-        function changeLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('finances_lang', lang);
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (i18n[lang] && i18n[lang][key]) el.innerText = i18n[lang][key];
-            });
-            render();
-        }
-
-        function changeCurrency(sym) {
-            currencySymbol = sym;
-            localStorage.setItem('finances_currency', sym);
-            render();
-        }
-
-        // FUNCIONES DE INTERFAZ
-        function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
-        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
-        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function isFutureDate(d) { return d > today; }
-
-        // LÓGICA FINANCIERA (Transacciones, Categorías, etc.)
-        function addTransaction(e) {
-            e.preventDefault();
-            const tx = {
-                id: Date.now(),
-                type: document.getElementById('txType').value,
-                desc: document.getElementById('txDesc').value,
-                amount: parseFloat(document.getElementById('txAmount').value),
-                date: document.getElementById('txDate').value,
-                category: document.getElementById('txCategoryInput').value.trim() || 'General'
-            };
-            state.transactions.unshift(tx);
-            if (tx.type === 'income') state.incomes.push({ id: Date.now(), desc: tx.desc, amount: tx.amount, date: tx.date });
-            else {
-                let cat = state.categories.find(c => c.name.toLowerCase() === tx.category.toLowerCase());
-                if (!cat) state.categories.push({ id: Date.now(), name: tx.category, limit: tx.amount, spent: tx.amount });
-                else cat.spent += tx.amount;
-            }
-            document.getElementById('txForm').reset();
-            document.getElementById('txDate').value = today;
-            saveData();
-        }
-
-        function addCategory(e) {
-            e.preventDefault();
-            state.categories.push({ id: Date.now(), name: document.getElementById('catName').value, limit: parseFloat(document.getElementById('catLimit').value), spent: 0 });
-            document.getElementById('budgetForm').reset();
-            saveData();
-        }
-
-        // --- FUNCIÓN AGREGADA DE SISI.HTML ---
-        function addSpentManual(id, inputElement) {
-            const val = parseFloat(inputElement.value);
-            if (!isNaN(val) && val !== 0) {
-                const cat = state.categories.find(c => c.id === id);
-                if (cat) {
-                    cat.spent = Math.max(0, cat.spent + val);
-                    inputElement.value = '';
-                    saveData();
-                }
-            }
-        }
-
-        function addDirectIncome(e) {
-            e.preventDefault();
-            state.incomes.push({ id: Date.now(), desc: document.getElementById('incDesc').value, amount: parseFloat(document.getElementById('incAmount').value), date: document.getElementById('incDate').value });
-            document.getElementById('incomeForm').reset();
-            document.getElementById('incDate').value = today;
-            saveData();
-        }
-
-        function addReceivable(e) {
-            e.preventDefault();
-            state.receivables.push({ id: Date.now(), person: document.getElementById('recPerson').value, amount: parseFloat(document.getElementById('recAmount').value), date: document.getElementById('recDate').value, payments: [] });
-            document.getElementById('receivableForm').reset();
-            document.getElementById('recDate').value = today;
-            saveData();
-        }
-
-        function addDebt(e) {
-            e.preventDefault();
-            state.debts.push({ id: Date.now(), title: document.getElementById('debtTitle').value, amount: parseFloat(document.getElementById('debtAmount').value), date: document.getElementById('debtDate').value || 'Sin Fecha', payments: [] });
-            document.getElementById('debtForm').reset();
-            saveData();
-        }
-
-        function createNewSavingsBox(e) {
-            e.preventDefault();
-            const amt = parseFloat(document.getElementById('boxInitialAmount').value) || 0;
-            state.savingsBoxes.push({ id: Date.now(), title: document.getElementById('boxTitle').value, total: amt, history: [{ id: Date.now(), type: 'add', source: 'Fondo Inicial', amount: amt, date: document.getElementById('boxDate').value, reason: 'Aporte Inicial' }] });
-            document.getElementById('savingsBoxForm').reset();
-            document.getElementById('boxDate').value = today;
-            saveData();
-        }
-
-        // MANEJO DE MODALES DE PAGO
-        function openReceivableModal(id) {
-            document.getElementById('modalReceivableId').value = id;
-            document.getElementById('receivableModal').classList.remove('hidden');
-        }
-        function closeReceivableModal() { document.getElementById('receivableModal').classList.add('hidden'); }
-        function processReceivablePayment(e) {
-            e.preventDefault();
-            const rec = state.receivables.find(r => r.id == document.getElementById('modalReceivableId').value);
-            const amt = parseFloat(document.getElementById('recPayAmount').value);
-            if (rec && amt <= rec.amount) {
-                rec.amount -= amt;
-                rec.payments.unshift({ id: Date.now(), amount: amt, date: document.getElementById('recPayDate').value, reason: document.getElementById('recPayReason').value });
-                closeReceivableModal();
-                saveData();
-            }
-        }
-
-        function openDebtModal(id) {
-            document.getElementById('modalDebtId').value = id;
-            document.getElementById('debtPaymentModal').classList.remove('hidden');
-        }
-        function closeDebtModal() { document.getElementById('debtPaymentModal').classList.add('hidden'); }
-        function processDebtPayment(e) {
-            e.preventDefault();
-            const debt = state.debts.find(d => d.id == document.getElementById('modalDebtId').value);
-            const amt = parseFloat(document.getElementById('debtPayAmount').value);
-            if (debt && amt <= debt.amount) {
-                debt.amount -= amt;
-                debt.payments.unshift({ id: Date.now(), amount: amt, date: document.getElementById('debtPayDate').value, reason: document.getElementById('debtPayReason').value });
-                closeDebtModal();
-                saveData();
-            }
-        }
-
-        function openSavingsModal(id) {
-            const box = state.savingsBoxes.find(b => b.id === id);
-            if (!box) return;
-            document.getElementById('modalBoxId').value = box.id;
-            document.getElementById('savingsModalTitle').innerText = `Microgestión: ${box.title}`;
-            document.getElementById('modalDate').value = today;
-            document.getElementById('savingsMovementModal').classList.remove('hidden');
-        }
-        function closeSavingsModal() { document.getElementById('savingsMovementModal').classList.add('hidden'); }
-        
-        // --- FUNCIÓN ACTUALIZADA CON LÓGICA SISI.HTML ---
-        function processSavingsMovement(e) {
-            e.preventDefault();
-            const boxId = parseInt(document.getElementById('modalBoxId').value);
-            const action = document.getElementById('modalActionType').value;
-            const source = document.getElementById('modalSource').value;
-            const amt = parseFloat(document.getElementById('modalAmount').value);
-            const date = document.getElementById('modalDate').value;
-            const reason = document.getElementById('modalReason').value;
-
-            const box = state.savingsBoxes.find(b => b.id === boxId);
-            if (box) {
-                if (action === 'subtract' && amt > box.total) return alert("Saldo insuficiente");
-                box.total = action === 'add' ? box.total + amt : box.total - amt;
-                box.history.unshift({ id: Date.now(), type: action, source: source, amount: amt, date: date, reason: reason });
-                closeSavingsModal();
-                saveData();
-            }
-        }
-
-        // --- FUNCIÓN AGREGADA DE SISI.HTML ---
-        function removeSavingsHistoryItem(boxId, historyId) {
-            const box = state.savingsBoxes.find(b => b.id === boxId);
-            if (box) {
-                box.history = box.history.filter(h => h.id !== historyId);
-                box.total = box.history.reduce((acc, curr) => curr.type === 'add' ? acc + curr.amount : acc - curr.amount, 0);
-                saveData();
-            }
-        }
-
-        function openCloseMonthModal() {
-            const surplus = state.incomes.reduce((a, b) => a + b.amount, 0) - state.categories.reduce((a, b) => a + b.spent, 0);
-            document.getElementById('surplusAmount').innerText = currencySymbol + surplus.toFixed(2);
-            document.getElementById('closeMonthModal').classList.remove('hidden');
-        }
-        function closeModal() { document.getElementById('closeMonthModal').classList.add('hidden'); }
-        function handleSurplus(opt) {
-            const surplus = state.incomes.reduce((a, b) => a + b.amount, 0) - state.categories.reduce((a, b) => a + b.spent, 0);
-            if (opt === 'nextMonth') state.incomes = [{ id: Date.now(), desc: 'Sobrante Mes Anterior', amount: surplus, date: today }];
-            else {
-                if (state.savingsBoxes.length > 0) {
-                    state.savingsBoxes[0].total += surplus;
-                    state.savingsBoxes[0].history.unshift({ type: 'add', amount: surplus, date: today, reason: 'Excedente Mensual', source: 'Cierre de Mes' });
-                }
-                state.incomes = [];
-            }
-            state.categories.forEach(c => c.spent = 0);
-            closeModal();
-            saveData();
-        }
-
-        function removeItem(type, id) { state[type] = state[type].filter(i => i.id !== id); saveData(); }
-
-        // RENDERIZADO
-        function render() {
-            const ti = state.incomes.reduce((a, b) => a + b.amount, 0);
-            const ts = state.categories.reduce((a, b) => a + b.spent, 0);
-            document.getElementById('totalIncome').innerText = currencySymbol + ti.toFixed(2);
-            document.getElementById('totalSpent').innerText = currencySymbol + ts.toFixed(2);
-            document.getElementById('netBalance').innerText = currencySymbol + (ti - ts).toFixed(2);
-            document.getElementById('totalSavings').innerText = currencySymbol + state.savingsBoxes.reduce((a, b) => a + b.total, 0).toFixed(2);
-            document.getElementById('totalDebts').innerText = currencySymbol + state.debts.reduce((a, b) => a + b.amount, 0).toFixed(2);
-            document.getElementById('totalReceivables').innerText = currencySymbol + state.receivables.reduce((a, b) => a + b.amount, 0).toFixed(2);
-
-            // Historial Transacciones
-            document.getElementById('transactionHistoryList').innerHTML = state.transactions.map(t => `
-                <div class="bg-slate-700/60 p-2.5 rounded-lg border border-slate-600 flex justify-between items-center text-xs gap-2">
-                    <div class="truncate"><span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type.toUpperCase()}</span> - <span class="text-slate-200">${t.desc}</span></div>
-                    <div class="flex items-center gap-2 shrink-0"><b>${currencySymbol}${t.amount}</b><button onclick="removeItem('transactions', ${t.id})" class="text-rose-400 p-1 active:scale-125 transition"><i class="fa-solid fa-trash"></i></button></div>
-                </div>`).join('');
-
-            // Categorías con Ajuste Manual
-            document.getElementById('categoryList').innerHTML = state.categories.map(c => `
-                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-medium">
-                        <span>${c.name}</span>
-                        <div class="flex items-center gap-2">
-                            <span>${currencySymbol}${c.spent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span>
-                            <button onclick="removeItem('categories', ${c.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                        <div class="bg-purple-500 h-full rounded-full transition-all duration-300" style="width:${Math.min(100, (c.spent/c.limit)*100)}%"></div>
-                    </div>
-                    <div class="flex items-center gap-2 pt-1">
-                        <span class="text-[10px] text-slate-400">Ajuste manual:</span>
-                        <input type="number" step="1" placeholder="+100 o -50" onchange="addSpentManual(${c.id}, this)" class="w-full bg-slate-800 border border-slate-600 text-[10px] px-2 py-1 rounded text-slate-200 focus:outline-none focus:border-purple-400">
-                    </div>
-                </div>`).join('');
-
-            // Ingresos tabla
-            document.getElementById('incomeList').innerHTML = state.incomes.map(i => `
-                <tr class="text-xs border-b border-slate-700/60">
-                    <td class="p-2.5 whitespace-nowrap">${i.date}</td><td class="p-2.5">${i.desc}</td><td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount}</td>
-                    <td class="p-2.5 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`).join('');
-
-            // Préstamos (Receivables)
-            document.getElementById('receivablesList').innerHTML = state.receivables.map(r => `
-                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                    <div class="flex justify-between items-center font-bold text-sm">
-                        <span class="truncate">${r.person}</span>
-                        <button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="text-cyan-400 text-lg font-black my-1.5">${currencySymbol}${r.amount.toFixed(2)}</div>
-                    <button onclick="openReceivableModal(${r.id})" class="w-full bg-cyan-600/20 active:bg-cyan-600/40 text-cyan-300 py-2 rounded-lg text-xs font-semibold min-h-[36px]">COBRAR</button>
-                </div>`).join('');
-
-            // Deudas
-            document.getElementById('debtList').innerHTML = state.debts.map(d => `
-                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex flex-col justify-between">
-                    <div class="flex justify-between items-center font-bold text-sm">
-                        <span class="truncate">${d.title}</span>
-                        <button onclick="removeItem('debts', ${d.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="text-rose-400 text-lg font-black my-1.5">${currencySymbol}${d.amount.toFixed(2)}</div>
-                    <button onclick="openDebtModal(${d.id})" class="w-full bg-rose-600/20 active:bg-rose-600/40 text-rose-300 py-2 rounded-lg text-xs font-semibold min-h-[36px]">ABONAR</button>
-                </div>`).join('');
-
-            // Cajas Ahorro con Microgestión e Historial Detallado
-            document.getElementById('savingsBoxesContainer').innerHTML = state.savingsBoxes.map(b => `
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between space-y-3">
-                    <div class="flex justify-between items-center font-bold">
-                        <span class="truncate text-slate-100">${b.title}</span>
-                        <button onclick="removeItem('savingsBoxes', ${b.id})" class="text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="text-amber-400 text-2xl font-black">${currencySymbol}${b.total.toFixed(2)}</div>
-                    <button onclick="openSavingsModal(${b.id})" class="w-full bg-amber-600/20 active:bg-amber-600/40 text-amber-300 border border-amber-500/30 py-2 rounded-lg text-xs font-semibold min-h-[36px] flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-sliders"></i> MICROGESTIÓN
-                    </button>
-                    <div class="pt-2 border-t border-slate-700/50 space-y-1.5">
-                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Historial Reciente:</span>
-                        <div class="max-h-32 overflow-y-auto space-y-1.5 pr-1 custom-scroll">
-                            ${b.history.map(h => `
-                                <div class="bg-slate-900/50 p-2 rounded text-[10px] flex justify-between items-start border border-slate-700/50">
-                                    <div class="space-y-0.5">
-                                        <div class="flex items-center gap-1">
-                                            <span class="font-bold ${h.type === 'add' ? 'text-emerald-400' : 'text-rose-400'}">
-                                                ${h.type === 'add' ? '+' : '-'}${currencySymbol}${h.amount.toFixed(2)}
-                                            </span>
-                                            <span class="px-1 rounded bg-slate-700 text-amber-300 text-[8px] border border-slate-600">${h.source || 'General'}</span>
-                                        </div>
-                                        <div class="text-slate-300 truncate max-w-[120px]">${h.reason}</div>
-                                        <div class="text-[8px] text-slate-500">${h.date}</div>
-                                    </div>
-                                    <button onclick="removeSavingsHistoryItem(${b.id}, ${h.id})" class="text-rose-500/70 hover:text-rose-400 p-0.5"><i class="fa-solid fa-trash-can"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>`).join('');
-        }
-
-        // Inicializar
-        if (currentUser) {
-            const userInfo = usersDB[currentUser];
-            const userLabel = document.getElementById('currentUserLabel');
-            if (userLabel) {
-                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${userInfo?.firstName || currentUser}`;
-            }
-            changeLanguage(currentLang);
-        }
-    </script>
 </body>
 </html>
