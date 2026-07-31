@@ -1,5 +1,5 @@
-// --- V1.0 ---
-// --- ESTADO INICIAL Y CONFIGURACIÓN ---
+// V2.0
+// --- SISTEMA DE ESTADO E INICIALIZACIÓN ---
 const today = new Date().toISOString().split('T')[0];
 
 let currentLang = localStorage.getItem('finances_lang') || 'es';
@@ -9,11 +9,24 @@ const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
 
 if (!usersDB[currentUser]) {
     usersDB[currentUser] = {
-        state: { transactions: [], incomes: [], categories: [], savingsBoxes: [], debts: [], receivables: [] }
+        state: { 
+            transactions: [], 
+            incomes: [], 
+            categories: [], 
+            savingsBoxes: [], 
+            debts: [], 
+            receivables: [],
+            globalHistory: [] 
+        }
     };
 }
 
 let state = usersDB[currentUser].state;
+
+// Asegurar la propiedad globalHistory si no existía previamente
+if (!state.globalHistory) {
+    state.globalHistory = [];
+}
 
 // --- DICCIONARIOS Y TRADUCCIONES ---
 const i18n = {
@@ -39,9 +52,9 @@ const i18n = {
         directIncomeTitle: "Direct Income", addBtn: "Add", receivablesTitle: "Accounts Receivable", 
         regLoanBtn: "Log Loan", debtsTitle: "Pending Debts", regDebtBtn: "Log Debt", savingsTitle: "Savings Boxes", 
         createBoxBtn: "Create Box", settingsTitle: "Settings", optionExpense: "Expense (-)", 
-        optionIncome: "Income (+)", thDate: "Date", thDesc: "Description", thAmount: "Amount", 
-        thAction: "Action", ftRec: "Educational Resources", ftTools: "Tools", ftSupport: "Support", 
-        ftLink1: "Financial Education Course", ftLink2: "Investment & Inflation Guide", 
+        optionIncome: "Income (+)", thDate: "Date", thDesc: "Description", 
+        thAmount: "Amount", thAction: "Action", ftRec: "Educational Resources", ftTools: "Tools", 
+        ftSupport: "Support", ftLink1: "Financial Education Course", ftLink2: "Investment & Inflation Guide", 
         ftLink4: "Compound Interest Calculator", ftLink7: "Help Center", rights: "All rights reserved.", 
         secureData: "100% Private and Secure. Your data is stored locally." 
     }
@@ -53,7 +66,22 @@ function saveData() {
         usersDB[currentUser].state = state;
         localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
         render();
+        if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) {
+            renderHistoryPage();
+        }
     }
+}
+
+// --- REGISTRO AUXILIAR EN EL HISTORIAL GLOBAL ---
+function logGlobalHistory(type, desc, amount, date, category = 'General') {
+    state.globalHistory.unshift({
+        id: Date.now(),
+        type: type,       // 'expense', 'income', 'receivable_payment', 'debt_payment'
+        desc: desc,
+        amount: parseFloat(amount),
+        date: date || today,
+        category: category
+    });
 }
 
 // --- AJUSTES Y NAVEGACIÓN ---
@@ -65,17 +93,38 @@ function logout() {
 function changeLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('finances_lang', lang);
+    
+    // Traducir todos los elementos con el atributo data-i18n en cualquier página
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (i18n[lang] && i18n[lang][key]) el.innerText = i18n[lang][key];
     });
-    render();
+
+    // Actualizar selectores de idioma en modales si existen
+    const langSelect = document.getElementById('langSelect');
+    if (langSelect) langSelect.value = lang;
+
+    // Renderizar según la página actual
+    if (document.getElementById('netBalance')) render();
+    if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) {
+        renderHistoryPage();
+    }
 }
+  
 
 function changeCurrency(sym) {
     currencySymbol = sym;
     localStorage.setItem('finances_currency', sym);
-    render();
+
+    // Actualizar selectores de moneda en modales si existen
+    const currencySelect = document.getElementById('currencySelect');
+    if (currencySelect) currencySelect.value = sym;
+
+    // Renderizar según la página actual
+    if (document.getElementById('netBalance')) render();
+    if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) {
+        renderHistoryPage();
+    }
 }
 
 function scrollToTop() {
@@ -83,43 +132,51 @@ function scrollToTop() {
 }
 
 // --- MODALES ---
-function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
-function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+function openSettingsModal() { document.getElementById('settingsModal')?.classList.remove('hidden'); }
+function closeSettingsModal() { document.getElementById('settingsModal')?.classList.add('hidden'); }
 
 function openCloseMonthModal() {
+    const totalTransactionsSpent = state.transactions
+        .filter(t => t.type === 'expense')
+        .reduce((a, b) => a + b.amount, 0);
+    const totalCategorySpent = state.categories.reduce((a, b) => a + b.spent, 0);
+    
     const ti = state.incomes.reduce((a, b) => a + b.amount, 0);
-    const ts = state.categories.reduce((a, b) => a + b.spent, 0);
+    const ts = totalTransactionsSpent + totalCategorySpent;
     const surplus = ti - ts;
-    document.getElementById('surplusAmount').innerText = currencySymbol + surplus.toFixed(2);
-    document.getElementById('closeMonthModal').classList.remove('hidden');
+
+    const surplusEl = document.getElementById('surplusAmount');
+    if (surplusEl) surplusEl.innerText = currencySymbol + surplus.toFixed(2);
+    document.getElementById('closeMonthModal')?.classList.remove('hidden');
 }
-function closeCloseMonthModal() { document.getElementById('closeMonthModal').classList.add('hidden'); }
+function closeCloseMonthModal() { document.getElementById('closeMonthModal')?.classList.add('hidden'); }
+function closeModal() { closeCloseMonthModal(); }
 
 function openSavingsModal(boxId) {
-    document.getElementById('modalBoxId').value = boxId;
-    document.getElementById('modalDate').value = today;
-    document.getElementById('savingsMovementModal').classList.remove('hidden');
+    if (document.getElementById('modalBoxId')) document.getElementById('modalBoxId').value = boxId;
+    if (document.getElementById('modalDate')) document.getElementById('modalDate').value = today;
+    document.getElementById('savingsMovementModal')?.classList.remove('hidden');
 }
-function closeSavingsModal() { document.getElementById('savingsMovementModal').classList.add('hidden'); }
+function closeSavingsModal() { document.getElementById('savingsMovementModal')?.classList.add('hidden'); }
 
 function openReceivableModal(id) {
-    document.getElementById('modalReceivableId').value = id;
-    document.getElementById('recPayDate').value = today;
-    document.getElementById('receivableModal').classList.remove('hidden');
+    if (document.getElementById('modalReceivableId')) document.getElementById('modalReceivableId').value = id;
+    if (document.getElementById('recPayDate')) document.getElementById('recPayDate').value = today;
+    document.getElementById('receivableModal')?.classList.remove('hidden');
 }
-function closeReceivableModal() { document.getElementById('receivableModal').classList.add('hidden'); }
+function closeReceivableModal() { document.getElementById('receivableModal')?.classList.add('hidden'); }
 
 function openDebtModal(id) {
-    document.getElementById('modalDebtId').value = id;
-    document.getElementById('debtPayDate').value = today;
-    document.getElementById('debtPaymentModal').classList.remove('hidden');
+    if (document.getElementById('modalDebtId')) document.getElementById('modalDebtId').value = id;
+    if (document.getElementById('debtPayDate')) document.getElementById('debtPayDate').value = today;
+    document.getElementById('debtPaymentModal')?.classList.remove('hidden');
 }
-function closeDebtModal() { document.getElementById('debtPaymentModal').classList.add('hidden'); }
+function closeDebtModal() { document.getElementById('debtPaymentModal')?.classList.add('hidden'); }
 
 // --- LÓGICA DE REGISTRO / FORMULARIO ---
 function addTransaction(e) {
     e.preventDefault();
-    const categoryValue = document.getElementById('txCategoryInput').value.trim() || 'General';
+    const categoryValue = document.getElementById('txCategoryInput')?.value.trim() || 'General';
     const tx = {
         id: Date.now(),
         type: document.getElementById('txType').value,
@@ -133,17 +190,13 @@ function addTransaction(e) {
 
     if (tx.type === 'income') {
         state.incomes.push({ id: tx.id, desc: tx.desc, amount: tx.amount, date: tx.date, category: tx.category });
+        logGlobalHistory('income', tx.desc, tx.amount, tx.date, tx.category);
     } else {
-        let cat = state.categories.find(c => c.name.toLowerCase() === tx.category.toLowerCase());
-        if (!cat) {
-            state.categories.push({ id: Date.now(), name: tx.category, limit: tx.amount, spent: tx.amount });
-        } else {
-            cat.spent += tx.amount;
-        }
+        logGlobalHistory('expense', tx.desc, tx.amount, tx.date, tx.category);
     }
 
     document.getElementById('txForm').reset();
-    document.getElementById('txDate').value = today;
+    if (document.getElementById('txDate')) document.getElementById('txDate').value = today;
     saveData();
 }
 
@@ -164,9 +217,10 @@ function addDirectIncome(e) {
     const amount = parseFloat(document.getElementById('incAmount').value);
     const date = document.getElementById('incDate').value;
     if (desc && !isNaN(amount)) {
-        state.incomes.push({ id: Date.now(), desc, amount, date });
+        state.incomes.push({ id: Date.now(), desc, amount, date, category: 'Ingreso Directo' });
+        logGlobalHistory('income', desc, amount, date, 'Ingreso Directo');
         document.getElementById('incomeForm').reset();
-        document.getElementById('incDate').value = today;
+        if (document.getElementById('incDate')) document.getElementById('incDate').value = today;
         saveData();
     }
 }
@@ -179,7 +233,7 @@ function addReceivable(e) {
     if (person && !isNaN(amount)) {
         state.receivables.push({ id: Date.now(), person, amount, date });
         document.getElementById('receivableForm').reset();
-        document.getElementById('recDate').value = today;
+        if (document.getElementById('recDate')) document.getElementById('recDate').value = today;
         saveData();
     }
 }
@@ -192,7 +246,7 @@ function addDebt(e) {
     if (title && !isNaN(amount)) {
         state.debts.push({ id: Date.now(), title, amount, date });
         document.getElementById('debtForm').reset();
-        document.getElementById('debtDate').value = today;
+        if (document.getElementById('debtDate')) document.getElementById('debtDate').value = today;
         saveData();
     }
 }
@@ -210,25 +264,26 @@ function createNewSavingsBox(e) {
             history: initialAmount > 0 ? [{ id: Date.now(), type: 'add', amount: initialAmount, reason: 'Monto inicial', date, source: 'Inicial' }] : []
         });
         document.getElementById('savingsBoxForm').reset();
-        document.getElementById('boxDate').value = today;
+        if (document.getElementById('boxDate')) document.getElementById('boxDate').value = today;
         saveData();
     }
 }
 
-// --- FUNCIÓN AGREGADA DE SISI.HTML ---
+// --- CONSUMO DE PRESUPUESTO MANUAL ---
 function addSpentManual(id, inputElement) {
     const val = parseFloat(inputElement.value);
-    if (!isNaN(val) && val !== 0) {
+    if (!isNaN(val) && val > 0) {
         const cat = state.categories.find(c => c.id === id);
         if (cat) {
-            cat.spent = Math.max(0, cat.spent + val);
+            cat.spent += val;
+            logGlobalHistory('expense', `Consumo de Presupuesto: ${cat.name}`, val, today, cat.name);
             inputElement.value = '';
             saveData();
         }
     }
 }
 
-// --- FUNCIÓN ACTUALIZADA CON LÓGICA SISI.HTML ---
+// --- PROCESAR MOVIMIENTOS EN CAJAS DE AHORRO ---
 function processSavingsMovement(e) {
     e.preventDefault();
     const boxId = parseInt(document.getElementById('modalBoxId').value);
@@ -249,7 +304,6 @@ function processSavingsMovement(e) {
     }
 }
 
-// --- FUNCIÓN AGREGADA DE SISI.HTML ---
 function removeSavingsHistoryItem(boxId, historyId) {
     const box = state.savingsBoxes.find(b => b.id === boxId);
     if (box) {
@@ -259,13 +313,19 @@ function removeSavingsHistoryItem(boxId, historyId) {
     }
 }
 
+// --- REGISTRO DE ABONOS DE COBROS Y DEUDAS ---
 function processReceivablePayment(e) {
     e.preventDefault();
     const id = parseInt(document.getElementById('modalReceivableId').value);
     const amount = parseFloat(document.getElementById('recPayAmount').value);
+    const date = document.getElementById('recPayDate').value || today;
+    const reason = document.getElementById('recPayReason').value || 'Abono recibido';
+    
     const rec = state.receivables.find(r => r.id === id);
     if (rec && !isNaN(amount)) {
         rec.amount -= amount;
+        logGlobalHistory('receivable_payment', `Cobro: ${rec.person} (${reason})`, amount, date, 'Cuentas por Cobrar');
+        
         if (rec.amount <= 0) state.receivables = state.receivables.filter(r => r.id !== id);
         closeReceivableModal();
         saveData();
@@ -276,37 +336,87 @@ function processDebtPayment(e) {
     e.preventDefault();
     const id = parseInt(document.getElementById('modalDebtId').value);
     const amount = parseFloat(document.getElementById('debtPayAmount').value);
+    const date = document.getElementById('debtPayDate').value || today;
+    const reason = document.getElementById('debtPayReason').value || 'Pago de deuda';
+    
     const debt = state.debts.find(d => d.id === id);
     if (debt && !isNaN(amount)) {
         debt.amount -= amount;
+        logGlobalHistory('debt_payment', `Pago Deuda: ${debt.title} (${reason})`, amount, date, 'Deudas');
+        
         if (debt.amount <= 0) state.debts = state.debts.filter(d => d.id !== id);
         closeDebtModal();
         saveData();
     }
 }
 
+// --- CIERRE DE MES (PASA EL RECORTE A INGRESOS DIRECTOS) ---
 function handleSurplus(option) {
+    // 1. Calcular el balance sobrante del mes
+    const totalTransactionsSpent = state.transactions
+        .filter(t => t.type === 'expense')
+        .reduce((a, b) => a + b.amount, 0);
+    const totalCategorySpent = state.categories.reduce((a, b) => a + b.spent, 0);
+    
+    const totalIncome = state.incomes.reduce((a, b) => a + b.amount, 0);
+    const totalSpent = totalTransactionsSpent + totalCategorySpent;
+    const surplus = totalIncome - totalSpent;
+
+    // 2. Calcular la fecha del último día del mes anterior
+    const now = new Date();
+    const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+    const formattedPrevMonthDate = prevMonthLastDay.toISOString().split('T')[0];
+
+    // 3. Procesar opción elegida en el modal
     if (option === 'nextMonth') {
+        // Limpiar movimientos
         state.transactions = [];
         state.incomes = [];
         state.categories.forEach(c => c.spent = 0);
+
+        // Si sobró dinero, ponerlo en Ingresos Directos como "Mes anterior"
+        if (surplus > 0) {
+            const carriedOverIncome = {
+                id: Date.now(),
+                desc: "Mes anterior",
+                amount: surplus,
+                date: formattedPrevMonthDate,
+                category: "Sobrante Mes Anterior"
+            };
+            state.incomes.push(carriedOverIncome);
+            logGlobalHistory('income', "Mes anterior", surplus, formattedPrevMonthDate, "Sobrante Mes Anterior");
+        }
+
     } else if (option === 'savings') {
-        const ti = state.incomes.reduce((a, b) => a + b.amount, 0);
-        const ts = state.categories.reduce((a, b) => a + b.spent, 0);
-        const surplus = Math.max(0, ti - ts);
+        // Si prefiere moverlo a la caja de ahorros
         if (surplus > 0) {
             if (state.savingsBoxes.length === 0) {
-                state.savingsBoxes.push({ id: Date.now(), title: "Ahorro General", total: surplus, history: [{ id: Date.now(), type: 'add', amount: surplus, reason: 'Excedente de mes', date: today, source: 'Cierre' }] });
+                state.savingsBoxes.push({
+                    id: Date.now(),
+                    title: "Ahorro General",
+                    total: surplus,
+                    history: [{ id: Date.now(), type: 'add', amount: surplus, reason: 'Excedente de mes', date: today, source: 'Cierre' }]
+                });
             } else {
                 state.savingsBoxes[0].total += surplus;
                 if (!state.savingsBoxes[0].history) state.savingsBoxes[0].history = [];
-                state.savingsBoxes[0].history.unshift({ id: Date.now(), type: 'add', amount: surplus, reason: 'Excedente de mes', date: today, source: 'Cierre' });
+                state.savingsBoxes[0].history.unshift({
+                    id: Date.now(),
+                    type: 'add',
+                    amount: surplus,
+                    reason: 'Excedente de mes',
+                    date: today,
+                    source: 'Cierre'
+                });
             }
         }
+        
+        // Limpiar movimientos para iniciar nuevo mes
         state.transactions = [];
         state.incomes = [];
         state.categories.forEach(c => c.spent = 0);
     }
+
     closeCloseMonthModal();
     saveData();
 }
@@ -316,10 +426,15 @@ function removeItem(type, id) {
     saveData();
 }
 
-// --- RENDERIZADO DE LA VISTA ---
+// --- RENDERIZADO DE VISTA PRINCIPAL ---
 function render() {
+    const totalTransactionsSpent = state.transactions
+        .filter(t => t.type === 'expense')
+        .reduce((a, b) => a + b.amount, 0);
+    const totalCategorySpent = state.categories.reduce((a, b) => a + b.spent, 0);
+    
     const ti = state.incomes.reduce((a, b) => a + b.amount, 0);
-    const ts = state.categories.reduce((a, b) => a + b.spent, 0);
+    const ts = totalTransactionsSpent + totalCategorySpent;
 
     if (document.getElementById('totalIncome')) document.getElementById('totalIncome').innerText = currencySymbol + ti.toFixed(2);
     if (document.getElementById('totalSpent')) document.getElementById('totalSpent').innerText = currencySymbol + ts.toFixed(2);
@@ -328,7 +443,7 @@ function render() {
     if (document.getElementById('totalDebts')) document.getElementById('totalDebts').innerText = currencySymbol + state.debts.reduce((a, b) => a + b.amount, 0).toFixed(2);
     if (document.getElementById('totalReceivables')) document.getElementById('totalReceivables').innerText = currencySymbol + state.receivables.reduce((a, b) => a + b.amount, 0).toFixed(2);
 
-    // Historial
+    // Historial Rápido del Index
     const historyList = document.getElementById('transactionHistoryList');
     if (historyList) {
         historyList.innerHTML = state.transactions.map(t => `
@@ -343,7 +458,7 @@ function render() {
             </div>`).join('');
     }
 
-    // Categorías (Actualizado para permitir agregar gasto manualmente mediante addSpentManual)
+    // Categorías y Presupuesto
     const catList = document.getElementById('categoryList');
     if (catList) {
         catList.innerHTML = state.categories.map(c => `
@@ -360,24 +475,24 @@ function render() {
                 </div>
                 <div class="flex items-center gap-2 pt-1">
                     <input type="number" id="manualSpentInput_${c.id}" placeholder="+ Gastado" step="1" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-400">
-                    <button onclick="addSpentManual(${c.id}, document.getElementById('manualSpentInput_${c.id}'))" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-2.5 py-1 rounded transition shrink-0"><i class="fa-solid fa-plus"></i></button>
+                    <button onclick="addSpentManual(${c.id}, document.getElementById('manualSpentInput_${c.id}'))" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-2.5 py-1 rounded transition shrink-0"><i class="fa-solid fa-plus"></i> Consumir</button>
                 </div>
             </div>`).join('');
     }
 
-    // Ingresos Tabla
+    // Tabla Ingresos Directos
     const incList = document.getElementById('incomeList');
     if (incList) {
         incList.innerHTML = state.incomes.map(i => `
             <tr class="text-xs border-b border-slate-700/60">
                 <td class="p-2.5 whitespace-nowrap">${i.date}</td>
-                <td class="p-2.5">${i.desc}</td>
-                <td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount}</td>
+                <td class="p-2.5 font-medium">${i.desc}</td>
+                <td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount.toFixed(2)}</td>
                 <td class="p-2.5 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></td>
             </tr>`).join('');
     }
 
-    // Cuentas por cobrar
+    // Cuentas por Cobrar
     const recList = document.getElementById('receivablesList');
     if (recList) {
         recList.innerHTML = state.receivables.map(r => `
@@ -394,7 +509,7 @@ function render() {
             </div>`).join('');
     }
 
-    // Deudas
+    // Mis Deudas
     const dList = document.getElementById('debtList');
     if (dList) {
         dList.innerHTML = state.debts.map(d => `
@@ -411,7 +526,7 @@ function render() {
             </div>`).join('');
     }
 
-    // Cajas de Ahorro (con renderizado de historial y opción de eliminar ítems del historial con removeSavingsHistoryItem)
+    // Cajas de Ahorro
     const savContainer = document.getElementById('savingsBoxesContainer');
     if (savContainer) {
         savContainer.innerHTML = state.savingsBoxes.map(b => `
@@ -441,7 +556,103 @@ function render() {
     }
 }
 
-// --- EVENTOS INICIALES AL CARGAR LA PÁGINA ---
+// --- FUNCIONES PÁGINA HISTORIAL ---
+function initHistoryPage() {
+    populateMonthSelector();
+    renderHistoryPage();
+}
+
+function populateMonthSelector() {
+    const selector = document.getElementById('monthSelector');
+    if (!selector) return;
+
+    const months = new Set();
+    state.globalHistory.forEach(item => {
+        if (item.date) {
+            months.add(item.date.substring(0, 7));
+        }
+    });
+
+    const currentMonth = today.substring(0, 7);
+    months.add(currentMonth);
+
+    const sortedMonths = Array.from(months).sort().reverse();
+    
+    selector.innerHTML = sortedMonths.map(m => {
+        const [year, month] = m.split('-');
+        const dateObj = new Date(year, month - 1);
+        const monthName = dateObj.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+        return `<option value="${m}">${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</option>`;
+    }).join('');
+}
+
+function renderHistoryPage() {
+    const selector = document.getElementById('monthSelector');
+    const typeFilter = document.getElementById('typeFilter');
+    const tableBody = document.getElementById('historyTableBody');
+    if (!selector || !tableBody) return;
+
+    const selectedMonth = selector.value;
+    const selectedType = typeFilter ? typeFilter.value : 'all';
+
+    let monthExpenses = 0;
+    let monthIncomes = 0;
+    let monthReceivables = 0;
+    let monthDebts = 0;
+
+    const filteredItems = state.globalHistory.filter(item => {
+        const matchesMonth = item.date && item.date.startsWith(selectedMonth);
+        const matchesType = selectedType === 'all' || item.type === selectedType;
+        return matchesMonth && matchesType;
+    });
+
+    state.globalHistory.forEach(item => {
+        if (item.date && item.date.startsWith(selectedMonth)) {
+            if (item.type === 'expense') monthExpenses += item.amount;
+            if (item.type === 'income') monthIncomes += item.amount;
+            if (item.type === 'receivable_payment') monthReceivables += item.amount;
+            if (item.type === 'debt_payment') monthDebts += item.amount;
+        }
+    });
+
+    if (document.getElementById('histMonthIncome')) document.getElementById('histMonthIncome').innerText = currencySymbol + monthIncomes.toFixed(2);
+    if (document.getElementById('histMonthExpense')) document.getElementById('histMonthExpense').innerText = currencySymbol + monthExpenses.toFixed(2);
+    if (document.getElementById('histMonthReceivables')) document.getElementById('histMonthReceivables').innerText = currencySymbol + monthReceivables.toFixed(2);
+    if (document.getElementById('histMonthDebts')) document.getElementById('histMonthDebts').innerText = currencySymbol + monthDebts.toFixed(2);
+
+    const badgeMap = {
+        expense: { label: 'Gasto', color: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
+        income: { label: 'Ingreso Directo', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+        receivable_payment: { label: 'Cobro Recibido', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' },
+        debt_payment: { label: 'Pago a Deuda', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' }
+    };
+
+    if (filteredItems.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-500">No hay registros para este mes/filtro.</td></tr>`;
+        return;
+    }
+
+    tableBody.innerHTML = filteredItems.map(item => {
+        const badge = badgeMap[item.type] || { label: item.type, color: 'bg-slate-700 text-slate-300' };
+        const isPositive = item.type === 'income' || item.type === 'receivable_payment';
+        
+        return `
+            <tr class="hover:bg-slate-800/40 border-b border-slate-800 transition">
+                <td class="py-3 px-4 font-semibold text-slate-300 whitespace-nowrap">${item.date}</td>
+                <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full border ${badge.color}">${badge.label}</span>
+                </td>
+                <td class="py-3 px-4 text-slate-200 font-medium">${item.desc}</td>
+                <td class="py-3 px-4 text-slate-400">${item.category || 'General'}</td>
+                <td class="py-3 px-4 text-right font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'} whitespace-nowrap">
+                    ${isPositive ? '+' : '-'}${currencySymbol}${item.amount.toFixed(2)}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// --- EVENTOS INICIALES ---
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[type="date"]').forEach(input => {
         if (!input.value) input.value = today;
