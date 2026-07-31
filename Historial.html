@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Historial Global - Fin Flow FPR</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between antialiased selection:bg-purple-500 selection:text-white">
+
+    <!-- NAVBAR NAVEGACIÓN -->
+    <header class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/60 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-purple-600 to-indigo-500 p-2 rounded-xl text-white shadow-lg shadow-purple-500/20">
+                    <i class="fa-solid fa-clock-rotate-left text-lg sm:text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-black bg-gradient-to-r from-purple-400 to-indigo-300 bg-clip-text text-transparent" data-i18n="histPageTitle">
+                        Historial de Transacciones
+                    </h1>
+                    <p class="text-[10px] sm:text-xs text-slate-400 hidden sm:block" data-i18n="histPageSub">Registro consolidado de todos los movimientos</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="index.html" class="bg-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg border border-slate-600/80 transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span class="hidden xs:inline" data-i18n="backBtn">Volver al Panel</span>
+                </a>
+                <button onclick="openSettingsModal()" class="bg-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold p-2.5 rounded-lg border border-slate-600/80 transition">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- RESUMEN EN TARJETAS (Grid Adaptable a Móvil) -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 sm:p-4 rounded-xl backdrop-blur-sm">
+                <div class="text-[11px] sm:text-xs text-slate-400 font-medium truncate" data-i18n="histInc">Ingresos del Mes</div>
+                <div id="histMonthIncome" class="text-base sm:text-2xl font-bold text-emerald-400 mt-1 truncate">$0.00</div>
+            </div>
+            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 sm:p-4 rounded-xl backdrop-blur-sm">
+                <div class="text-[11px] sm:text-xs text-slate-400 font-medium truncate" data-i18n="histExp">Gastos del Mes</div>
+                <div id="histMonthExpense" class="text-base sm:text-2xl font-bold text-rose-400 mt-1 truncate">$0.00</div>
+            </div>
+            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 sm:p-4 rounded-xl backdrop-blur-sm">
+                <div class="text-[11px] sm:text-xs text-slate-400 font-medium truncate" data-i18n="histRec">Cobros Recibidos</div>
+                <div id="histMonthReceivables" class="text-base sm:text-2xl font-bold text-cyan-400 mt-1 truncate">$0.00</div>
+            </div>
+            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 sm:p-4 rounded-xl backdrop-blur-sm">
+                <div class="text-[11px] sm:text-xs text-slate-400 font-medium truncate" data-i18n="histDebts">Deudas Pagadas</div>
+                <div id="histMonthDebts" class="text-base sm:text-2xl font-bold text-purple-400 mt-1 truncate">$0.00</div>
+            </div>
+        </section>
+
+        <!-- FILTROS DE BÚSQUEDA -->
+        <section class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-xl space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4">
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div class="w-full sm:w-48">
+                    <label class="block text-[10px] sm:text-xs font-semibold text-slate-400 mb-1" data-i18n="lblMonth">Seleccionar Mes</label>
+                    <select id="monthSelector" onchange="renderHistoryPage()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-purple-500">
+                    </select>
+                </div>
+                <div class="w-full sm:w-48">
+                    <label class="block text-[10px] sm:text-xs font-semibold text-slate-400 mb-1" data-i18n="lblType">Tipo de Movimiento</label>
+                    <select id="typeFilter" onchange="renderHistoryPage()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-purple-500">
+                        <option value="all" data-i18n="optAll">Todos los Tipos</option>
+                        <option value="expense" data-i18n="optExpenses">Gastos</option>
+                        <option value="income" data-i18n="optIncomes">Ingresos Directos</option>
+                        <option value="receivable_payment" data-i18n="optRecPayments">Cobros Recibidos</option>
+                        <option value="debt_payment" data-i18n="optDebtPayments">Pagos de Deudas</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- TABLA CON DESPLAZAMIENTO HORIZONTAL EN SMARTPHONES -->
+        <section class="bg-slate-800/80 border border-slate-700/80 rounded-xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-slate-900/80 border-b border-slate-700/80 text-slate-400 font-semibold uppercase text-[10px] sm:text-xs tracking-wider">
+                            <th class="py-3 px-4" data-i18n="thDate">Fecha</th>
+                            <th class="py-3 px-4" data-i18n="thType">Tipo</th>
+                            <th class="py-3 px-4" data-i18n="thDesc">Descripción</th>
+                            <th class="py-3 px-4" data-i18n="thCat">Categoría / Origen</th>
+                            <th class="py-3 px-4 text-right" data-i18n="thAmount">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody" class="divide-y divide-slate-800 text-slate-200">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-800/60 border-t border-slate-700/60 mt-8 py-4 text-center text-xs text-slate-400 px-4">
+        <p>&copy; <span id="year"></span> Fin Flow FPR. <span data-i18n="rights">Todos los derechos reservados.</span></p>
+    </footer>
+
+    <!-- MODAL DE CONFIGURACIÓN SINCRONIZADO -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-purple-400"></i>
+                    <span data-i18n="settingsTitle">Configuración</span>
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-200 p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Idioma / Language</label>
+                    <select id="langSelect" onchange="changeLanguage(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Moneda / Currency</label>
+                    <select id="currencySelect" onchange="changeCurrency(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
+                        <option value="$">USD ($)</option>
+                        <option value="€">EUR (€)</option>
+                        <option value="Q">GTQ (Q)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button onclick="closeSettingsModal()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-lg text-xs transition">
+                    Aceptar / Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARGA DE SCRIPT PRINCIPAL UNIFICADO -->
+    <script src="scrip.js"></script>
+    <script>
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        // Inyección unificada del diccionario para el Historial
+        Object.assign(i18n.es, {
+            histPageTitle: "Historial de Transacciones",
+            histPageSub: "Registro consolidado de todos los movimientos",
+            backBtn: "Volver al Panel",
+            histInc: "Ingresos del Mes",
+            histExp: "Gastos del Mes",
+            histRec: "Cobros Recibidos",
+            histDebts: "Deudas Pagadas",
+            lblMonth: "Seleccionar Mes",
+            lblType: "Tipo de Movimiento",
+            optAll: "Todos los Tipos",
+            optExpenses: "Gastos",
+            optIncomes: "Ingresos Directos",
+            optRecPayments: "Cobros Recibidos",
+            optDebtPayments: "Pagos de Deudas",
+            thType: "Tipo",
+            thCat: "Categoría / Origen"
+        });
+
+        Object.assign(i18n.en, {
+            histPageTitle: "Transaction History",
+            histPageSub: "Consolidated record of all movements",
+            backBtn: "Back to Dashboard",
+            histInc: "Month's Income",
+            histExp: "Month's Expenses",
+            histRec: "Received Payments",
+            histDebts: "Paid Debts",
+            lblMonth: "Select Month",
+            lblType: "Movement Type",
+            optAll: "All Types",
+            optExpenses: "Expenses",
+            optIncomes: "Direct Income",
+            optRecPayments: "Collected Loans",
+            optDebtPayments: "Debt Payments",
+            thType: "Type",
+            thCat: "Category / Source"
+        });
+
+        // Al cargar la vista, inicializamos y sincronizamos con el estado global de script.js
+        document.addEventListener('DOMContentLoaded', () => {
+            initHistoryPage();
+            
+            // Sincronizar UI y traducción al cargar
+            changeLanguage(currentLang);
+            changeCurrency(currencySymbol);
+        });
+    </script>
+</body>
+</html>
