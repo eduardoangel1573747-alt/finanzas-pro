@@ -67,4 +67,6 @@ finanzas-pro/
 ├── styles.css      # Estilos personalizados y animaciones
 └── README.md       # Documentación del proyecto
 └── PreguntasFPR.html # Preguntas u soporte
-└── scrip.js        # Funciones de Java 
+└── scrip.js        # Funciones de Java
+└── scripL.js        # Funciones de Java de Login
+
