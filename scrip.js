@@ -1,31 +1,72 @@
-// V2.0
+// V2.1
 // --- SISTEMA DE ESTADO E INICIALIZACIÓN ---
 const today = new Date().toISOString().split('T')[0];
 
 let currentLang = localStorage.getItem('finances_lang') || 'es';
 let currencySymbol = localStorage.getItem('finances_currency') || '$';
-const currentUser = localStorage.getItem('finances_session_user') || 'demo_user';
-const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
 
-if (!usersDB[currentUser]) {
-    usersDB[currentUser] = {
-        state: { 
-            transactions: [], 
-            incomes: [], 
-            categories: [], 
-            savingsBoxes: [], 
-            debts: [], 
-            receivables: [],
-            globalHistory: [] 
-        }
-    };
+// 1. Verificar sesión activa
+let currentUser = localStorage.getItem('finances_session_user');
+
+if (!currentUser && !window.location.pathname.includes('loginP.html')) {
+    window.location.href = 'loginP.html';
 }
 
-let state = usersDB[currentUser].state;
+// 2. Cargar Base de Datos General de Usuarios
+const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
 
-// Asegurar la propiedad globalHistory si no existía previamente
-if (!state.globalHistory) {
-    state.globalHistory = [];
+// Estructura por defecto para usuarios nuevos o limpios
+const defaultState = { 
+    transactions: [], 
+    incomes: [], 
+    categories: [], 
+    savingsBoxes: [], 
+    debts: [], 
+    receivables: [],
+    globalHistory: [] 
+};
+
+// 3. Crear perfil de usuario si no existe dentro de la DB
+if (currentUser && !usersDB[currentUser]) {
+    usersDB[currentUser] = { state: { ...defaultState } };
+    localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
+}
+
+// 4. Asegurar que las propiedades existan en el perfil activo
+if (currentUser && usersDB[currentUser]) {
+    if (!usersDB[currentUser].state) {
+        usersDB[currentUser].state = { ...defaultState };
+    }
+    if (!usersDB[currentUser].state.globalHistory) {
+        usersDB[currentUser].state.globalHistory = [];
+    }
+}
+
+// Apuntador reactivo al estado del usuario actual
+let state = currentUser && usersDB[currentUser] ? usersDB[currentUser].state : { ...defaultState };
+
+// --- GUARDAR Y SINCRONIZAR INDEPENDIENTEMENTE ---
+function saveData() {
+    if (currentUser) {
+        // Cargar última versión de la DB para no sobreescribir otros usuarios
+        const currentUsersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
+        
+        if (!currentUsersDB[currentUser]) {
+            currentUsersDB[currentUser] = {};
+        }
+
+        // Asignar el estado del usuario activo
+        currentUsersDB[currentUser].state = state;
+        
+        // Guardar la BD completa e independiente
+        localStorage.setItem('finances_users_db', JSON.stringify(currentUsersDB));
+        
+        // Refrescar vistas
+        render();
+        if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) {
+            renderHistoryPage();
+        }
+    }
 }
 
 // --- DICCIONARIOS Y TRADUCCIONES ---
@@ -87,7 +128,7 @@ function logGlobalHistory(type, desc, amount, date, category = 'General') {
 // --- AJUSTES Y NAVEGACIÓN ---
 function logout() {
     localStorage.removeItem('finances_session_user');
-    window.location.href = 'login.html';
+    window.location.href = 'loginP.html';
 }
 
 function changeLanguage(lang) {
@@ -205,7 +246,13 @@ function addCategory(e) {
     const name = document.getElementById('catName').value.trim();
     const limit = parseFloat(document.getElementById('catLimit').value);
     if (name && !isNaN(limit)) {
-        state.categories.push({ id: Date.now(), name, limit, spent: 0 });
+        state.categories.push({ 
+            id: Date.now(), 
+            name: name, 
+            limit: limit, 
+            spent: 0, 
+            pendingLogs: [] // Registros temporales sin publicar aún en el historial
+        });
         document.getElementById('budgetForm').reset();
         saveData();
     }
@@ -276,7 +323,17 @@ function addSpentManual(id, inputElement) {
         const cat = state.categories.find(c => c.id === id);
         if (cat) {
             cat.spent += val;
-            logGlobalHistory('expense', `Consumo de Presupuesto: ${cat.name}`, val, today, cat.name);
+            
+            if (!cat.pendingLogs) cat.pendingLogs = [];
+            
+            // Se guarda la fecha actual, monto y categoría temporalmente
+            cat.pendingLogs.push({
+                desc: `Consumo Presupuesto: ${cat.name}`,
+                amount: val,
+                date: today,
+                category: cat.name
+            });
+
             inputElement.value = '';
             saveData();
         }
@@ -352,7 +409,17 @@ function processDebtPayment(e) {
 
 // --- CIERRE DE MES (PASA EL RECORTE A INGRESOS DIRECTOS) ---
 function handleSurplus(option) {
-    // 1. Calcular el balance sobrante del mes
+    // 1. Enviar todos los consumos del mes guardados en las categorías al Historial Global
+    state.categories.forEach(cat => {
+        if (cat.pendingLogs && cat.pendingLogs.length > 0) {
+            cat.pendingLogs.forEach(log => {
+                logGlobalHistory('expense', log.desc, log.amount, log.date, log.category);
+            });
+            cat.pendingLogs = []; // Limpiar consumos pendientes tras registrarlos
+        }
+    });
+
+    // 2. Calcular el balance sobrante del mes
     const totalTransactionsSpent = state.transactions
         .filter(t => t.type === 'expense')
         .reduce((a, b) => a + b.amount, 0);
@@ -362,19 +429,17 @@ function handleSurplus(option) {
     const totalSpent = totalTransactionsSpent + totalCategorySpent;
     const surplus = totalIncome - totalSpent;
 
-    // 2. Calcular la fecha del último día del mes anterior
+    // 3. Calcular la fecha del último día del mes anterior
     const now = new Date();
     const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0);
     const formattedPrevMonthDate = prevMonthLastDay.toISOString().split('T')[0];
 
-    // 3. Procesar opción elegida en el modal
+    // 4. Procesar la opción elegida en el modal (Paso al siguiente mes o a ahorro)
     if (option === 'nextMonth') {
-        // Limpiar movimientos
         state.transactions = [];
         state.incomes = [];
         state.categories.forEach(c => c.spent = 0);
 
-        // Si sobró dinero, ponerlo en Ingresos Directos como "Mes anterior"
         if (surplus > 0) {
             const carriedOverIncome = {
                 id: Date.now(),
@@ -388,7 +453,6 @@ function handleSurplus(option) {
         }
 
     } else if (option === 'savings') {
-        // Si prefiere moverlo a la caja de ahorros
         if (surplus > 0) {
             if (state.savingsBoxes.length === 0) {
                 state.savingsBoxes.push({
@@ -411,7 +475,6 @@ function handleSurplus(option) {
             }
         }
         
-        // Limpiar movimientos para iniciar nuevo mes
         state.transactions = [];
         state.incomes = [];
         state.categories.forEach(c => c.spent = 0);
@@ -420,6 +483,7 @@ function handleSurplus(option) {
     closeCloseMonthModal();
     saveData();
 }
+
 
 function removeItem(type, id) {
     state[type] = state[type].filter(i => i.id !== id);
@@ -654,10 +718,23 @@ function renderHistoryPage() {
 
 // --- EVENTOS INICIALES ---
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Mostrar el nombre dinámico del usuario activo en el header
+    const userLabel = document.getElementById('currentUserLabel');
+    if (userLabel && currentUser) {
+        const userData = usersDB[currentUser];
+        // Muestra el Nombre si existe, si no, el nombre de Usuario
+        const displayName = (userData && userData.firstName) ? userData.firstName : currentUser;
+        
+        userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${displayName}`;
+        userLabel.classList.remove('hidden'); // Hace visible la etiqueta
+    }
+
+    // 2. Asignar la fecha de hoy por defecto a los inputs tipo fecha
     document.querySelectorAll('input[type="date"]').forEach(input => {
         if (!input.value) input.value = today;
     });
 
+    // 3. Cargar idioma, moneda y renderizar los datos
     changeLanguage(currentLang);
     changeCurrency(currencySymbol);
 });
