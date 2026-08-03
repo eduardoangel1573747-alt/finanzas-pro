@@ -47,39 +47,50 @@
 
     <div id="appSection" class="min-h-screen flex flex-col justify-between">
         <div>
-            <!-- Header Móvil Optimizado -->
+            
+             <!-- Header Móvil y Desktop Optimizado -->
             <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
-                <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex justify-between items-center gap-2">
+                <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-4 flex justify-between items-center gap-2">
+                    
+                    <!-- Logo y Nombre -->
                     <div class="flex items-center space-x-2 shrink-0">
-                        <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
-                        <h1 class="text-sm sm:text-xl font-bold tracking-wide truncate max-w-[130px] xs:max-w-none" data-i18n="appTitle">Fin Flow FPR</h1>
+                        <i class="fa-solid fa-wallet text-emerald-400 text-xl sm:text-2xl"></i>
+                        <h1 class="text-base sm:text-xl font-bold tracking-wide text-white truncate max-w-[130px] sm:max-w-none" data-i18n="appTitle">
+                            Fin Flow FPR
+                        </h1>
                     </div>
                     
-                    <div class="flex items-center gap-1.5 sm:gap-3">
-                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700/80 px-2 py-1 rounded-md border border-slate-600 hidden md:inline-block">
-                            <i class="fa-solid fa-user text-emerald-400 mr-1"></i> Usuario
+                    <!-- Acciones / Botones -->
+                    <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                        <!-- Usuario (Solo visible en pantallas medianas y superiores) -->
+                        <span id="currentUserLabel" class="hidden md:flex items-center text-xs text-slate-300 bg-slate-700/80 px-2.5 py-1.5 rounded-lg border border-slate-600">
+                            <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i> Usuario
                         </span>
                         
-                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
+                        <!-- Botón Configuración -->
+                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center">
                             <i class="fa-solid fa-gear"></i>
                         </button>
 
-                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-2.5 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 min-h-[36px]">
+                        <!-- Botón Cierre de Mes -->
+                        <button onclick="openCloseMonthModal()" title="Cierre de Mes" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-2.5 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 h-9 sm:h-auto">
                             <i class="fa-solid fa-calendar-check"></i> 
                             <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span>
                             <span class="sm:hidden" data-i18n="closeShort">Cierre</span>
                         </button>
-                        
-                         <!-- Boton de cierre del mes -->
-                        <a href="Historial.html" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 min-h-[36px]">
+
+                        <!-- Botón Historial (Solo icono en móvil, texto completo en PC) -->
+                        <a href="Historial.html" title="Historial Mes a Mes" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-clock-rotate-left text-teal-400"></i>
                             <span class="hidden sm:inline">Historial Mes a Mes</span>
                         </a>
                         
-                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
+                        <!-- Botón Cerrar Sesión -->
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </button>
                     </div>
+
                 </div>
             </header>
 
