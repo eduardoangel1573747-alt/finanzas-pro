@@ -65,8 +65,8 @@ finanzas-pro/
 ├── index.html      # Panel principal (Dashboard)
 ├── login.html      # Gestión de acceso y registro
 ├── styles.css      # Estilos personalizados y animaciones
-└── README.md       # Documentación del proyecto
-└── PreguntasFPR.html # Preguntas u soporte
-└── scrip.js        # Funciones de Java
+├── README.md       # Documentación del proyecto
+├── PreguntasFPR.html # Preguntas u soporte
+├── scrip.js        # Funciones de Java
 └── scripL.js        # Funciones de Java de Login
 
