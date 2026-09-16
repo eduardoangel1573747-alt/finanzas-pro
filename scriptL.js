@@ -1,96 +1,155 @@
-        // V1.0
-        const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
-        const securityQuestionsMap = { mascota: "¿Cuál es el nombre de tu primera mascota?", ciudad: "¿En qué ciudad naciste?", colegio: "¿Cuál es el nombre de tu primera escuela?", comida: "¿Cuál es tu comida favorita?" };
-        let isRegisterMode = false;
-
-        // Redirigir si ya está logueado
-        if(localStorage.getItem('finances_session_user')) window.location.href = 'index.html';
-
-        function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('loginForm').classList.toggle('hidden', isRegisterMode);
-            document.getElementById('registerForm').classList.toggle('hidden', !isRegisterMode);
-            document.getElementById('authTitle').innerText = isRegisterMode ? 'Crear Cuenta' : 'Iniciar Sesión';
-            document.getElementById('toggleAuthText').innerHTML = isRegisterMode ? '¿Ya tienes una cuenta? <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">Ingresar</button>' : '¿No tienes una cuenta? <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">Crear Cuenta</button>';
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const inputVal = document.getElementById('loginUsername').value.trim().toLowerCase();
-            const password = document.getElementById('loginPassword').value;
-            let foundKey = Object.keys(usersDB).find(u => u === inputVal || usersDB[u].email === inputVal);
-            if (!foundKey || usersDB[foundKey].password !== password) {
-                const err = document.getElementById('loginError');
-                err.innerText = 'Usuario o contraseña incorrectos.';
-                err.classList.remove('hidden');
-                return;
+        // V2.0 + Firebase Integration
+// scriptL.js - Manejo de Autenticación con Firebase Auth
+let isRegisterMode = false;
+// Redirigir a index.html si ya hay una sesión activa
+function checkExistingAuth() {
+    if (window.dbMethods && window.dbMethods.onAuthStateChanged && window.auth) {
+        window.dbMethods.onAuthStateChanged(window.auth, (user) => {
+            if (user && (window.location.pathname.includes('login.html') || window.location.pathname.endsWith('/') || window.location.pathname === '')) {
+                window.location.href = 'index.html';
             }
-            localStorage.setItem('finances_session_user', foundKey);
-            window.location.href = 'index.html';
+        });
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkExistingAuth);
+} else {
+    checkExistingAuth();
+}
+// Alternar interfaz entre Iniciar Sesión y Crear Cuenta
+function toggleAuthMode() {
+    isRegisterMode = !isRegisterMode;
+    document.getElementById('loginForm')?.classList.toggle('hidden', isRegisterMode);
+    document.getElementById('registerForm')?.classList.toggle('hidden', !isRegisterMode);
+    
+    const authTitle = document.getElementById('authTitle');
+    if (authTitle) authTitle.innerText = isRegisterMode ? 'Crear Cuenta' : 'Iniciar Sesión';
+    const toggleText = document.getElementById('toggleAuthText');
+    if (toggleText) {
+        toggleText.innerHTML = isRegisterMode 
+            ? '¿Ya tienes una cuenta? <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">Ingresar</button>' 
+            : '¿No tienes una cuenta? <button onclick="toggleAuthMode()" class="text-emerald-400 font-semibold hover:underline ml-1">Crear Cuenta</button>';
+    }
+}
+// Iniciar sesión con Firebase
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const err = document.getElementById('loginError');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (err) err.classList.add('hidden');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Ingresando...';
+    }
+    try {
+        await window.dbMethods.signInWithEmailAndPassword(window.auth, email, password);
+        window.location.href = 'index.html';
+    } catch (error) {
+        if (err) {
+            let msg = 'Correo o contraseña incorrectos.';
+            if (error.code === 'auth/invalid-email') msg = 'El correo electrónico no es válido.';
+            if (error.code === 'auth/user-not-found') msg = 'No existe ninguna cuenta con este correo.';
+            if (error.code === 'auth/wrong-password') msg = 'Contraseña incorrecta.';
+            if (error.code === 'auth/invalid-credential') msg = 'Correo o contraseña incorrectos.';
+            err.innerText = msg;
+            err.classList.remove('hidden');
         }
-
-        function handleRegister(e) {
-            e.preventDefault();
-            const username = document.getElementById('regUsername').value.trim().toLowerCase();
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            
-            const usersDB = JSON.parse(localStorage.getItem('finances_users_db')) || {};
-
-            if (usersDB[username] || Object.values(usersDB).some(u => u.email === email)) {
-                alert('El usuario o correo ya existe.'); 
-                return;
-            }
-
-            usersDB[username] = {
-                firstName: document.getElementById('regFirstName').value,
-                lastName: document.getElementById('regLastName').value,
-                email: email,
-                password: document.getElementById('regPassword').value,
-                securityQuestion: document.getElementById('regSecurityQuestion').value,
-                securityAnswer: document.getElementById('regSecurityAnswer').value.trim().toLowerCase(),
-                state: { 
-                    transactions: [], 
-                    incomes: [], 
-                    categories: [], 
-                    savingsBoxes: [], 
-                    debts: [], 
-                    receivables: [],
-                    globalHistory: [] 
-                }
-            };
-
-            localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
-            alert('¡Cuenta creada! Ya puedes iniciar sesión.');
-            location.reload();
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Ingresar';
         }
-
-        function showForgotPasswordStep1() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('forgotForm').classList.remove('hidden');
+    }
+}
+// Registrar usuario en Firebase Auth y crear su registro en Firestore
+async function handleRegister(e) {
+    e.preventDefault();
+    const firstName = document.getElementById('regFirstName')?.value.trim() || '';
+    const lastName = document.getElementById('regLastName')?.value.trim() || '';
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const err = document.getElementById('registerError');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (err) err.classList.add('hidden');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Creando cuenta...';
+    }
+    try {
+        // 1. Crear usuario en Firebase Authentication
+        const userCredential = await window.dbMethods.createUserWithEmailAndPassword(window.auth, email, password);
+        const user = userCredential.user;
+        // 2. Crear documento de estado inicial en Cloud Firestore
+        const defaultState = {
+            transactions: [],
+            incomes: [],
+            categories: [],
+            savingsBoxes: [],
+            debts: [],
+            receivables: [],
+            globalHistory: []
+        };
+        const userDocRef = window.dbMethods.doc(window.db, "users", user.uid);
+        await window.dbMethods.setDoc(userDocRef, {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            state: defaultState
+        });
+        window.location.href = 'index.html';
+    } catch (error) {
+        if (err) {
+            let msg = 'Error al registrar: ' + error.message;
+            if (error.code === 'auth/email-already-in-use') msg = 'Este correo ya está registrado.';
+            if (error.code === 'auth/weak-password') msg = 'La contraseña debe tener al menos 6 caracteres.';
+            err.innerText = msg;
+            err.classList.remove('hidden');
+        } else {
+            alert('Error al registrar: ' + error.message);
         }
-
-        function cancelForgot() {
-            document.getElementById('forgotForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Crear Cuenta';
         }
-
-        function verifyUserForRecovery() {
-            const searchVal = document.getElementById('forgotSearchInput').value.trim().toLowerCase();
-            let foundKey = Object.keys(usersDB).find(u => u === searchVal || usersDB[u].email === searchVal);
-            if (!foundKey) { alert('Cuenta no encontrada.'); return; }
-            document.getElementById('recoveryTargetUser').value = foundKey;
-            document.getElementById('forgotQuestionLabel').innerText = securityQuestionsMap[usersDB[foundKey].securityQuestion];
-            document.getElementById('forgotStep1').classList.add('hidden');
-            document.getElementById('forgotStep2').classList.remove('hidden');
+    }
+}
+// Recuperar contraseña enviando correo oficial desde Firebase
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgotSearchInput').value.trim();
+    const err = document.getElementById('forgotError');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (err) err.classList.add('hidden');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Enviando...';
+    }
+    try {
+        await window.dbMethods.sendPasswordResetEmail(window.auth, email);
+        alert('Se ha enviado un enlace de recuperación a tu correo electrónico.');
+        cancelForgot();
+    } catch (error) {
+        if (err) {
+            err.innerText = 'Error al enviar correo: ' + error.message;
+            err.classList.remove('hidden');
+        } else {
+            alert('Error al enviar correo: ' + error.message);
         }
-
-        function handleForgotPassword(e) {
-            e.preventDefault();
-            const key = document.getElementById('recoveryTargetUser').value;
-            if (usersDB[key].securityAnswer === document.getElementById('forgotAnswerInput').value.trim().toLowerCase()) {
-                usersDB[key].password = document.getElementById('forgotNewPassword').value;
-                localStorage.setItem('finances_users_db', JSON.stringify(usersDB));
-                alert('Contraseña actualizada.');
-                location.reload();
-            } else { alert('Respuesta incorrecta.'); }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Enviar Enlace de Recuperación';
         }
+    }
+}
+function showForgotPasswordStep1() {
+    document.getElementById('loginForm')?.classList.add('hidden');
+    document.getElementById('forgotForm')?.classList.remove('hidden');
+}
+function cancelForgot() {
+    document.getElementById('forgotForm')?.classList.add('hidden');
+    document.getElementById('loginForm')?.classList.remove('hidden');
+}
