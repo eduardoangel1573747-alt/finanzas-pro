@@ -1,4 +1,4 @@
-//  V1.0
+//  V1.1
 let currencySymbol = localStorage.getItem('finances_currency') || '$';
 
 window.addEventListener('finances-settings-changed', event => {
@@ -34,11 +34,19 @@ if (window.auth && window.dbMethods) {
 
 function initFirebaseListener() {
     const { onAuthStateChanged } = window.dbMethods;
-    onAuthStateChanged(window.auth, (user) => {
+    onAuthStateChanged(window.auth, async (user) => {
         if (user) {
             currentUser = user;
-            const emailSpan = document.getElementById('userEmailDisplay');
-            if (emailSpan) emailSpan.textContent = user.email;
+            try {
+                const profileSnapshot = await window.dbMethods.getDoc(window.dbMethods.doc(window.db, 'users', user.uid));
+                const profile = profileSnapshot.exists() ? profileSnapshot.data() : {};
+                const emailSpan = document.getElementById('userEmailDisplay');
+                if (emailSpan) emailSpan.textContent = profile.username || 'Usuario';
+            } catch (error) {
+                console.error('Error cargando perfil del usuario en Carteras:', error);
+                const emailSpan = document.getElementById('userEmailDisplay');
+                if (emailSpan) emailSpan.textContent = 'Usuario';
+            }
             loadFirebaseData();
         } else {
             currentUser = null;
