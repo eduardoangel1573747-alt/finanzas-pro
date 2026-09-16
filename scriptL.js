@@ -46,7 +46,7 @@ async function handleLogin(e) {
     try {
         const userSnapshot = await window.dbMethods.getDocs(
             window.dbMethods.query(
-                window.dbMethods.collection(window.db),
+                window.dbMethods.collection(window.db, 'users'),
                 window.dbMethods.where('username', '==', username)
             )
         );
@@ -88,7 +88,7 @@ async function handleRegister(e) {
     try {
         const existingUser = await window.dbMethods.getDocs(
             window.dbMethods.query(
-                window.dbMethods.collection(window.db),
+                window.dbMethods.collection(window.db, 'users'),
                 window.dbMethods.where('username', '==', username)
             )
         );
