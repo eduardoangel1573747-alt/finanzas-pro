@@ -1,18 +1,14 @@
+<!-- V2.0 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fin Flow FPR - Carteras y Cuentas</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../styles.css">
     <style>
         .custom-scroll::-webkit-scrollbar { width: 5px; }
         .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); border-radius: 8px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.4); border-radius: 8px; }
+
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.7); }
     </style>
 </head>
@@ -33,8 +29,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button onclick="openSettingsModal()" class="bg-slate-700/50 hover:bg-slate-700 text-slate-200 p-2 rounded-xl border border-slate-600/50" title="Configuración"><i class="fa-solid fa-gear"></i></button>
-
             <a href="historialCartera.html" 
             class="bg-slate-700/80 hover:bg-purple-600 text-slate-200 hover:text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl border border-slate-600/80 hover:border-purple-500/80 transition-all duration-200 flex items-center gap-2 shadow-sm" 
             title="Ver Historial">
@@ -77,8 +71,6 @@
                     href="../index.html"
                     class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
                     <i class="fa-solid fa-house text-emerald-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Dashboard Principal
                     </span>
                 </a>
 
@@ -165,6 +157,14 @@
                         Historial Mes a Mes
                     </span>
                 </a>
+
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p>
+                </div>
+                <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group text-left">
+                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform"></i>
+                    <span class="text-sm font-medium">Configuración de App</span>
+                </button>
             </nav>
 
             <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90">
