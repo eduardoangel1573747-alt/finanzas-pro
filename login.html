@@ -1,4 +1,4 @@
-<!-- V2.2 -->
+<!-- V2.3 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,16 +25,17 @@
             <!-- Formulario de LOGIN -->
            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                 
-                <!-- Campo: Correo Electrónico -->
+                <!-- Campo: Usuario -->
                 <div>
                     <label for="loginUsername" class="text-xs font-medium text-slate-300 block mb-1.5 tracking-wide">
-                        Correo Electrónico
+                        Usuario
                     </label>
                     <div class="relative">
-                        <input type="email" 
+                        <input type="text" 
                             id="loginUsername" 
                             required 
-                            placeholder="ejemplo@correo.com" 
+                            autocomplete="username"
+                            placeholder="tu_usuario" 
                             class="w-full bg-slate-800/80 border border-slate-600/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-400/70 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200 shadow-sm">
                     </div>
                 </div>
@@ -94,6 +95,22 @@
                             placeholder="Pérez" 
                             class="w-full bg-slate-800/80 border border-slate-600/80 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-400/70 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200 shadow-sm">
                     </div>
+                </div>
+
+                <!-- Campo: Usuario -->
+                <div>
+                    <label for="regUsername" class="text-xs font-medium text-slate-300 block mb-1.5 tracking-wide">
+                        Usuario
+                    </label>
+                    <input type="text"
+                        id="regUsername"
+                        required
+                        minlength="3"
+                        pattern="[A-Za-z0-9_.-]+"
+                        autocomplete="username"
+                        placeholder="juan123"
+                        class="w-full bg-slate-800/80 border border-slate-600/80 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-400/70 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200 shadow-sm">
+                    <p class="text-[10px] text-slate-500 mt-1">Usa letras, números, punto, guion o guion bajo.</p>
                 </div>
 
                 <!-- Campo: Correo Electrónico -->
@@ -191,7 +208,7 @@
         sendPasswordResetEmail,
         onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     // Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDIM1mBM9AuficthPXlpjwMcNTi5H63PW4",
@@ -211,6 +228,10 @@
         doc, 
         getDoc, 
         setDoc, 
+        collection,
+        query,
+        where,
+        getDocs,
         onAuthStateChanged,
         signInWithEmailAndPassword: (auth, email, pass) => signInWithEmailAndPassword(auth, email, pass),
         createUserWithEmailAndPassword: (auth, email, pass) => createUserWithEmailAndPassword(auth, email, pass),
@@ -223,4 +244,3 @@
 </script>
 </body>
 </html>
-
