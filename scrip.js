@@ -1,4 +1,4 @@
-// scrip.js - Fin Flow V3.2 (Cloud Firestore Sync)
+// script.js - Fin Flow V3.3 (Cloud Firestore Sync)
 const today = new Date().toISOString().split('T')[0];
 
 let currentLang = localStorage.getItem('finances_lang') || 'es';
@@ -59,7 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Configurar etiqueta de usuario en Header
             const userLabel = document.getElementById('currentUserLabel');
             if (userLabel) {
-                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${user.email}`;
+                const profileSnapshot = await window.dbMethods.getDoc(
+                    window.dbMethods.doc(window.db, 'users', user.uid)
+                );
+                const profile = profileSnapshot.exists() ? profileSnapshot.data() : {};
+                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i><span class="truncate">${escapeHtml(profile.username || 'Usuario')}</span>`;
                 userLabel.classList.remove('hidden');
             }
 
