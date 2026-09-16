@@ -1,3 +1,4 @@
+<!-- V2.0 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -81,6 +82,12 @@
                     <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
                     <span class="text-sm font-medium">Historial Mes a Mes</span>
                 </a>
+
+                <div class="pt-3 pb-1"><p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p></div>
+                <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
+                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Configuración de App</span>
+                </button>
             </nav>
         </div>
         <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90 backdrop-blur shrink-0">
@@ -109,7 +116,6 @@
                     </div>
                     
                     <div class="flex items-center gap-2 overflow-x-auto custom-scroll max-w-full py-1 pl-1">
-                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-lg min-w-[36px] min-h-[36px]"><i class="fa-solid fa-gear"></i></button>
                         <a href="historialGastosD.html" 
                         class="bg-slate-700/80 hover:bg-purple-600 text-slate-200 hover:text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl border border-slate-600/80 hover:border-purple-500/80 transition-all duration-200 flex items-center gap-2 shadow-sm" 
                         title="Ver Historial">
