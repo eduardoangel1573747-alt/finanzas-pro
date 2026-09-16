@@ -443,7 +443,7 @@
                                 <table class="w-full text-left text-sm text-slate-300 min-w-[340px]">
                                     <thead class="bg-slate-800/90 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 backdrop-blur-md border-b border-slate-700/80">
                                         <tr>
-                                            <th class="py-3 px-4 whitespace-nowrap" data-i18n="thDate">Fecha</th>
+                                            <th class="py-2 px-2 whitespace-nowrap" data-i18n="thDate">Fecha</th>
                                             <th class="py-3 px-4" data-i18n="thDesc">Descripción</th>
                                             <th class="py-3 px-4 whitespace-nowrap" data-i18n="thAmount">Monto</th>
                                             <th class="py-3 px-4 text-right" data-i18n="thAction">Acción</th>
@@ -758,7 +758,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fecha</label>
-                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Motivo</label>
@@ -780,7 +780,7 @@
             <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
                 <input type="hidden" id="modalReceivableId">
                 <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
-                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
                 <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar Cobro</button>
             </form>
@@ -797,7 +797,7 @@
             <form id="debtPaymentForm" onsubmit="processDebtPayment(event)" class="space-y-3">
                 <input type="hidden" id="modalDebtId">
                 <input type="number" id="debtPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
-                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
                 <input type="text" id="debtPayReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Registrar Abono</button>
             </form>
