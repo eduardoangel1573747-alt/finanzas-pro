@@ -1,4 +1,4 @@
-/* styles.css */
+/* styles.css  2.0*/
 
 /* Base responsive compartida para todos los módulos */
 *,
@@ -35,6 +35,18 @@ input[type="number"] {
 
 table {
     max-width: 100%;
+}
+
+.budget-header-actions {
+    scrollbar-width: thin;
+}
+
+.budget-month-selector .month-nav-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Evita que contenido generado por JavaScript ensanche la página completa. */
@@ -98,6 +110,25 @@ input:focus, select:focus {
 
     header > div > div:last-child::-webkit-scrollbar {
         display: none;
+    }
+
+    .budget-header-actions {
+        justify-content: flex-start;
+        padding-bottom: .15rem;
+    }
+
+    .budget-header-actions #currentUserLabel {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .budget-month-selector {
+        padding: 1rem;
+    }
+
+    .budget-month-selector .month-nav-button {
+        width: 2.5rem;
+        height: 2.5rem;
     }
 
     main {
