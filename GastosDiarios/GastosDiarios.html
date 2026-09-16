@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fin Flow FPR - Vista de Gastos Diarios</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        input, select, button { touch-action: manipulation; }
+        @media (max-width: 640px) {
+            input[type="text"], input[type="number"], input[type="date"], select {
+                font-size: 16px !important;
+            }
+        }
+        .custom-scroll::-webkit-scrollbar { height: 4px; width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Backdrop para el Sidebar -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Panel Deslizante Lateral -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[85vw] sm:w-80 max-w-xs bg-slate-800 border-r border-slate-700 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl">
+        <div class="flex flex-col h-full overflow-hidden">
+            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex items-center justify-between shrink-0 bg-slate-800/90 backdrop-blur">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-chart-pie text-emerald-400 text-lg sm:text-xl"></i>
+                    <span class="font-bold text-base sm:text-lg text-white">Módulos</span>
+                </div>
+                <button onclick="toggleSidebar()" aria-label="Cerrar menú" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/80 active:bg-slate-700 transition flex items-center justify-center min-w-[40px] min-h-[40px]">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1 overscroll-contain">
+                <a href="../index.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-house text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Dashboard Principal</span>
+                </a>
+                <a href="../PresupuestoMes/Presupuesto.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-calculator text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Presupuesto Mes a Mes</span>
+                </a>
+                <a href="GastosDiarios.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-white bg-slate-700/90 font-semibold group">
+                    <i class="fa-solid fa-receipt text-blue-400 text-base sm:text-sm"></i>
+                    <span class="text-sm">Vistas de Gastos Diariamente</span>
+                </a>
+                <a href="../Objetivos/objetivosAhorros.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-bullseye text-amber-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Objetivos de Ahorro</span>
+                </a>
+                <a href="../CuentasCarteras/CuentasCarteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-wallet text-purple-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Carteras & Cuentas</span>
+                </a>
+                <div class="pt-3 pb-1"><p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Gestión Avanzada</p></div>
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-arrows-rotate text-cyan-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Suscripciones y Pagos Fijos</span>
+                </a>
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-chart-line text-indigo-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Inversiones & Activos</span>
+                </a>
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-chart-column text-rose-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Reportes & Analytics</span>
+                </a>
+                <div class="pt-3 pb-1"><p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Operaciones</p></div>
+                <a href="../Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Historial Mes a Mes</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90 backdrop-blur shrink-0">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="font-medium">Versión App</span>
+                <span class="font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">v5.0</span>
+            </div>
+        </div>
+    </aside>
+
+    <div id="appSection" class="min-h-screen flex flex-col justify-between">
+        <div>
+            <!-- Header -->
+            <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex items-center justify-between gap-2 overflow-hidden">
+                    <div class="flex items-center space-x-3 shrink-0">
+                        <button onclick="toggleSidebar()" title="Abrir Módulos" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 hover:text-white p-2 rounded-lg text-sm transition flex items-center justify-center">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-calendar-day text-purple-400 text-lg sm:text-2xl"></i>
+                            <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap">
+                                Gastos Diarios
+                            </h1>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 overflow-x-auto custom-scroll max-w-full py-1 pl-1">
+                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-lg min-w-[36px] min-h-[36px]"><i class="fa-solid fa-gear"></i></button>
+                        <a href="historialGastosD.html" 
+                        class="bg-slate-700/80 hover:bg-purple-600 text-slate-200 hover:text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl border border-slate-600/80 hover:border-purple-500/80 transition-all duration-200 flex items-center gap-2 shadow-sm" 
+                        title="Ver Historial">
+                            <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                            <span>Historial</span>
+                        </a>
+
+                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700/80 px-2.5 py-1.5 rounded-lg border border-slate-600 flex items-center shrink-0 whitespace-nowrap">
+                            <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i>
+                            <span class="truncate max-w-[90px] sm:max-w-none">Usuario</span>
+                        </span>
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center shrink-0 min-w-[36px] min-h-[36px]">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
+                
+                <!-- CARD Novedad: Formulario para Agregar Nuevo Gasto a Firestore -->
+                <section class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-5 sm:p-6 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-emerald-400"></i> Registrar Nuevo Gasto Diario
+                    </h3>
+                    <form id="addExpenseForm" onsubmit="saveDailyExpenseToFirestore(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <input type="text" id="expenseDesc" placeholder="Descripción (ej. Almuerzo)" required class="bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-purple-500 outline-none">
+                        <input type="number" step="0.01" id="expenseAmount" placeholder="Monto" required class="bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-purple-500 outline-none">
+                        <input type="date" id="expenseDate" required class="bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-purple-500 outline-none">
+                        <button type="submit" id="btnSaveExpense" class="bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-bold rounded-xl p-2.5 text-xs transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar
+                        </button>
+                    </form>
+                </section>
+
+                <!-- CARD 1: Gráfico y Resumen Estilo UI -->
+                <section class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-5 sm:p-6 space-y-6">
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            GASTADO: <span id="dailyDateRangeText" class="text-white">---</span>
+                        </p>
+                        <h2 id="periodTotalSpent" class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1">
+                            $0.00
+                        </h2>
+                    </div>
+
+                    <!-- Lienzo para Canvas Chart -->
+                    <div class="relative w-full h-44 sm:h-52 bg-slate-900/40 rounded-xl p-2 border border-slate-700/50 flex flex-col justify-end">
+                        <canvas id="dailyExpenseCanvas" class="w-full h-full"></canvas>
+                    </div>
+
+                    <!-- Leyenda del Gráfico -->
+                    <div class="flex items-center gap-6 text-xs text-slate-300 font-medium pt-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50"></span>
+                            <span>Este período</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                            <span>Media</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CARD 2: Calendario Interactivo con Desglose de Gastos -->
+                <section class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-5 sm:p-6 space-y-6">
+                    <!-- Control Navegación del Período -->
+                    <div class="flex items-center justify-between">
+                        <button onclick="shiftDailyPeriod(-1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition active:scale-95">
+                            <i class="fa-solid fa-chevron-left text-lg"></i>
+                        </button>
+                        <h3 id="calendarPeriodHeader" class="text-base sm:text-lg font-bold text-white capitalize">
+                            Cargando período...
+                        </h3>
+                        <button onclick="shiftDailyPeriod(1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition active:scale-95">
+                            <i class="fa-solid fa-chevron-right text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Grid Días de la semana -->
+                    <div class="grid grid-cols-7 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <div>DOM</div>
+                        <div>LUN</div>
+                        <div>MAR</div>
+                        <div>MIÉ</div>
+                        <div>JUE</div>
+                        <div>VIE</div>
+                        <div>SÁB</div>
+                    </div>
+
+                    <!-- Grid interactivo con Montos por Día -->
+                    <div id="dailyGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2">
+                        <!-- Generado Dinámicamente por Script -->
+                    </div>
+                </section>
+
+                <!-- Detalle del Día Seleccionado -->
+                <section class="bg-slate-800 rounded-2xl border border-slate-700 shadow-xl p-5 sm:p-6 space-y-4">
+                    <h3 id="selectedDayTitle" class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list-ul text-purple-400"></i> Movimientos del Día
+                    </h3>
+                    <div id="selectedDayList" class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-1">
+                        <p class="text-xs text-slate-500 italic">Selecciona un día en el calendario para ver el desglose.</p>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-800/90 border-t border-slate-700 mt-8 pt-6 pb-6 relative text-slate-300">
+            <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+                <p>© 2026 Finanzas Personales Pro. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK ESM y Puente de Integración -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIM1mBM9AuficthPXlpjwMcNTi5H63PW4",
+            authDomain: "proyecto-web-9f7fc.firebaseapp.com",
+            projectId: "proyecto-web-9f7fc",
+            storageBucket: "proyecto-web-9f7fc.firebasestorage.app",
+            messagingSenderId: "325159836538",
+            appId: "1:325159836538:web:9907100d419ef41f2494c3",
+            measurementId: "G-MJV4XPPJYR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.dbMethods = { doc, getDoc, setDoc, onAuthStateChanged, signOut };
+    </script>
+
+    <!-- JS Principal e Interacción -->
+    <script src="../settings-global.js"></script>
+    <script src="../scrip.js"></script>
+    <script src="../slide.js"></script>
+
+    <script src="scriptGastosD.js"></script>
+
+</body>
+</html>
