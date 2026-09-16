@@ -1,4 +1,4 @@
-<!-- V2.3 -->
+<!-- V2.3.1 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,17 +25,17 @@
             <!-- Formulario de LOGIN -->
            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                 
-                <!-- Campo: Usuario -->
+                <!-- Campo: Correo Electrónico -->
                 <div>
                     <label for="loginUsername" class="text-xs font-medium text-slate-300 block mb-1.5 tracking-wide">
-                        Usuario
+                        Correo Electrónico
                     </label>
                     <div class="relative">
-                        <input type="text" 
+                        <input type="email" 
                             id="loginUsername" 
                             required 
-                            autocomplete="username"
-                            placeholder="tu_usuario" 
+                            autocomplete="email"
+                            placeholder="ejemplo@correo.com" 
                             class="w-full bg-slate-800/80 border border-slate-600/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-400/70 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200 shadow-sm">
                     </div>
                 </div>
