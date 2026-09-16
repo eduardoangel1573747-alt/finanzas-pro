@@ -1,4 +1,4 @@
-<!-- V4.0.1 All -->
+<!-- V6.0 All -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,10 +10,6 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-        }
-        // Redirección de seguridad: Si no hay sesión, va al login
-        if (!localStorage.getItem('finances_session_user')) {
-            window.location.href = 'login.html';
         }
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -45,19 +41,128 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
     <link rel="stylesheet" href="styles.css">
 
+    <!-- Overlay/Backdrop para cerrar el panel al hacer clic afuera -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Panel Deslizante Lateral (Off-canvas Sidebar Responsivo) -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[85vw] sm:w-80 max-w-xs bg-slate-800 border-r border-slate-700 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl">
+        
+        <!-- Contenedor Superior (Flex col para controlar scroll interno) -->
+        <div class="flex flex-col h-full overflow-hidden">
+            
+            <!-- Sidebar Header (Fijo arriba) -->
+            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex items-center justify-between shrink-0 bg-slate-800/90 backdrop-blur">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-chart-pie text-emerald-400 text-lg sm:text-xl"></i>
+                    <span class="font-bold text-base sm:text-lg text-white">Módulos</span>
+                </div>
+                <!-- Botón de cierre grande apto para pantallas táctiles -->
+                <button onclick="toggleSidebar()" aria-label="Cerrar menú" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/80 active:bg-slate-700 transition flex items-center justify-center min-w-[40px] min-h-[40px]">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Menú de Navegación / Módulos (Scroll flexible y adaptativo) -->
+            <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1 overscroll-contain">
+                
+                <a href="PresupuestoMes/Presupuesto.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-calculator text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Presupuesto Mes a Mes</span>
+                </a>
+
+                <a href="GastosDiarios/GastosDiarios.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-receipt text-blue-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Vistas de Gastos Diariamente</span>
+                </a>
+
+                <a href="Objetivos/objetivosAhorros.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-bullseye text-amber-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Objetivos de Ahorro</span>
+                </a>
+
+                <a href="CuentasCarteras/CuentasCarteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-wallet text-purple-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Carteras & Cuentas</span>
+                </a>
+
+                <!-- Secciones adicionales -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Gestión Avanzada</p>
+                </div>
+
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-arrows-rotate text-cyan-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Suscripciones y Pagos Fijos</span>
+                </a>
+
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-chart-line text-indigo-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Inversiones & Activos</span>
+                </a>
+
+                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
+                    <i class="fa-solid fa-chart-column text-rose-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Reportes & Analytics</span>
+                </a>
+
+                <!-- Operaciones & Historial -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Operaciones</p>
+                </div>
+
+                <a href="Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Historial Mes a Mes</span>
+                </a>
+
+                <button onclick="openCloseMonthModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
+                    <i class="fa-solid fa-calendar-check text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Cierre de Mes</span>
+                </button>
+
+                <!-- Ajustes de Sistema -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p>
+                </div>
+
+                <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
+                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Configuración de App</span>
+                </button>
+
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer (Fijo abajo) -->
+        <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90 backdrop-blur shrink-0">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="font-medium">Versión App</span>
+                <span class="font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">v6.0</span>
+            </div>
+        </div>
+    </aside>
+
+
     <div id="appSection" class="min-h-screen flex flex-col justify-between">
         <div>
             
-             <!-- Header Optimizado con Scroll Horizontal para Móvil -->
+            <!-- Header Optimizado con Scroll Horizontal para Móvil -->
             <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
                 <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex items-center justify-between gap-2 overflow-hidden">
                     
-                    <!-- Logo y Título -->
-                    <div class="flex items-center space-x-2 shrink-0">
-                        <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
-                        <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap" data-i18n="appTitle">
-                            Fin Flow FPR
-                        </h1>
+                    <!-- Botón Menú + Logo y Título -->
+                    <div class="flex items-center space-x-3 shrink-0">
+                        <!-- Botón para deslizar el panel -->
+                        <button onclick="toggleSidebar()" title="Abrir Módulos" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 hover:text-white p-2 rounded-lg text-sm transition flex items-center justify-center">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </button>
+
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
+                            <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap" data-i18n="appTitle">
+                                Fin Flow FPR
+                            </h1>
+                        </div>
                     </div>
                     
                     <!-- Contenedor de Acciones con Scroll Horizontal (no-scrollbar) -->
@@ -69,24 +174,6 @@
                             <span class="truncate max-w-[90px] sm:max-w-none">Usuario</span>
                         </span>
                         
-                        <!-- Configuración -->
-                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center shrink-0 min-w-[36px] min-h-[36px]">
-                            <i class="fa-solid fa-gear"></i>
-                        </button>
-
-                        <!-- Cierre de Mes -->
-                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 shrink-0 min-h-[36px] whitespace-nowrap">
-                            <i class="fa-solid fa-calendar-check"></i> 
-                            <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span>
-                            <span class="sm:inline hidden" data-i18n="closeShort">Cierre</span>
-                            <span class="inline sm:hidden">Cierre</span>
-                        </button>
-
-                        <!-- Historial -->
-                        <a href="Historial.html" title="Historial Mes a Mes" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shrink-0 min-w-[36px] min-h-[36px]">
-                            <i class="fa-solid fa-clock-rotate-left text-teal-400"></i>
-                            <span class="hidden sm:inline">Historial Mes a Mes</span>
-                        </a>
                         
                         <!-- Cerrar Sesión -->
                         <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center shrink-0 min-w-[36px] min-h-[36px]">
@@ -603,7 +690,7 @@
 
                 <div class="pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2 text-center sm:text-left">
                     <p>© 2026 Finanzas Personales Pro. <span data-i18n="rights">Todos los derechos reservados.</span></p>
-                    <p data-i18n="secureData">100% Privado y Seguro. Tus datos se guardan de forma local.</p>
+                    <p data-i18n="secureData">100% Privado y Seguro. Respaldado en la nube con Firebase.</p>
                 </div>
             </div>
             <button onclick="scrollToTop()" class="fixed bottom-5 right-5 z-40 bg-emerald-600 active:bg-emerald-700 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition transform active:scale-95"><i class="fa-solid fa-arrow-up text-sm"></i></button>
@@ -671,7 +758,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fecha</label>
-                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
+                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Motivo</label>
@@ -693,7 +780,7 @@
             <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
                 <input type="hidden" id="modalReceivableId">
                 <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
-                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
+                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar Cobro</button>
             </form>
@@ -710,7 +797,7 @@
             <form id="debtPaymentForm" onsubmit="processDebtPayment(event)" class="space-y-3">
                 <input type="hidden" id="modalDebtId">
                 <input type="number" id="debtPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
-                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-1 text-sm text-white min-h-[42px]">
+                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <input type="text" id="debtPayReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
                 <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Registrar Abono</button>
             </form>
@@ -730,8 +817,40 @@
         </div>
     </div>
 
-     <!-- Enlace al archivo de JavaScript externo -->
+    <!-- 1. CARGA E INICIALIZACIÓN DE FIREBASE (CDN ESM) -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // AQUÍ PEGAS TU OBJETO REAL DE FIREBASE:
+    const firebaseConfig = {
+        apiKey: "AIzaSyDIM1mBM9AuficthPXlpjwMcNTi5H63PW4",
+        authDomain: "proyecto-web-9f7fc.firebaseapp.com",
+        projectId: "proyecto-web-9f7fc",
+        storageBucket: "proyecto-web-9f7fc.firebasestorage.app",
+        messagingSenderId: "325159836538",
+        appId: "1:325159836538:web:9907100d419ef41f2494c3",
+        measurementId: "G-MJV4XPPJYR"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    
+    // Exponer servicios a nivel global (window) para que tu script.js los use
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    window.dbMethods = { doc, getDoc, setDoc, onAuthStateChanged, signOut };
+    </script>
+
+    <!-- Enlace al archivo de JavaScript externo -->
+    <script src="settings-global.js"></script>
     <script src="scrip.js"></script>
+    <!-- Enlace al archvio del slide -->
+    <script src="slide.js"></script>
+
+    
+
 
 </body>
 </html>
