@@ -1,4 +1,4 @@
-// V2.1 + Firebase Integration
+// V2.2 
 // scriptL.js - Manejo de Autenticación con Firebase Auth
 let isRegisterMode = false;
 // Redirigir a index.html si ya hay una sesión activa
@@ -34,7 +34,7 @@ function toggleAuthMode() {
 // Iniciar sesión con Firebase
 async function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+    const email = document.getElementById('loginUsername').value.trim().toLowerCase();
     const password = document.getElementById('loginPassword').value;
     const err = document.getElementById('loginError');
     const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -44,20 +44,13 @@ async function handleLogin(e) {
         submitBtn.innerText = 'Ingresando...';
     }
     try {
-        const userSnapshot = await window.dbMethods.getDocs(
-            window.dbMethods.query(
-                window.dbMethods.collection(window.db, 'users'),
-                window.dbMethods.where('username', '==', username)
-            )
-        );
-        if (userSnapshot.empty) throw { code: 'auth/user-not-found' };
-        const profile = userSnapshot.docs[0].data();
-        await window.dbMethods.signInWithEmailAndPassword(window.auth, profile.email, password);
+        await window.dbMethods.signInWithEmailAndPassword(window.auth, email, password);
         window.location.href = 'index.html';
     } catch (error) {
         if (err) {
-            let msg = 'Usuario o contraseña incorrectos.';
-            if (error.code === 'auth/user-not-found') msg = 'No existe ninguna cuenta con este usuario.';
+            let msg = 'Correo o contraseña incorrectos.';
+            if (error.code === 'auth/invalid-email') msg = 'El correo electrónico no es válido.';
+            if (error.code === 'auth/user-not-found') msg = 'No existe ninguna cuenta con este correo.';
             if (error.code === 'auth/wrong-password') msg = 'Contraseña incorrecta.';
             if (error.code === 'auth/invalid-credential') msg = 'Correo o contraseña incorrectos.';
             err.innerText = msg;
