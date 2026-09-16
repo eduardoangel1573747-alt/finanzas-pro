@@ -1,5 +1,50 @@
 /* styles.css */
 
+/* Base responsive compartida para todos los módulos */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+canvas,
+svg,
+video {
+    max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+input[type="date"],
+input[type="month"],
+input[type="number"] {
+    min-width: 0;
+}
+
+table {
+    max-width: 100%;
+}
+
+/* Evita que contenido generado por JavaScript ensanche la página completa. */
+[id$="List"],
+[id$="Container"],
+[id$="Grid"],
+.custom-scroll {
+    min-width: 0;
+}
+
 /* Personalización de la barra de desplazamiento (Scrollbar) */
 ::-webkit-scrollbar {
     width: 8px;
@@ -34,6 +79,108 @@ input:focus, select:focus {
     .container-custom {
         padding-left: 1rem;
         padding-right: 1rem;
+    }
+
+    body {
+        min-width: 0;
+    }
+
+    header > div {
+        flex-wrap: wrap;
+    }
+
+    header > div > div:last-child {
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    header > div > div:last-child::-webkit-scrollbar {
+        display: none;
+    }
+
+    main {
+        min-width: 0;
+    }
+
+    section,
+    form,
+    article {
+        min-width: 0;
+    }
+
+    input[type="date"],
+    input[type="month"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        min-height: 42px;
+        font-size: 16px;
+    }
+
+    button,
+    a {
+        touch-action: manipulation;
+    }
+
+    /* Los encabezados de tarjetas no fuerzan el ancho de la pantalla. */
+    section > div.flex.items-center.justify-between,
+    section > div.flex.items-center.justify-between.border-b {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    /* Mantiene tablas legibles dentro de un scroll horizontal contenido. */
+    .overflow-x-auto {
+        max-width: 100%;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+    }
+
+    table {
+        white-space: nowrap;
+    }
+
+    /* Modales altos en iPhone se pueden recorrer sin cortar campos inferiores. */
+    [class*="fixed"][class*="inset-0"] {
+        overflow-y: auto;
+    }
+
+    [class*="fixed"][class*="inset-0"] > [class*="max-w-"] {
+        margin-top: auto;
+        margin-bottom: auto;
+        max-height: calc(100dvh - 1.5rem);
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .grid.grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    main {
+        padding-left: .75rem;
+        padding-right: .75rem;
+    }
+
+    header {
+        padding-left: .75rem !important;
+        padding-right: .75rem !important;
+    }
+
+    header h1 {
+        max-width: 11rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .p-5,
+    .p-6 {
+        padding: 1rem;
     }
 }
 
