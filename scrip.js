@@ -1,4 +1,4 @@
-// script.js - Fin Flow V3.3 (Cloud Firestore Sync)
+// script.js - Fin Flow V3.3.1 (Cloud Firestore Sync)
 const today = new Date().toISOString().split('T')[0];
 
 let currentLang = localStorage.getItem('finances_lang') || 'es';
