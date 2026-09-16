@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -160,9 +161,30 @@
                 </button>
             </div>
         </div>
-    </div>
+    <!-- 1. CARGA E INICIALIZACIÓN DE FIREBASE (CDN ESM) -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDIM1mBM9AuficthPXlpjwMcNTi5H63PW4",
+        authDomain: "proyecto-web-9f7fc.firebaseapp.com",
+        projectId: "proyecto-web-9f7fc",
+        storageBucket: "proyecto-web-9f7fc.firebasestorage.app",
+        messagingSenderId: "325159836538",
+        appId: "1:325159836538:web:9907100d419ef41f2494c3",
+        measurementId: "G-MJV4XPPJYR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.auth = getAuth(app);
+    window.db = getFirestore(app);
+    window.dbMethods = { doc, getDoc, setDoc, onAuthStateChanged, signOut };
+    </script>
 
     <!-- CARGA DE SCRIPT PRINCIPAL UNIFICADO -->
+    <script src="settings-global.js"></script>
     <script src="scrip.js"></script>
     <script>
         document.getElementById('year').innerText = new Date().getFullYear();
