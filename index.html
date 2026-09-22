@@ -1,4 +1,4 @@
-<!-- V6.0 All -->
+<!-- V5.2 All + Firebase -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,107 +41,81 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Overlay/Backdrop para cerrar el panel al hacer clic afuera -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
-
-    <!-- Panel Deslizante Lateral (Off-canvas Sidebar Responsivo) -->
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[85vw] sm:w-80 max-w-xs bg-slate-800 border-r border-slate-700 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl">
-        
-        <!-- Contenedor Superior (Flex col para controlar scroll interno) -->
-        <div class="flex flex-col h-full overflow-hidden">
+    <!-- Navegacion lateral -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    <aside id="sidebar" aria-label="Menu principal" class="fixed top-0 left-0 h-full w-[85vw] sm:w-80 max-w-xs bg-slate-800 border-r border-slate-700 z-50 -translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+        <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800/90 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-wallet text-emerald-400 text-xl"></i>
+                <span class="font-bold text-lg text-white">Módulos</span>
+            </div>
+            <button onclick="toggleSidebar()" aria-label="Cerrar menú" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition min-w-[40px] min-h-[40px]">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1">
+            <a href="index.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-white bg-slate-700/90 font-semibold">
+                <i class="fa-solid fa-house text-emerald-400"></i>
+                <span class="text-sm">Dashboard Principal</span>
+            </a>
             
-            <!-- Sidebar Header (Fijo arriba) -->
-            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex items-center justify-between shrink-0 bg-slate-800/90 backdrop-blur">
-                <div class="flex items-center space-x-2.5">
-                    <i class="fa-solid fa-chart-pie text-emerald-400 text-lg sm:text-xl"></i>
-                    <span class="font-bold text-base sm:text-lg text-white">Módulos</span>
-                </div>
-                <!-- Botón de cierre grande apto para pantallas táctiles -->
-                <button onclick="toggleSidebar()" aria-label="Cerrar menú" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/80 active:bg-slate-700 transition flex items-center justify-center min-w-[40px] min-h-[40px]">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+
+            <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+                        Operaciones
+                    </p>
             </div>
 
-            <!-- Menú de Navegación / Módulos (Scroll flexible y adaptativo) -->
-            <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1 overscroll-contain">
-                
-                <a href="PresupuestoMes/Presupuesto.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
-                    <i class="fa-solid fa-calculator text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Presupuesto Mes a Mes</span>
+            <button onclick="openCloseMonthModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition text-left">
+                <i class="fa-solid fa-calendar-check text-emerald-400"></i>
+                <span class="text-sm font-medium">Cierre de mes</span>
+            </button>
+
+            <a href="Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
+                <i class="fa-solid fa-clock-rotate-left text-teal-400"></i>
+                <span class="text-sm font-medium">Historial Mes a Mes</span>
+            </a>
+
+            <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+                        Gestión Avanzada
+                    </p>
+            </div>
+
+            <a href="CuentasCarteras/CuentasCarteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
+                <i class="fa-solid fa-wallet text-purple-400"></i>
+                <span class="text-sm font-medium">Cuentas Carteras</span>
+            </a>
+            <a href="Objetivos/objetivosAhorros.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
+                <i class="fa-solid fa-bullseye text-amber-400"></i>
+                <span class="text-sm font-medium">Objetivos de Ahorro</span>
+            </a>
+            <a href="GastosDiarios/GastosDiarios.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-white bg-slate-700/90 font-semibold group">
+                    <i class="fa-solid fa-receipt text-blue-400 text-base sm:text-sm"></i>
+                    <span class="text-sm">Gastos Diarios</span>
                 </a>
 
-                <a href="GastosDiarios/GastosDiarios.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
-                    <i class="fa-solid fa-receipt text-blue-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Vistas de Gastos Diariamente</span>
-                </a>
-
-                <a href="Objetivos/objetivosAhorros.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
-                    <i class="fa-solid fa-bullseye text-amber-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Objetivos de Ahorro</span>
-                </a>
-
-                <a href="CuentasCarteras/CuentasCarteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
-                    <i class="fa-solid fa-wallet text-purple-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Carteras & Cuentas</span>
-                </a>
-
-                <!-- Secciones adicionales -->
-                <div class="pt-3 pb-1">
-                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Gestión Avanzada</p>
-                </div>
-
-                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
-                    <i class="fa-solid fa-arrows-rotate text-cyan-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Suscripciones y Pagos Fijos</span>
-                </a>
-
-                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
-                    <i class="fa-solid fa-chart-line text-indigo-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Inversiones & Activos</span>
-                </a>
-
-                <a href="#" aria-disabled="true" onclick="event.preventDefault(); toggleSidebar()" title="Módulo próximamente" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-500 cursor-not-allowed transition group">
-                    <i class="fa-solid fa-chart-column text-rose-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Reportes & Analytics</span>
-                </a>
-
-                <!-- Operaciones & Historial -->
-                <div class="pt-3 pb-1">
-                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Operaciones</p>
-                </div>
-
-                <a href="Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
-                    <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Historial Mes a Mes</span>
-                </a>
-
-                <button onclick="openCloseMonthModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
-                    <i class="fa-solid fa-calendar-check text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
-                    <span class="text-sm font-medium">Cierre de Mes</span>
-                </button>
-
-                <!-- Ajustes de Sistema -->
-                <div class="pt-3 pb-1">
+            
+            <div class="pt-3 pb-1">
                     <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p>
-                </div>
-
-                <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
-                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform text-base sm:text-sm"></i>
+            </div>
+            <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group text-left">
+                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform"></i>
                     <span class="text-sm font-medium">Configuración de App</span>
-                </button>
+            </button>
 
-            </nav>
-        </div>
-
-        <!-- Sidebar Footer (Fijo abajo) -->
-        <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90 backdrop-blur shrink-0">
+        </nav>
+        <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90">
             <div class="flex items-center justify-between text-xs text-slate-400">
-                <span class="font-medium">Versión App</span>
-                <span class="font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">v6.0</span>
+                <span class="font-medium">
+                        Versión App
+                </span>
+                <span class="font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                        v5.0
+                </span>
             </div>
         </div>
     </aside>
-
 
     <div id="appSection" class="min-h-screen flex flex-col justify-between">
         <div>
@@ -150,19 +124,15 @@
             <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
                 <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex items-center justify-between gap-2 overflow-hidden">
                     
-                    <!-- Botón Menú + Logo y Título -->
+                    <!-- Logo y Título -->
                     <div class="flex items-center space-x-3 shrink-0">
-                        <!-- Botón para deslizar el panel -->
-                        <button onclick="toggleSidebar()" title="Abrir Módulos" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 hover:text-white p-2 rounded-lg text-sm transition flex items-center justify-center">
+                        <button onclick="toggleSidebar()" title="Abrir menú" aria-label="Abrir menú" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 hover:text-white p-2 rounded-lg text-sm transition flex items-center justify-center min-w-[40px] min-h-[40px]">
                             <i class="fa-solid fa-bars text-lg"></i>
                         </button>
-
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
-                            <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap" data-i18n="appTitle">
-                                Fin Flow FPR
-                            </h1>
-                        </div>
+                        <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
+                        <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap" data-i18n="appTitle">
+                            Fin Flow FPR
+                        </h1>
                     </div>
                     
                     <!-- Contenedor de Acciones con Scroll Horizontal (no-scrollbar) -->
@@ -173,7 +143,6 @@
                             <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i>
                             <span class="truncate max-w-[90px] sm:max-w-none">Usuario</span>
                         </span>
-                        
                         
                         <!-- Cerrar Sesión -->
                         <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center shrink-0 min-w-[36px] min-h-[36px]">
@@ -443,7 +412,7 @@
                                 <table class="w-full text-left text-sm text-slate-300 min-w-[340px]">
                                     <thead class="bg-slate-800/90 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 backdrop-blur-md border-b border-slate-700/80">
                                         <tr>
-                                            <th class="py-2 px-2 whitespace-nowrap" data-i18n="thDate">Fecha</th>
+                                            <th class="py-3 px-4 whitespace-nowrap" data-i18n="thDate">Fecha</th>
                                             <th class="py-3 px-4" data-i18n="thDesc">Descripción</th>
                                             <th class="py-3 px-4 whitespace-nowrap" data-i18n="thAmount">Monto</th>
                                             <th class="py-3 px-4 text-right" data-i18n="thAction">Acción</th>
@@ -843,14 +812,8 @@
     window.dbMethods = { doc, getDoc, setDoc, onAuthStateChanged, signOut };
     </script>
 
-    <!-- Enlace al archivo de JavaScript externo -->
-    <script src="settings-global.js"></script>
+     <!-- Enlace al archivo de JavaScript externo -->
     <script src="scrip.js"></script>
-    <!-- Enlace al archvio del slide -->
-    <script src="slide.js"></script>
-
-    
-
 
 </body>
 </html>
