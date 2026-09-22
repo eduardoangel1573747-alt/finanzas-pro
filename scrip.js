@@ -1,4 +1,4 @@
-// script.js - Fin Flow V3.3.1 (Cloud Firestore Sync)
+// script.js - Fin Flow V3.2 (Cloud Firestore Sync)
 const today = new Date().toISOString().split('T')[0];
 
 let currentLang = localStorage.getItem('finances_lang') || 'es';
@@ -14,38 +14,6 @@ let state = {
     receivables: [],
     globalHistory: [] 
 };
-window.state = state;
-
-function getLocalDateString(date = new Date()) {
-    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return localDate.toISOString().slice(0, 10);
-}
-
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-function normalizeState(value) {
-    const defaults = {
-        transactions: [],
-        incomes: [],
-        categories: [],
-        savingsBoxes: [],
-        debts: [],
-        receivables: [],
-        globalHistory: []
-    };
-    const normalized = value && typeof value === 'object' ? value : {};
-    Object.keys(defaults).forEach(key => {
-        if (!Array.isArray(normalized[key])) normalized[key] = [];
-    });
-    return { ...defaults, ...normalized };
-}
 
 // --- AUTENTICACIÓN Y CARGA DE DATOS ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -59,11 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Configurar etiqueta de usuario en Header
             const userLabel = document.getElementById('currentUserLabel');
             if (userLabel) {
-                const profileSnapshot = await window.dbMethods.getDoc(
-                    window.dbMethods.doc(window.db, 'users', user.uid)
-                );
-                const profile = profileSnapshot.exists() ? profileSnapshot.data() : {};
-                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i><span class="truncate">${escapeHtml(profile.username || 'Usuario')}</span>`;
+                userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1"></i> ${user.email}`;
                 userLabel.classList.remove('hidden');
             }
 
@@ -88,8 +52,7 @@ async function loadUserDataFromFirebase() {
         const docSnap = await window.dbMethods.getDoc(userDocRef);
 
         if (docSnap.exists() && docSnap.data().state) {
-            state = normalizeState(docSnap.data().state);
-            window.state = state;
+            state = { ...state, ...docSnap.data().state };
         } else {
             await saveData();
         }
@@ -157,7 +120,6 @@ const i18n = {
 };
 
 function logGlobalHistory(type, desc, amount, date, category = 'General') {
-    if (!Array.isArray(state.globalHistory)) state.globalHistory = [];
     state.globalHistory.unshift({
         id: Date.now(),
         type: type,
@@ -171,7 +133,6 @@ function logGlobalHistory(type, desc, amount, date, category = 'General') {
 function changeLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('finances_lang', lang);
-    document.documentElement.lang = lang;
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (i18n[lang] && i18n[lang][key]) el.innerText = i18n[lang][key];
@@ -180,7 +141,6 @@ function changeLanguage(lang) {
     if (langSelect) langSelect.value = lang;
     if (document.getElementById('netBalance')) render();
     if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) renderHistoryPage();
-    window.dispatchEvent(new CustomEvent('finances-settings-changed', { detail: { language: lang, currency: currencySymbol } }));
 }
 
 function changeCurrency(sym) {
@@ -190,19 +150,32 @@ function changeCurrency(sym) {
     if (currencySelect) currencySelect.value = sym;
     if (document.getElementById('netBalance')) render();
     if (typeof renderHistoryPage === 'function' && document.getElementById('historyTableBody')) renderHistoryPage();
-    window.dispatchEvent(new CustomEvent('finances-settings-changed', { detail: { language: currentLang, currency: sym } }));
 }
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-// --- MODALES ---
-function openSettingsModal() {
-    const languageSelect = document.getElementById('settingLanguage') || document.getElementById('langSelect');
-    const currencySelect = document.getElementById('settingCurrency') || document.getElementById('currencySelect');
-    if (languageSelect) languageSelect.value = currentLang;
-    if (currencySelect) currencySelect.value = currencySymbol;
-    document.getElementById('settingsModal')?.classList.remove('hidden');
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (!sidebar || !backdrop) return;
+
+    const isOpen = sidebar.classList.contains('translate-x-0');
+    sidebar.classList.toggle('translate-x-0', !isOpen);
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    backdrop.classList.toggle('hidden', isOpen);
+    backdrop.classList.toggle('opacity-0', isOpen);
+    backdrop.classList.toggle('opacity-100', !isOpen);
+    document.body.classList.toggle('overflow-hidden', !isOpen);
 }
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.getElementById('sidebar')?.classList.contains('translate-x-0')) {
+        toggleSidebar();
+    }
+});
+
+// --- MODALES ---
+function openSettingsModal() { document.getElementById('settingsModal')?.classList.remove('hidden'); }
 function closeSettingsModal() { document.getElementById('settingsModal')?.classList.add('hidden'); }
 
 function openCloseMonthModal() {
@@ -244,13 +217,11 @@ function closeDebtModal() { document.getElementById('debtPaymentModal')?.classLi
 function addTransaction(e) {
     e.preventDefault();
     const categoryValue = document.getElementById('txCategoryInput')?.value.trim() || 'General';
-        const amount = parseFloat(document.getElementById('txAmount').value);
-        if (!desc || !Number.isFinite(amount) || amount <= 0 || !date) return;
-        const tx = {
+    const tx = {
         id: Date.now(),
         type: document.getElementById('txType').value,
         desc: document.getElementById('txDesc').value,
-            amount,
+        amount: parseFloat(document.getElementById('txAmount').value),
         date: document.getElementById('txDate').value,
         category: categoryValue
     };
@@ -268,47 +239,14 @@ function addTransaction(e) {
     saveData();
 }
 
-async function addCategory(e) {
+function addCategory(e) {
     e.preventDefault();
     const name = document.getElementById('catName').value.trim();
     const limit = parseFloat(document.getElementById('catLimit').value);
-
-    if (name && Number.isFinite(limit) && limit > 0) {
-        const catId = Date.now();
-        
-        // 1. Guardar en state de Index
-        state.categories.push({ id: catId, name, limit, spent: 0, pendingLogs: [] });
-
-        // 2. Obtener la clave del mes actual (Ej: "2026-08")
-        const now = new Date();
-        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-        // 3. Cargar o inicializar budgetData
-        const userDocRef = window.dbMethods.doc(window.db, "users", currentUser);
-        const docSnap = await window.dbMethods.getDoc(userDocRef);
-        let budgetData = docSnap.exists() && docSnap.data().budgetData ? docSnap.data().budgetData : { months: {} };
-
-        if (!budgetData.months) budgetData.months = {};
-        if (!budgetData.months[monthKey]) budgetData.months[monthKey] = { categories: [], movements: [] };
-
-        // 4. Agregar a la lista de categorías de Presupuesto
-        budgetData.months[monthKey].categories.push({
-            id: catId,
-            name: name,
-            description: "Creada desde el Inicio",
-            budget: limit,
-            icon: "fa-solid fa-folder"
-        });
-
+    if (name && !isNaN(limit)) {
+        state.categories.push({ id: Date.now(), name, limit, spent: 0, pendingLogs: [] });
         document.getElementById('budgetForm').reset();
-
-        // 5. Guardar ambos estados combinados en Firestore
-        try {
-            await window.dbMethods.setDoc(userDocRef, { state, budgetData }, { merge: true });
-            render();
-        } catch (error) {
-            console.error("Error al sincronizar categoría:", error);
-        }
+        saveData();
     }
 }
 
@@ -317,7 +255,7 @@ function addDirectIncome(e) {
     const desc = document.getElementById('incDesc').value.trim();
     const amount = parseFloat(document.getElementById('incAmount').value);
     const date = document.getElementById('incDate').value;
-    if (desc && Number.isFinite(amount) && amount > 0 && date) {
+    if (desc && !isNaN(amount)) {
         state.incomes.push({ id: Date.now(), desc, amount, date, category: 'Ingreso Directo' });
         logGlobalHistory('income', desc, amount, date, 'Ingreso Directo');
         document.getElementById('incomeForm').reset();
@@ -331,8 +269,8 @@ function addReceivable(e) {
     const person = document.getElementById('recPerson').value.trim();
     const amount = parseFloat(document.getElementById('recAmount').value);
     const date = document.getElementById('recDate').value;
-    if (person && Number.isFinite(amount) && amount > 0 && date) {
-        state.receivables.push({ id: Date.now(), person, amount, initialAmount: amount, date, payments: [] });
+    if (person && !isNaN(amount)) {
+        state.receivables.push({ id: Date.now(), person, amount, date });
         document.getElementById('receivableForm').reset();
         if (document.getElementById('recDate')) document.getElementById('recDate').value = today;
         saveData();
@@ -344,8 +282,8 @@ function addDebt(e) {
     const title = document.getElementById('debtTitle').value.trim();
     const amount = parseFloat(document.getElementById('debtAmount').value);
     const date = document.getElementById('debtDate').value;
-    if (title && Number.isFinite(amount) && amount > 0) {
-        state.debts.push({ id: Date.now(), title, amount, initialAmount: amount, date, payments: [] });
+    if (title && !isNaN(amount)) {
+        state.debts.push({ id: Date.now(), title, amount, date });
         document.getElementById('debtForm').reset();
         if (document.getElementById('debtDate')) document.getElementById('debtDate').value = today;
         saveData();
@@ -357,7 +295,7 @@ function createNewSavingsBox(e) {
     const title = document.getElementById('boxTitle').value.trim();
     const initialAmount = parseFloat(document.getElementById('boxInitialAmount').value);
     const date = document.getElementById('boxDate').value;
-    if (title && Number.isFinite(initialAmount) && initialAmount >= 0 && date) {
+    if (title && !isNaN(initialAmount)) {
         state.savingsBoxes.push({
             id: Date.now(),
             title,
@@ -372,7 +310,7 @@ function createNewSavingsBox(e) {
 
 function addSpentManual(id, inputElement) {
     const val = parseFloat(inputElement.value);
-    if (Number.isFinite(val) && val > 0) {
+    if (!isNaN(val) && val > 0) {
         const cat = state.categories.find(c => c.id === id);
         if (cat) {
             cat.spent += val;
@@ -394,7 +332,7 @@ function processSavingsMovement(e) {
     const reason = document.getElementById('modalReason').value;
 
     const box = state.savingsBoxes.find(b => b.id === boxId);
-    if (box && Number.isFinite(amt) && amt > 0) {
+    if (box) {
         if (action === 'subtract' && amt > box.total) return alert("Saldo insuficiente");
         box.total = action === 'add' ? box.total + amt : box.total - amt;
         if (!box.history) box.history = [];
@@ -421,7 +359,7 @@ function processReceivablePayment(e) {
     const reason = document.getElementById('recPayReason').value || 'Abono recibido';
     
     const rec = state.receivables.find(r => r.id === id);
-    if (rec && Number.isFinite(amount) && amount > 0 && amount <= rec.amount && date) {
+    if (rec && !isNaN(amount)) {
         rec.amount -= amount;
         logGlobalHistory('receivable_payment', `Cobro: ${rec.person} (${reason})`, amount, date, 'Cuentas por Cobrar');
         if (rec.amount <= 0) state.receivables = state.receivables.filter(r => r.id !== id);
@@ -438,7 +376,7 @@ function processDebtPayment(e) {
     const reason = document.getElementById('debtPayReason').value || 'Pago de deuda';
     
     const debt = state.debts.find(d => d.id === id);
-    if (debt && Number.isFinite(amount) && amount > 0 && amount <= debt.amount && date) {
+    if (debt && !isNaN(amount)) {
         debt.amount -= amount;
         logGlobalHistory('debt_payment', `Pago Deuda: ${debt.title} (${reason})`, amount, date, 'Deudas');
         if (debt.amount <= 0) state.debts = state.debts.filter(d => d.id !== id);
@@ -492,7 +430,6 @@ function handleSurplus(option) {
 }
 
 function removeItem(type, id) {
-    if (!Array.isArray(state[type])) return;
     state[type] = state[type].filter(i => i.id !== id);
     saveData();
 }
@@ -514,8 +451,8 @@ function render() {
     const historyList = document.getElementById('transactionHistoryList');
     if (historyList) {
         historyList.innerHTML = state.transactions.map(t => `
-                <div class="bg-slate-700/60 p-2.5 rounded-lg border border-slate-600 flex justify-between items-center text-xs gap-2">
-                    <div class="truncate"><span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${escapeHtml(t.type.toUpperCase())}</span> - <span class="text-slate-200">${escapeHtml(t.desc)}</span></div>
+            <div class="bg-slate-700/60 p-2.5 rounded-lg border border-slate-600 flex justify-between items-center text-xs gap-2">
+                <div class="truncate"><span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type.toUpperCase()}</span> - <span class="text-slate-200">${t.desc}</span></div>
                 <div class="flex items-center gap-2 shrink-0"><b>${currencySymbol}${t.amount}</b><button onclick="removeItem('transactions', ${t.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></div>
             </div>`).join('');
     }
@@ -523,8 +460,8 @@ function render() {
     const catList = document.getElementById('categoryList');
     if (catList) {
         catList.innerHTML = state.categories.map(c => `
-                <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-medium"><span>${escapeHtml(c.name)}</span><div class="flex items-center gap-2"><span>${currencySymbol}${c.spent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span><button onclick="removeItem('categories', ${c.id})" class="text-rose-400 p-1" aria-label="Eliminar categoría"><i class="fa-solid fa-trash"></i></button></div></div>
+            <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
+                <div class="flex justify-between items-center text-xs font-medium"><span>${c.name}</span><div class="flex items-center gap-2"><span>${currencySymbol}${c.spent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span><button onclick="removeItem('categories', ${c.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></div></div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-purple-500 h-full rounded-full transition-all duration-300" style="width:${Math.min(100, (c.spent / c.limit) * 100)}%"></div></div>
                 <div class="flex items-center gap-2 pt-1"><input type="number" id="manualSpentInput_${c.id}" placeholder="+ Gastado" step="1" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-400"><button onclick="addSpentManual(${c.id}, document.getElementById('manualSpentInput_${c.id}'))" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-2.5 py-1 rounded transition shrink-0"><i class="fa-solid fa-plus"></i> Consumir</button></div>
             </div>`).join('');
@@ -533,19 +470,19 @@ function render() {
     const incList = document.getElementById('incomeList');
     if (incList) {
         incList.innerHTML = state.incomes.map(i => `
-            <tr class="text-xs border-b border-slate-700/60"><td class="p-2.5 whitespace-nowrap">${escapeHtml(i.date)}</td><td class="p-2.5 font-medium">${escapeHtml(i.desc)}</td><td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount.toFixed(2)}</td><td class="p-2.5 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 p-1" aria-label="Eliminar ingreso"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
+            <tr class="text-xs border-b border-slate-700/60"><td class="p-2.5 whitespace-nowrap">${i.date}</td><td class="p-2.5 font-medium">${i.desc}</td><td class="p-2.5 text-emerald-400 font-semibold whitespace-nowrap">${currencySymbol}${i.amount.toFixed(2)}</td><td class="p-2.5 text-right"><button onclick="removeItem('incomes', ${i.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
     }
 
     const recList = document.getElementById('receivablesList');
     if (recList) {
         recList.innerHTML = state.receivables.map(r => `
-            <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex justify-between items-center"><div><div class="font-bold text-sm text-slate-100">${escapeHtml(r.person)}</div><div class="text-xs text-slate-400">${escapeHtml(r.date)}</div><div class="text-cyan-400 text-base font-bold">${currencySymbol}${r.amount.toFixed(2)}</div></div><div class="flex gap-2"><button onclick="openReceivableModal(${r.id})" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-2.5 py-1.5 rounded-lg">Cobrar</button><button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 p-1" aria-label="Eliminar cuenta por cobrar"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
+            <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex justify-between items-center"><div><div class="font-bold text-sm text-slate-100">${r.person}</div><div class="text-xs text-slate-400">${r.date}</div><div class="text-cyan-400 text-base font-bold">${currencySymbol}${r.amount.toFixed(2)}</div></div><div class="flex gap-2"><button onclick="openReceivableModal(${r.id})" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-2.5 py-1.5 rounded-lg"><i class="fa-solid fa-hand-holding-dollar"></i> Cobrar</button><button onclick="removeItem('receivables', ${r.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
     }
 
     const dList = document.getElementById('debtList');
     if (dList) {
         dList.innerHTML = state.debts.map(d => `
-            <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex justify-between items-center"><div><div class="font-bold text-sm text-slate-100">${escapeHtml(d.title)}</div><div class="text-xs text-slate-400">${escapeHtml(d.date || 'Sin fecha')}</div><div class="text-rose-400 text-base font-bold">${currencySymbol}${d.amount.toFixed(2)}</div></div><div class="flex gap-2"><button onclick="openDebtModal(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-2.5 py-1.5 rounded-lg">Abonar</button><button onclick="removeItem('debts', ${d.id})" class="text-rose-400 p-1" aria-label="Eliminar deuda"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
+            <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 flex justify-between items-center"><div><div class="font-bold text-sm text-slate-100">${d.title}</div><div class="text-xs text-slate-400">${d.date || 'Sin fecha'}</div><div class="text-rose-400 text-base font-bold">${currencySymbol}${d.amount.toFixed(2)}</div></div><div class="flex gap-2"><button onclick="openDebtModal(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-2.5 py-1.5 rounded-lg"><i class="fa-solid fa-credit-card"></i> Abonar</button><button onclick="removeItem('debts', ${d.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
     }
 
     const savContainer = document.getElementById('savingsBoxesContainer');
@@ -632,3 +569,4 @@ function renderHistoryPage() {
             </tr>`;
     }).join('');
 }
+
