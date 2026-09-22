@@ -1,4 +1,4 @@
-<!-- V2.0 -->
+<!-- V2.1 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -38,12 +38,10 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <a href="historialCartera.html" 
-            class="bg-slate-700/80 hover:bg-purple-600 text-slate-200 hover:text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl border border-slate-600/80 hover:border-purple-500/80 transition-all duration-200 flex items-center gap-2 shadow-sm" 
-            title="Ver Historial">
-                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
-                <span>Historial</span>
-            </a>
+            <a href="../index.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-house text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Dashboard Principal</span>
+                </a>
 
             <div class="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-xl text-xs sm:text-sm text-slate-300 flex items-center gap-2 shadow-inner">
                 <i class="fa-solid fa-user text-emerald-400"></i>
@@ -76,96 +74,42 @@
             </div>
 
             <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1 custom-scroll">
-                <a
-                    href="../index.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-house text-emerald-400 group-hover:scale-110 transition-transform"></i>
-                    </span>
-                </a>
 
-                <a
-                    href="../PresupuestoMes/Presupuesto.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-white bg-slate-700/90 font-semibold">
-                    <i class="fa-solid fa-calculator text-purple-400"></i>
-                    <span class="text-sm">
-                        Presupuesto Mes a Mes
-                    </span>
-                </a>
+            <a href="../index.html  " onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-white bg-slate-700/90 font-semibold">
+                <i class="fa-solid fa-house text-emerald-400"></i>
+                <span class="text-sm">Dashboard Principal</span>
+            </a>
 
-                <a
-                    href="../GastosDiarios/GastosDiarios.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-receipt text-blue-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Vistas de Gastos Diariamente
-                    </span>
-                </a>
+            <div class="pt-3 pb-1">
+                <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+                     Operaciones
+                </p>
+            </div>
+                
 
-                <a
-                    href="../Objetivos/objetivosAhorros.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-bullseye text-amber-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Objetivos de Ahorro
-                    </span>
-                </a>
+            <a
+                href="../Historial.html"
+                class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
+                <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium">
+                    Historial Mes a Mes
+                </span>
+            </a>
 
-                <a
-                    href="CuentasCarteras.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-wallet text-purple-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Carteras & Cuentas
-                    </span>
-                </a>
-
-                <div class="pt-3 pb-1">
-                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+            <div class="pt-3 pb-1">
+                <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
                         Gestión Avanzada
-                    </p>
-                </div>
+                </p>
+            </div>
 
-                <a
-                    href="#" aria-disabled="true" onclick="event.preventDefault()" title="Módulo próximamente"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-arrows-rotate text-cyan-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Suscripciones y Pagos Fijos
-                    </span>
-                </a>
-
-                <a
-                    href="#" aria-disabled="true" onclick="event.preventDefault()" title="Módulo próximamente"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-chart-line text-indigo-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Inversiones & Activos
-                    </span>
-                </a>
-
-                <a
-                    href="#" aria-disabled="true" onclick="event.preventDefault()" title="Módulo próximamente"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-chart-column text-rose-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Reportes & Analytics
-                    </span>
-                </a>
-
-                <div class="pt-3 pb-1">
-                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">
-                        Operaciones
-                    </p>
-                </div>
-
-                <a
-                    href="../Historial.html"
-                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition group">
-                    <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform"></i>
-                    <span class="text-sm font-medium">
-                        Historial Mes a Mes
-                    </span>
-                </a>
+            <a href="CuentasCarteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
+                <i class="fa-solid fa-wallet text-purple-400"></i>
+                <span class="text-sm font-medium">Cuentas Carteras</span>
+            </a>
+            <a href="../Objetivos/objetivosAhorros.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
+                <i class="fa-solid fa-bullseye text-amber-400"></i>
+                <span class="text-sm font-medium">Objetivos de Ahorro</span>
+            </a>
 
                 <div class="pt-3 pb-1">
                     <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p>
@@ -315,7 +259,7 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fecha de Gestión</label>
-                    <input type="date" id="modalDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none min-h-[42px]">
+                    <input type="date" id="modalDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-1 text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none min-h-[42px]">
                 </div>
                 <div class="pt-2">
                     <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20">
