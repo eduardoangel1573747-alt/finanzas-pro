@@ -1,7 +1,15 @@
-// V1.0
+// V1.1
 let currentPeriodOffset = 0;
 let dailyExpensesLoaded = false;
 let dailyExpensesLoading = false;
+
+function logout() {
+    if (window.auth && window.dbMethods?.signOut) {
+        window.dbMethods.signOut(window.auth).then(() => {
+            window.location.href = '../login.html';
+        });
+    }
+}
 
 window.addEventListener('finances-settings-changed', event => {
     if (event.detail?.currency) window.currencySymbol = event.detail.currency;
@@ -13,15 +21,8 @@ window.addEventListener('finances-settings-changed', event => {
 // ============================================================
 
 function ensureDailyState() {
-    if (!window.state || typeof window.state !== 'object') {
-        window.state = {};
-    }
-
-    if (!Array.isArray(window.state.transactions)) {
-        window.state.transactions = [];
-    }
-
-    return window.state;
+    if (!Array.isArray(window.dailyExpenses)) window.dailyExpenses = [];
+    return window.dailyExpenses;
 }
 
 function normalizeDailyTransactions(transactions) {
@@ -109,6 +110,11 @@ async function initializeDailyExpenses() {
             user.uid
         );
 
+        const userLabel = document.getElementById('currentUserLabel');
+        if (userLabel) {
+            userLabel.innerHTML = `<i class="fa-solid fa-user text-emerald-400 mr-1.5"></i><span class="truncate max-w-[140px]">${escapeDailyHtml(user.email || 'Usuario')}</span>`;
+        }
+
         // Referencia al documento del usuario
         const userDocRef =
             window.dbMethods.doc(
@@ -128,50 +134,12 @@ async function initializeDailyExpenses() {
             const firestoreData =
                 snapshot.data();
 
+            window.dailyExpenses = normalizeDailyTransactions(firestoreData.dailyExpenses);
+
             console.log(
                 'Datos recuperados desde Firestore:',
                 firestoreData
             );
-
-            if (
-                firestoreData &&
-                firestoreData.state
-            ) {
-
-                const currentState =
-                    ensureDailyState();
-
-                const firestoreState =
-                    firestoreData.state;
-
-                /*
-                 * IMPORTANTE:
-                 * Fusionamos el estado existente con
-                 * el estado recuperado.
-                 *
-                 * Así no eliminamos otras propiedades
-                 * utilizadas por scrip.js.
-                 */
-
-                Object.assign(currentState, firestoreState);
-                window.state = currentState;
-
-                // Recuperar transacciones
-                window.state.transactions =
-                    normalizeDailyTransactions(
-                        firestoreState.transactions
-                    );
-
-                console.log(
-                    'Transacciones recuperadas:',
-                    window.state.transactions
-                );
-
-            } else {
-
-                ensureDailyState();
-
-            }
 
         } else {
 
@@ -331,31 +299,6 @@ function waitForAuthenticatedUser(timeout = 10000) {
 
 
 // ============================================================
-// RENDER GLOBAL
-// ============================================================
-
-const originalRender = window.render;
-
-window.render = function () {
-
-    if (
-        typeof originalRender === 'function'
-    ) {
-
-        originalRender();
-
-    }
-
-    if (dailyExpensesLoaded) {
-
-        renderDailyView();
-
-    }
-
-};
-
-
-// ============================================================
 // GUARDAR NUEVO GASTO
 // ============================================================
 
@@ -398,7 +341,6 @@ async function saveDailyExpenseToFirestore(event) {
             ? dateInput.value
             : '';
 
-
     // Validar datos
     if (
         !desc ||
@@ -408,7 +350,7 @@ async function saveDailyExpenseToFirestore(event) {
     ) {
 
         alert(
-            'Por favor completa todos los campos con datos válidos.'
+            'Completa la descripción, el monto y la fecha.'
         );
 
         return;
@@ -446,10 +388,6 @@ async function saveDailyExpenseToFirestore(event) {
         }
 
 
-        // Asegurar estructura
-        ensureDailyState();
-
-
         // Crear nuevo movimiento
         const newTransaction = {
 
@@ -467,15 +405,7 @@ async function saveDailyExpenseToFirestore(event) {
 
         };
 
-
-        // Agregar al estado local
-        window.state.transactions.push(
-            newTransaction
-        );
-
-        if (typeof logGlobalHistory === 'function') {
-            logGlobalHistory('expense', desc, amount, date, 'Gastos Diarios');
-        }
+        ensureDailyState().push(newTransaction);
 
 
         console.log(
@@ -498,9 +428,7 @@ async function saveDailyExpenseToFirestore(event) {
 
             userDocRef,
 
-            {
-                state: window.state
-            },
+            { dailyExpenses: window.dailyExpenses },
 
             {
                 merge: true
@@ -526,14 +454,8 @@ async function saveDailyExpenseToFirestore(event) {
             amountInput.value = '';
         }
 
-
         // Actualizar interfaz
         renderDailyView();
-
-
-        alert(
-            '¡Gasto guardado en Firestore exitosamente!'
-        );
 
 
     } catch (error) {
@@ -586,9 +508,9 @@ function shiftDailyPeriod(offset) {
 function renderDailyView() {
 
     if (
-        !window.state ||
+        !window.dailyExpenses ||
         !Array.isArray(
-            window.state.transactions
+            window.dailyExpenses
         )
     ) {
 
@@ -707,7 +629,7 @@ function renderDailyView() {
     let periodSpent = 0;
 
 
-    window.state.transactions.forEach(
+    window.dailyExpenses.forEach(
         (t) => {
 
             if (
@@ -932,9 +854,9 @@ function selectDayDetails(
 
 
     if (
-        !window.state ||
+        !window.dailyExpenses ||
         !Array.isArray(
-            window.state.transactions
+            window.dailyExpenses
         )
     ) {
 
@@ -951,7 +873,7 @@ function selectDayDetails(
 
 
     const dayExpenses =
-        window.state.transactions.filter(
+        window.dailyExpenses.filter(
 
             (t) =>
 
@@ -1013,19 +935,22 @@ function selectDayDetails(
 
                         </div>
 
-                        <span
-                            class="
-                                text-rose-400
-                                font-bold
-                                text-sm
-                            "
-                        >
-
-                            -${window.currencySymbol || '$'}${(
-                                Number(t.amount) || 0
-                            ).toFixed(2)}
-
-                        </span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-rose-400 font-bold text-sm">
+                                -${window.currencySymbol || '$'}${(
+                                    Number(t.amount) || 0
+                                ).toFixed(2)}
+                            </span>
+                            <button
+                                type="button"
+                                onclick="deleteDailyExpense('${escapeDailyHtml(t.id)}')"
+                                title="Eliminar gasto"
+                                aria-label="Eliminar gasto"
+                                class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
+                            >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
 
                     </div>
 
@@ -1034,6 +959,35 @@ function selectDayDetails(
 
             .join('');
 
+}
+
+async function deleteDailyExpense(transactionId) {
+    const expense = window.dailyExpenses?.find(item => String(item.id) === String(transactionId));
+    if (!expense) return;
+
+    if (!confirm(`¿Eliminar el gasto "${expense.desc}"?`)) return;
+
+    const previousExpenses = window.dailyExpenses;
+    window.dailyExpenses = previousExpenses.filter(item => String(item.id) !== String(transactionId));
+
+    try {
+        await waitForFirebase();
+        const user = window.auth?.currentUser;
+        if (!user) throw new Error('No hay una sesión activa.');
+
+        const userDocRef = window.dbMethods.doc(window.db, 'users', user.uid);
+        await window.dbMethods.setDoc(userDocRef, { dailyExpenses: window.dailyExpenses }, { merge: true });
+
+        renderDailyView();
+        const dateParts = String(expense.date || '').split('-').map(Number);
+        if (dateParts.length === 3 && dateParts.every(Number.isFinite)) {
+            selectDayDetails(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        }
+    } catch (error) {
+        window.dailyExpenses = previousExpenses;
+        console.error('Error al eliminar el gasto:', error);
+        alert('No se pudo eliminar el gasto. Inténtalo nuevamente.');
+    }
 }
 
 
