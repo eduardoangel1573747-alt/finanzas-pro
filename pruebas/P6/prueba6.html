@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas 6</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-12">
+   <link rel="stylesheet" href="styles.css">
+
+    <!-- Overlay/Backdrop para cerrar el panel al hacer clic afuera -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Panel Deslizante Lateral (Off-canvas Sidebar Responsivo) -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[85vw] sm:w-80 max-w-xs bg-slate-800 border-r border-slate-700 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl">
+        
+        <!-- Contenedor Superior (Flex col para controlar scroll interno) -->
+        <div class="flex flex-col h-full overflow-hidden">
+            
+            <!-- Sidebar Header (Fijo arriba) -->
+            <div class="p-3.5 sm:p-4 border-b border-slate-700 flex items-center justify-between shrink-0 bg-slate-800/90 backdrop-blur">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-chart-pie text-emerald-400 text-lg sm:text-xl"></i>
+                    <span class="font-bold text-base sm:text-lg text-white">Módulos</span>
+                </div>
+                <!-- Botón de cierre grande apto para pantallas táctiles -->
+                <button onclick="toggleSidebar()" aria-label="Cerrar menú" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700/80 active:bg-slate-700 transition flex items-center justify-center min-w-[40px] min-h-[40px]">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Menú de Navegación / Módulos (Scroll flexible y adaptativo) -->
+            <nav class="p-3 sm:p-4 space-y-1 overflow-y-auto flex-1 overscroll-contain">
+                
+                <a href="Presupuesto.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-calculator text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Presupuesto Mes a Mes</span>
+                </a>
+
+                <a href="GastosDiarios.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-receipt text-blue-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Vistas de Gastos Diariamente</span>
+                </a>
+
+                <a href="ObjetivosAhorro.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-bullseye text-amber-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Objetivos de Ahorro</span>
+                </a>
+
+                <a href="Carteras.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-wallet text-purple-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Carteras & Cuentas</span>
+                </a>
+
+                <!-- Secciones adicionales -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Gestión Avanzada</p>
+                </div>
+
+                <a href="Suscripciones.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-arrows-rotate text-cyan-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Suscripciones y Pagos Fijos</span>
+                </a>
+
+                <a href="Inversiones.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-chart-line text-indigo-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Inversiones & Activos</span>
+                </a>
+
+                <a href="Reportes.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-chart-column text-rose-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Reportes & Analytics</span>
+                </a>
+
+                <!-- Operaciones & Historial -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Operaciones</p>
+                </div>
+
+                <a href="Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group">
+                    <i class="fa-solid fa-clock-rotate-left text-teal-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Historial Mes a Mes</span>
+                </a>
+
+                <button onclick="openCloseMonthModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
+                    <i class="fa-solid fa-calendar-check text-emerald-400 group-hover:scale-110 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Cierre de Mes</span>
+                </button>
+
+                <!-- Ajustes de Sistema -->
+                <div class="pt-3 pb-1">
+                    <p class="px-3 text-[10px] uppercase font-bold tracking-wider text-slate-500">Ajustes</p>
+                </div>
+
+                <button onclick="openSettingsModal(); toggleSidebar();" class="w-full flex items-center gap-3 px-3.5 py-3 sm:py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 active:bg-slate-700 transition group text-left">
+                    <i class="fa-solid fa-gear text-slate-400 group-hover:rotate-45 transition-transform text-base sm:text-sm"></i>
+                    <span class="text-sm font-medium">Configuración de App</span>
+                </button>
+
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer (Fijo abajo) -->
+        <div class="p-3.5 sm:p-4 border-t border-slate-700 bg-slate-800/90 backdrop-blur shrink-0">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="font-medium">Versión App</span>
+                <span class="font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">v5.0</span>
+            </div>
+        </div>
+    </aside>
+
+   <div id="appSection" class="min-h-screen flex flex-col justify-between">
+    <div>
+
+        <!-- Header Optimizado con Scroll Horizontal para Móvil -->
+            <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex items-center justify-between gap-2 overflow-hidden">
+                    
+                    <!-- Botón Menú + Logo y Título -->
+                    <div class="flex items-center space-x-3 shrink-0">
+                        <!-- Botón para deslizar el panel -->
+                        <button onclick="toggleSidebar()" title="Abrir Módulos" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 hover:text-white p-2 rounded-lg text-sm transition flex items-center justify-center">
+                            <i class="fa-solid fa-bars text-lg"></i>
+                        </button>
+
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
+                            <h1 class="text-sm sm:text-xl font-bold tracking-wide text-white whitespace-nowrap" data-i18n="appTitle">
+                                Fin Flow FPR
+                            </h1>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenedor de Acciones con Scroll Horizontal -->
+                    <div class="flex items-center gap-2 overflow-x-auto custom-scroll max-w-full py-1 pl-1">
+                        
+                        <!-- Etiqueta Usuario -->
+                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700/80 px-2.5 py-1.5 rounded-lg border border-slate-600 flex items-center shrink-0 whitespace-nowrap">
+                            <i class="fa-solid fa-user text-emerald-400 mr-1.5"></i>
+                            <span class="truncate max-w-[90px] sm:max-w-none">Usuario</span>
+                        </span>        
+                        
+                        <!-- Cerrar Sesión -->
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center shrink-0 min-w-[36px] min-h-[36px]">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 sm:space-y-8">
+                <!-- Dashboard Summary -->
+                <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow col-span-2 sm:col-span-1 flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-emerald-400 mb-1">
+                            <i class="fa-solid fa-scale-balanced text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider" data-i18n="netBalance">Balance Disponible</p>
+                        </div>
+                        <h3 id="netBalance" class="text-xl sm:text-2xl font-black text-emerald-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-blue-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-up text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalIncome">Ingresos Totales</p>
+                        </div>
+                        <h3 id="totalIncome" class="text-lg sm:text-2xl font-bold text-blue-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-purple-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-down text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSpent">Gastos Acumulados</p>
+                        </div>
+                        <h3 id="totalSpent" class="text-lg sm:text-2xl font-bold text-purple-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-amber-400 mb-1">
+                            <i class="fa-solid fa-piggy-bank text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSavings">Total Ahorrado</p>
+                        </div>
+                        <h3 id="totalSavings" class="text-lg sm:text-2xl font-bold text-amber-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-cyan-400 mb-1">
+                            <i class="fa-solid fa-hand-holding-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalReceivables">Te Deben A Ti</p>
+                        </div>
+                        <h3 id="totalReceivables" class="text-lg sm:text-2xl font-bold text-cyan-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-rose-400 mb-1">
+                            <i class="fa-solid fa-file-invoice-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalDebts">Deudas Pendientes</p>
+                        </div>
+                        <h3 id="totalDebts" class="text-lg sm:text-2xl font-bold text-rose-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+                </section>
+
+            </main>
+
+    </div>
+
+   </div>
+
+   <!-- MODAL CONFIGURACIÓN -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> <span data-i18n="settingsTitle">Configuración</span></h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Idioma</label>
+                    <select id="settingLanguage" onchange="changeLanguage(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
+                        <option value="es">Español 🇲🇽</option>
+                        <option value="en">English 🇺🇸</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Moneda</label>
+                    <select id="settingCurrency" onchange="changeCurrency(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
+                        <option value="$">Dólar ($)</option>
+                        <option value="€">Euro (€)</option>
+                        <option value="Q">Quetzal (Q)</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="closeSettingsModal()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition min-h-[42px]">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL CIERRE DE MES -->
+    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 text-center my-auto">
+            <h3 class="text-lg sm:text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
+            <p class="text-xs sm:text-sm text-slate-300">Balance sobrante: <span id="surplusAmount" class="font-bold text-emerald-400 text-base sm:text-lg">$0.00</span></p>
+            <div class="space-y-2.5">
+                <button onclick="handleSurplus('nextMonth')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Pasar al siguiente mes</button>
+                <button onclick="handleSurplus('savings')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Mover a Caja de Ahorro</button>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 text-xs py-1">Cancelar</button>
+        </div>
+    </div>
+
+   <!-- JS para controlar el deslizamiento del menú -->
+   <script src="menu.js"></script>
+
+   <!-- Enlace al archivo de JavaScript externo -->
+    <script src="scripP.js"></script>
+
+</body>
+</html> 

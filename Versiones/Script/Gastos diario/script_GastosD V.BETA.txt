@@ -1,0 +1,214 @@
+// V BETA
+    let currentPeriodOffset = 0; 
+
+        // Sincronizar fecha por defecto en el input
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('expenseDate');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+        });
+
+        // Extensión del ciclo de renderizado global
+        const originalRender = window.render;
+        window.render = function() {
+            if (typeof originalRender === 'function') originalRender();
+            renderDailyView();
+        };
+
+        // Función para guardar el nuevo gasto directamente a Firestore
+        async function saveDailyExpenseToFirestore(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btnSaveExpense');
+            const desc = document.getElementById('expenseDesc').value.trim();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const date = document.getElementById('expenseDate').value;
+
+            if (!desc || isNaN(amount) || amount <= 0 || !date) {
+                alert('Por favor completa todos los campos con datos válidos.');
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Guardando...`;
+
+                // 1. Obtener el usuario autenticado directamente desde la instancia de Auth
+                const user = window.auth ? window.auth.currentUser : null;
+
+                if (!user) {
+                    alert('No hay una sesión activa. Inicia sesión nuevamente.');
+                    return;
+                }
+
+                const newTransaction = {
+                    id: Date.now().toString(),
+                    desc: desc,
+                    amount: amount,
+                    type: 'expense',
+                    category: 'Gastos Diarios',
+                    date: date
+                };
+
+                // 2. Garantizar la estructura del estado local
+                if (!window.state) window.state = {};
+                if (!Array.isArray(window.state.transactions)) window.state.transactions = [];
+                
+                window.state.transactions.push(newTransaction);
+
+                // 3. Guardar persistente en Firestore
+                const userDocRef = window.dbMethods.doc(window.db, "users", user.uid);
+                await window.dbMethods.setDoc(userDocRef, { state: window.state }, { merge: true });
+
+                // 4. Limpiar formulario y re-renderizar
+                document.getElementById('expenseDesc').value = '';
+                document.getElementById('expenseAmount').value = '';
+                
+                renderDailyView();
+                alert('¡Gasto guardado en Firestore exitosamente!');
+            } catch (error) {
+                console.error("Error al guardar en Firestore:", error);
+                alert('Ocurrió un error al guardar en la base de datos: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar`;
+            }
+        }
+
+        function shiftDailyPeriod(offset) {
+            currentPeriodOffset += offset;
+            renderDailyView();
+        }
+
+        function renderDailyView() {
+            if (!window.state || !window.state.transactions) return;
+
+            const now = new Date();
+            const targetMonth = new Date(now.getFullYear(), now.getMonth() + currentPeriodOffset, 1);
+            const year = targetMonth.getFullYear();
+            const month = targetMonth.getMonth();
+
+            const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sept", "Oct", "Nov", "Dic"];
+            const fullMonthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDayIndex = new Date(year, month, 1).getDay();
+
+            document.getElementById('dailyDateRangeText').innerText = `1 ${monthNames[month].toUpperCase()} - ${daysInMonth} ${monthNames[month].toUpperCase()}`;
+            document.getElementById('calendarPeriodHeader').innerText = `${fullMonthNames[month]} ${year}`;
+
+            // Agrupar gastos por día
+            const dailyTotals = {};
+            let periodSpent = 0;
+
+            window.state.transactions.forEach(t => {
+                if (t.type === 'expense' && t.date) {
+                    const [tYear, tMonth, tDay] = t.date.split('-').map(Number);
+                    if (tYear === year && (tMonth - 1) === month) {
+                        dailyTotals[tDay] = (dailyTotals[tDay] || 0) + t.amount;
+                        periodSpent += t.amount;
+                    }
+                }
+            });
+
+            document.getElementById('periodTotalSpent').innerText = `${window.currencySymbol || '$'}${periodSpent.toFixed(2)}`;
+
+            // Renderizar Grid del Calendario
+            const grid = document.getElementById('dailyGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                grid.innerHTML += `<div class="p-2"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const spent = dailyTotals[day] || 0;
+                const isSelected = spent > 0;
+                const cellBg = isSelected 
+                    ? 'bg-purple-600/30 border-purple-500/50 text-white' 
+                    : 'bg-slate-900/50 border-slate-700/50 text-slate-400';
+
+                grid.innerHTML += `
+                    <button onclick="selectDayDetails(${year}, ${month}, ${day})" class="flex flex-col items-center justify-center p-2 rounded-xl border ${cellBg} hover:border-purple-400 transition cursor-pointer aspect-square">
+                        <span class="text-xs font-bold">${day}</span>
+                        <span class="text-[10px] ${spent > 0 ? 'text-purple-300 font-bold' : 'text-slate-500'}">${window.currencySymbol || '$'}${spent.toFixed(0)}</span>
+                    </button>
+                `;
+            }
+
+            drawDailyChart(daysInMonth, dailyTotals);
+        }
+
+        function selectDayDetails(year, month, day) {
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const listContainer = document.getElementById('selectedDayList');
+            document.getElementById('selectedDayTitle').innerText = `Movimientos del ${day}/${month + 1}/${year}`;
+
+            const dayExpenses = window.state.transactions.filter(t => t.type === 'expense' && t.date === formattedDate);
+
+            if (dayExpenses.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-slate-500 italic">Sin registros de gastos en esta fecha.</p>`;
+                return;
+            }
+
+            listContainer.innerHTML = dayExpenses.map(t => `
+                <div class="bg-slate-700/60 p-3 rounded-xl border border-slate-600 flex justify-between items-center text-xs">
+                    <div>
+                        <p class="font-bold text-white">${t.desc}</p>
+                        <p class="text-slate-400 text-[10px]">${t.category || 'General'}</p>
+                    </div>
+                    <span class="text-rose-400 font-bold text-sm">-${window.currencySymbol || '$'}${t.amount.toFixed(2)}</span>
+                </div>
+            `).join('');
+        }
+
+        function drawDailyChart(daysInMonth, dailyTotals) {
+            const canvas = document.getElementById('dailyExpenseCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            let cumulative = 0;
+            const points = [];
+            const avgPoints = [];
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                cumulative += (dailyTotals[i] || 0);
+                points.push(cumulative);
+                avgPoints.push((cumulative / i) * (i * 0.85));
+            }
+
+            const maxVal = Math.max(...points, 100);
+
+            // Línea de Media (Gris)
+            ctx.beginPath();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < daysInMonth; i++) {
+                const x = (i / (daysInMonth - 1)) * w;
+                const y = h - (avgPoints[i] / maxVal) * (h - 20) - 10;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Línea de Período Actual (Morada)
+            ctx.beginPath();
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 3;
+
+            for (let i = 0; i < daysInMonth; i++) {
+                const x = (i / (daysInMonth - 1)) * w;
+                const y = h - (points[i] / maxVal) * (h - 20) - 10;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }

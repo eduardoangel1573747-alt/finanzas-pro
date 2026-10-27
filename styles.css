@@ -1,0 +1,223 @@
+/* styles.css  2.0*/
+
+/* Base responsive compartida para todos los módulos */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+canvas,
+svg,
+video {
+    max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+input[type="date"],
+input[type="month"],
+input[type="number"] {
+    min-width: 0;
+}
+
+table {
+    max-width: 100%;
+}
+
+.budget-header-actions {
+    scrollbar-width: thin;
+}
+
+.budget-month-selector .month-nav-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Evita que contenido generado por JavaScript ensanche la página completa. */
+[id$="List"],
+[id$="Container"],
+[id$="Grid"],
+.custom-scroll {
+    min-width: 0;
+}
+
+/* Personalización de la barra de desplazamiento (Scrollbar) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a; /* slate-900 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155; /* slate-700 */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #10b981; /* emerald-500 */
+}
+
+/* Animaciones suaves para cambios de estado */
+.transition-all-custom {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Estilo para inputs enfocados */
+input:focus, select:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 640px) {
+    .container-custom {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    body {
+        min-width: 0;
+    }
+
+    header > div {
+        flex-wrap: wrap;
+    }
+
+    header > div > div:last-child {
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    header > div > div:last-child::-webkit-scrollbar {
+        display: none;
+    }
+
+    .budget-header-actions {
+        justify-content: flex-start;
+        padding-bottom: .15rem;
+    }
+
+    .budget-header-actions #currentUserLabel {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .budget-month-selector {
+        padding: 1rem;
+    }
+
+    .budget-month-selector .month-nav-button {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    main {
+        min-width: 0;
+    }
+
+    section,
+    form,
+    article {
+        min-width: 0;
+    }
+
+    input[type="date"],
+    input[type="month"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        min-height: 42px;
+        font-size: 16px;
+    }
+
+    button,
+    a {
+        touch-action: manipulation;
+    }
+
+    /* Los encabezados de tarjetas no fuerzan el ancho de la pantalla. */
+    section > div.flex.items-center.justify-between,
+    section > div.flex.items-center.justify-between.border-b {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    /* Mantiene tablas legibles dentro de un scroll horizontal contenido. */
+    .overflow-x-auto {
+        max-width: 100%;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+    }
+
+    table {
+        white-space: nowrap;
+    }
+
+    /* Modales altos en iPhone se pueden recorrer sin cortar campos inferiores. */
+    [class*="fixed"][class*="inset-0"] {
+        overflow-y: auto;
+    }
+
+    [class*="fixed"][class*="inset-0"] > [class*="max-w-"] {
+        margin-top: auto;
+        margin-bottom: auto;
+        max-height: calc(100dvh - 1.5rem);
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .grid.grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    main {
+        padding-left: .75rem;
+        padding-right: .75rem;
+    }
+
+    header {
+        padding-left: .75rem !important;
+        padding-right: .75rem !important;
+    }
+
+    header h1 {
+        max-width: 11rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .p-5,
+    .p-6 {
+        padding: 1rem;
+    }
+}
+
+/* Clase para ocultar elementos con transición */
+.hidden-fade {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}

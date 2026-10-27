@@ -1,0 +1,717 @@
+<!-- V4.0.1 All -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fin Flow FPR - Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+        // Redirección de seguridad: Si no hay sesión, va al login
+        if (!localStorage.getItem('finances_session_user')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Corrección táctil y de Inputs para dispositivos móviles */
+        input, select, button {
+            touch-action: manipulation;
+        }
+        /* Previene zoom automático molesto en iOS al hacer focus */
+        @media (max-width: 640px) {
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            select {
+                font-size: 16px !important;
+            }
+        }
+        /* Scrollbar suave para móviles */
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
+    <link rel="stylesheet" href="styles.css">
+
+    <div id="appSection" class="min-h-screen flex flex-col justify-between">
+        <div>
+            <!-- Header Móvil Optimizado -->
+            <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 shadow-md">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-4 flex justify-between items-center gap-2">
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <i class="fa-solid fa-wallet text-emerald-400 text-lg sm:text-2xl"></i>
+                        <h1 class="text-sm sm:text-xl font-bold tracking-wide truncate max-w-[130px] xs:max-w-none" data-i18n="appTitle">Fin Flow FPR</h1>
+                    </div>
+                    
+                    <div class="flex items-center gap-1.5 sm:gap-3">
+                        <span id="currentUserLabel" class="text-xs text-slate-300 bg-slate-700/80 px-2 py-1 rounded-md border border-slate-600 hidden md:inline-block">
+                            <i class="fa-solid fa-user text-emerald-400 mr-1"></i> Usuario
+                        </span>
+                        
+                        <button onclick="openSettingsModal()" title="Configuración" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+
+                        <button onclick="openCloseMonthModal()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-2.5 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 min-h-[36px]">
+                            <i class="fa-solid fa-calendar-check"></i> 
+                            <span class="hidden sm:inline" data-i18n="closeMonth">Cierre de Mes</span>
+                            <span class="sm:hidden" data-i18n="closeShort">Cierre</span>
+                        </button>
+                        
+                        <button onclick="logout()" title="Cerrar Sesión" class="bg-slate-700 hover:bg-rose-600 active:scale-95 text-slate-300 hover:text-white p-2 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm transition flex items-center justify-center min-w-[36px] min-h-[36px]">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-5 sm:space-y-8">
+                <!-- Dashboard Summary -->
+                <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow col-span-2 sm:col-span-1 flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-emerald-400 mb-1">
+                            <i class="fa-solid fa-scale-balanced text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider" data-i18n="netBalance">Balance Disponible</p>
+                        </div>
+                        <h3 id="netBalance" class="text-xl sm:text-2xl font-black text-emerald-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-blue-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-up text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalIncome">Ingresos Totales</p>
+                        </div>
+                        <h3 id="totalIncome" class="text-lg sm:text-2xl font-bold text-blue-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-purple-400 mb-1">
+                            <i class="fa-solid fa-arrow-trend-down text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSpent">Gastos Acumulados</p>
+                        </div>
+                        <h3 id="totalSpent" class="text-lg sm:text-2xl font-bold text-purple-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-amber-400 mb-1">
+                            <i class="fa-solid fa-piggy-bank text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalSavings">Total Ahorrado</p>
+                        </div>
+                        <h3 id="totalSavings" class="text-lg sm:text-2xl font-bold text-amber-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-cyan-400 mb-1">
+                            <i class="fa-solid fa-hand-holding-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalReceivables">Te Deben A Ti</p>
+                        </div>
+                        <h3 id="totalReceivables" class="text-lg sm:text-2xl font-bold text-cyan-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+
+                    <div class="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700 shadow flex flex-col justify-between">
+                        <div class="flex items-center gap-1.5 text-rose-400 mb-1">
+                            <i class="fa-solid fa-file-invoice-dollar text-xs sm:text-sm"></i>
+                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider truncate" data-i18n="totalDebts">Deudas Pendientes</p>
+                        </div>
+                        <h3 id="totalDebts" class="text-lg sm:text-2xl font-bold text-rose-400 tracking-tight mt-0.5">$0.00</h3>
+                    </div>
+                </section>
+
+                <!-- Registrar Transacción -->
+                 <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6">
+                    
+                    <!-- Header principal -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shadow-inner">
+                                <i class="fa-solid fa-receipt text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="regTransactionTitle">
+                                    Registrar Transacción
+                                </h2>
+                                <p class="text-xs text-slate-400">Añade un nuevo movimiento a tus finanzas</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-teal-300 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                            Control Rápido
+                        </span>
+                    </div>
+
+                    <!-- Formulario Grid Interactivo -->
+                    <form id="txForm" onsubmit="addTransaction(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5">
+                            
+                            <!-- Tipo -->
+                            <div class="lg:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Tipo</label>
+                                <div class="relative">
+                                    <select id="txType" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition appearance-none cursor-pointer">
+                                        <option value="expense" data-i18n="optionExpense">🔻 Gasto (-)</option>
+                                        <option value="income" data-i18n="optionIncome">🟢 Ingreso (+)</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400">
+                                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="lg:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Descripción</label>
+                                <input type="text" id="txDesc" placeholder="Ej. Supermercado, Nómina" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Monto -->
+                            <div class="lg:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Monto</label>
+                                <input type="number" id="txAmount" placeholder="0.00" step="0.01" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="lg:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Fecha</label>
+                                <input type="date" id="txDate" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-1 py-1 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Categoría -->
+                            <div class="lg:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Categoría</label>
+                                <input type="text" id="txCategoryInput" placeholder="Ej. Comida, Servicios" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition">
+                            </div>
+
+                        </div>
+
+                        <!-- Botón de Envío -->
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 active:scale-[0.98] text-slate-950 font-bold py-2.5 px-7 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-teal-500/25 cursor-pointer" data-i18n="saveBtn">
+                                <i class="fa-solid fa-plus-circle text-base"></i> Guardar Movimiento
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Historial estilo Feed -->
+                    <div class="pt-4 border-t border-slate-700/60 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 flex items-center gap-2" data-i18n="txHistory">
+                                <i class="fa-solid fa-history text-teal-400"></i> Últimos Registros
+                            </h3>
+                        </div>
+                        
+                        <div id="transactionHistoryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto pr-1 custom-scroll">
+                            <!-- Las tarjetas generadas en script.js tendrán una excelente presentación aquí -->
+                        </div>
+                    </div>
+
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8">
+                    <!-- Presupuesto por Categorías - Rediseño Premium -->
+                    <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6">
+                        
+                        <!-- Header principal con badge decorativo -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shadow-inner">
+                                    <i class="fa-solid fa-chart-pie text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="budgetTitle">
+                                        Presupuesto por Categorías
+                                    </h2>
+                                    <p class="text-xs text-slate-400">Establece límites y controla tus gastos asignados</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                                Límites y Control
+                            </span>
+                        </div>
+
+                        <!-- Formulario para crear categoría -->
+                        <form id="budgetForm" onsubmit="addCategory(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 bg-slate-900/40 p-3.5 rounded-xl border border-slate-700/50">
+                            
+                            <!-- Nombre de la Categoría -->
+                            <div class="sm:col-span-5">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Nombre Categoría</label>
+                                <input type="text" id="catName" placeholder="Ej. Comida, Alquiler, Salidas" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Límite de Presupuesto -->
+                            <div class="sm:col-span-4">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Límite Permitido</label>
+                                <input type="number" id="catLimit" placeholder="0.00" step="1" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Botón Crear -->
+                            <div class="sm:col-span-3 flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 cursor-pointer min-h-[42px]" data-i18n="createCatBtn">
+                                    <i class="fa-solid fa-plus-circle text-base"></i> Crear
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista dinámicamente alimentada por JS -->
+                        <div class="pt-2">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group text-purple-400"></i> Mis Categorías
+                            </h3>
+                            
+                            <div id="categoryList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-1 custom-scroll">
+                                <!-- Las tarjetas de categoría renderizadas en script.js aparecerán aquí -->
+                            </div>
+                        </div>
+
+                    </section>
+                    
+
+                    <!-- Ingresos Directos - Rediseño Premium -->
+                    <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6">
+                        
+                        <!-- Header principal con badge decorativo -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shadow-inner">
+                                    <i class="fa-solid fa-money-bill-trend-up text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="directIncomeTitle">
+                                        Ingresos Directos
+                                    </h2>
+                                    <p class="text-xs text-slate-400">Registra entradas extras, sueldos o bonos directos</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-blue-300 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                                Entradas de Capital
+                            </span>
+                        </div>
+
+                        <!-- Formulario Grid Reestructurado -->
+                        <form id="incomeForm" onsubmit="addDirectIncome(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 bg-slate-900/40 p-3.5 rounded-xl border border-slate-700/50">
+                            
+                            <!-- Descripción -->
+                            <div class="sm:col-span-4">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Descripción</label>
+                                <input type="text" id="incDesc" placeholder="Ej. Freelance, Venta, Bono" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Monto -->
+                            <div class="sm:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Monto</label>
+                                <input type="number" id="incAmount" placeholder="0.00" step="0.01" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Fecha (Ícono Blanco) -->
+                            <div class="sm:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Fecha</label>
+                                <input type="date" id="incDate" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-1 py-1 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition scheme-dark">
+                            </div>
+
+                            <!-- Botón Añadir -->
+                            <div class="sm:col-span-2 flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 cursor-pointer min-h-[42px]" data-i18n="addBtn">
+                                    <i class="fa-solid fa-plus-circle text-base"></i> Añadir
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Tabla Estilizada de Ingresos -->
+                        <div class="pt-2">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-blue-400"></i> Detalle de Entradas
+                            </h3>
+                            
+                            <div class="overflow-x-auto max-h-60 rounded-xl border border-slate-700/70 custom-scroll bg-slate-900/50">
+                                <table class="w-full text-left text-sm text-slate-300 min-w-[340px]">
+                                    <thead class="bg-slate-800/90 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 backdrop-blur-md border-b border-slate-700/80">
+                                        <tr>
+                                            <th class="py-3 px-4 whitespace-nowrap" data-i18n="thDate">Fecha</th>
+                                            <th class="py-3 px-4" data-i18n="thDesc">Descripción</th>
+                                            <th class="py-3 px-4 whitespace-nowrap" data-i18n="thAmount">Monto</th>
+                                            <th class="py-3 px-4 text-right" data-i18n="thAction">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incomeList" class="divide-y divide-slate-800/80 text-xs">
+                                        <!-- Filas cargadas dinámicamente desde script.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Cuentas por Cobrar - Rediseño Premium -->
+                    <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6 lg:col-span-2">
+                        
+                        <!-- Header principal con badge decorativo -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-inner">
+                                    <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="receivablesTitle">
+                                        Cuentas por Cobrar
+                                    </h2>
+                                    <p class="text-xs text-slate-400">Seguimiento del dinero que has prestado a terceros</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                                Por Cobrar
+                            </span>
+                        </div>
+
+                        <!-- Formulario Grid Reestructurado -->
+                        <form id="receivableForm" onsubmit="addReceivable(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 bg-slate-900/40 p-3.5 rounded-xl border border-slate-700/50">
+                            
+                            <!-- Nombre de la Persona -->
+                            <div class="sm:col-span-4">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Persona / Deudor</label>
+                                <input type="text" id="recPerson" placeholder="Ej. Juan Pérez" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Monto Prestado -->
+                            <div class="sm:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Monto Prestado</label>
+                                <input type="number" id="recAmount" placeholder="0.00" step="0.01" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Fecha</label>
+                                <input type="date" id="recDate" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition scheme-dark">
+                            </div>
+
+                            <!-- Botón Registrar -->
+                            <div class="sm:col-span-3 flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/20 cursor-pointer min-h-[42px]" data-i18n="regLoanBtn">
+                                    <i class="fa-solid fa-plus-circle text-base"></i> Registrar Préstamo
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista de Cuentas por Cobrar -->
+                        <div class="pt-2">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Préstamos Activos
+                            </h3>
+                            
+                            <div id="receivablesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto pr-1 custom-scroll">
+                                <!-- Las tarjetas dinámicas cargadas en script.js aparecerán aquí -->
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- Mis Deudas y Pagos Pendientes - Rediseño Premium -->
+                    <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6 lg:col-span-2">
+                        
+                        <!-- Header principal con badge decorativo -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shadow-inner">
+                                    <i class="fa-solid fa-receipt text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="debtsTitle">
+                                        Mis Deudas y Pagos Pendientes
+                                    </h2>
+                                    <p class="text-xs text-slate-400">Controla tus compromisos financieros y fechas límite de pago</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-rose-300 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                                Por Pagar
+                            </span>
+                        </div>
+
+                        <!-- Formulario Grid Reestructurado -->
+                        <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 bg-slate-900/40 p-3.5 rounded-xl border border-slate-700/50">
+                            
+                            <!-- Deuda / Servicio -->
+                            <div class="sm:col-span-4">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Deuda / Servicio</label>
+                                <input type="text" id="debtTitle" placeholder="Ej. Tarjeta, Luz, Préstamo" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Monto Pendiente -->
+                            <div class="sm:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Monto Pendiente</label>
+                                <input type="number" id="debtAmount" placeholder="0.00" step="0.01" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Fecha Límite (Ícono Blanco) -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Fecha Límite</label>
+                                <input type="date" id="debtDate" title="Fecha límite" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition scheme-dark">
+                            </div>
+
+                            <!-- Botón Registrar -->
+                            <div class="sm:col-span-3 flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 cursor-pointer min-h-[42px]" data-i18n="regDebtBtn">
+                                    <i class="fa-solid fa-file-circle-plus text-base"></i> Registrar Deuda
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista de Deudas -->
+                        <div class="pt-2">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-rose-400"></i> Compromisos Activos
+                            </h3>
+                            
+                            <div id="debtList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto pr-1 custom-scroll">
+                                <!-- Las tarjetas dinámicas cargadas en script.js aparecerán aquí -->
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- Cajas de Ahorro y Microgestión - Rediseño Premium -->
+                    <section class="bg-gradient-to-b from-slate-800 to-slate-800/80 backdrop-blur-xl p-5 sm:p-6 rounded-2xl border border-slate-700/70 shadow-2xl space-y-6 lg:col-span-2">
+                        
+                        <!-- Header principal con badge decorativo -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-inner">
+                                    <i class="fa-solid fa-piggy-bank text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-white leading-tight" data-i18n="savingsTitle">
+                                        Cajas de Ahorro y Microgestión
+                                    </h2>
+                                    <p class="text-xs text-slate-400">Separa tus fondos en metas específicas o reservas de emergencia</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full hidden sm:inline-block">
+                                Fondos & Metas
+                            </span>
+                        </div>
+
+                        <!-- Formulario Grid Reestructurado -->
+                        <form id="savingsBoxForm" onsubmit="createNewSavingsBox(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3.5 bg-slate-900/40 p-3.5 rounded-xl border border-slate-700/50">
+                            
+                            <!-- Nombre de la caja -->
+                            <div class="sm:col-span-4">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Nombre de la Caja</label>
+                                <input type="text" id="boxTitle" placeholder="Ej. Fondo de Emergencia, Vacaciones" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Monto Inicial -->
+                            <div class="sm:col-span-3">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Monto Inicial</label>
+                                <input type="number" id="boxInitialAmount" placeholder="0.00" step="0.01" min="0" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition">
+                            </div>
+
+                            <!-- Fecha (Con scheme-dark para icono blanco) -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1.5">Fecha</label>
+                                <input type="date" id="boxDate" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition scheme-dark">
+                            </div>
+
+                            <!-- Botón Crear Caja -->
+                            <div class="sm:col-span-3 flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 active:scale-[0.98] text-slate-950 font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 cursor-pointer min-h-[42px]">
+                                    <i class="fa-solid fa-plus-circle text-base"></i> <span data-i18n="createBoxBtn">Crear Caja</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista de Cajas de Ahorro -->
+                        <div class="pt-2">
+                            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-vault text-amber-400"></i> Mis Alcancías y Reserva
+                            </h3>
+                            
+                            <div id="savingsBoxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-96 overflow-y-auto pr-1 custom-scroll">
+                                <!-- Las tarjetas generadas en script.js aparecerán aquí -->
+                            </div>
+                        </div>
+
+                    </section>
+
+                </div>
+            </main>
+        </div>
+
+        <!-- FOOTER MÓVIL ADAPTADO -->
+        <footer class="bg-slate-800/90 border-t border-slate-700 mt-8 pt-6 pb-6 relative text-slate-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-700 gap-4 text-center md:text-left">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-emerald-400 text-2xl"></i>
+                        <span class="text-base sm:text-lg font-bold tracking-wide text-slate-100">Fin <span class="text-emerald-400">Flow</span>  FPR</span>
+                    </div>
+                            
+                    <div class="flex items-center space-x-4">
+                        <a href="https://www.youtube.com/watch?v=aCYm_6Xapf8" target="_blank" class="w-10 h-10 bg-slate-700 hover:bg-rose-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="w-10 h-10 bg-slate-700 hover:bg-blue-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/carias_ssj?igsh=dmR0NGhodjI0djZ4&utm_source=qr" target="_blank" class="w-10 h-10 bg-slate-700 hover:bg-pink-600 rounded-full flex items-center justify-center text-slate-200 hover:text-white transition shadow"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 py-6 text-xs text-center sm:text-left">
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftRec">Recursos Educativos</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="https://www.codespa.org/app/uploads/Educacion-financiera_capitulo-1.pdf" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink1">Guia de Educación Financiera</a></li>
+                            <li><a href="https://moneyfortherestofus-com.translate.goog/guide-to-inflation/?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink2">Guía de Inversiones e Inflación</a></li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftTools">Herramientas</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="http://www.moneychimp.com/international/es/calculator/compound_interest_calculator.htm" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink4">Calculadora Interés Compuesto</a></li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftSupport">Soporte</h4>
+                        <ul class="space-y-2 text-slate-400">
+                            <li><a href="PreguntasFPR.html" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink7">Centro de Asistencia</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2 text-center sm:text-left">
+                    <p>© 2026 Finanzas Personales Pro. <span data-i18n="rights">Todos los derechos reservados.</span></p>
+                    <p data-i18n="secureData">100% Privado y Seguro. Tus datos se guardan de forma local.</p>
+                </div>
+            </div>
+            <button onclick="scrollToTop()" class="fixed bottom-5 right-5 z-40 bg-emerald-600 active:bg-emerald-700 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition transform active:scale-95"><i class="fa-solid fa-arrow-up text-sm"></i></button>
+        </footer>
+    </div>
+
+    <!-- MODALES OPTIMIZADOS PARA CUALQUIER PANTALLA MÓVIL -->
+    <!-- MODAL CONFIGURACIÓN -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-gear"></i> <span data-i18n="settingsTitle">Configuración</span></h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Idioma</label>
+                    <select id="settingLanguage" onchange="changeLanguage(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
+                        <option value="es">Español 🇲🇽</option>
+                        <option value="en">English 🇺🇸</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-300 font-semibold mb-1.5 block">Moneda</label>
+                    <select id="settingCurrency" onchange="changeCurrency(this.value)" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm focus:outline-none focus:border-emerald-400 text-slate-100 min-h-[42px]">
+                        <option value="$">Dólar ($)</option>
+                        <option value="€">Euro (€)</option>
+                        <option value="Q">Quetzal (Q)</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="closeSettingsModal()" class="w-full bg-emerald-600 active:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition min-h-[42px]">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL AHORROS -->
+    <div id="savingsMovementModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
+            <div class="flex justify-between items-center">
+                <h3 id="savingsModalTitle" class="text-base sm:text-lg font-bold text-amber-400">Microgestión de Fondo</h3>
+                <button onclick="closeSavingsModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="savingsMovementForm" onsubmit="processSavingsMovement(event)" class="space-y-3">
+                <input type="hidden" id="modalBoxId">
+                <div class="grid grid-cols-1 gap-3">
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Acción</label>
+                        <select id="modalActionType" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                            <option value="add">Añadir Fondos (+)</option>
+                            <option value="subtract">Descontar / Consumo (-)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fuente / Método</label>
+                        <select id="modalSource" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta / Banco">Tarjeta / Cuenta de Banco</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Otro">Otro Aspecto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Monto</label>
+                        <input type="number" id="modalAmount" step="1" required placeholder="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Fecha</label>
+                        <input type="date" id="modalDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-bold mb-1 block">Motivo</label>
+                        <input type="text" id="modalReason" required placeholder="Ej. Gasto en tarjeta" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-amber-600 active:bg-amber-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px] mt-2 shadow-lg shadow-amber-900/20">Guardar Movimiento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL COBRO -->
+    <div id="receivableModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
+            <div class="flex justify-between items-center">
+                <h3 id="receivableModalTitle" class="text-base sm:text-lg font-bold text-cyan-400">Registrar Cobro</h3>
+                <button onclick="closeReceivableModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="receivableFormModal" onsubmit="processReceivablePayment(event)" class="space-y-3">
+                <input type="hidden" id="modalReceivableId">
+                <input type="number" id="recPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="recPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="text" id="recPayReason" required placeholder="Nota" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <button type="submit" class="w-full bg-cyan-600 active:bg-cyan-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Guardar Cobro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ABONO -->
+    <div id="debtPaymentModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 my-auto">
+            <div class="flex justify-between items-center">
+                <h3 id="debtModalTitle" class="text-base sm:text-lg font-bold text-rose-400">Abonar Deuda</h3>
+                <button onclick="closeDebtModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="debtPaymentForm" onsubmit="processDebtPayment(event)" class="space-y-3">
+                <input type="hidden" id="modalDebtId">
+                <input type="number" id="debtPayAmount" step="1" required placeholder="Monto" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="date" id="debtPayDate" required class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <input type="text" id="debtPayReason" required placeholder="Motivo" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-2.5 text-sm text-white min-h-[42px]">
+                <button type="submit" class="w-full bg-rose-600 active:bg-rose-700 text-white font-semibold py-2.5 rounded-lg text-sm min-h-[42px]">Registrar Abono</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CIERRE DE MES -->
+    <div id="closeMonthModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3.5 z-50 overflow-y-auto">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full p-5 border border-slate-700 shadow-2xl space-y-4 text-center my-auto">
+            <h3 class="text-lg sm:text-xl font-bold text-emerald-400">¡Finalizar Mes!</h3>
+            <p class="text-xs sm:text-sm text-slate-300">Balance sobrante: <span id="surplusAmount" class="font-bold text-emerald-400 text-base sm:text-lg">$0.00</span></p>
+            <div class="space-y-2.5">
+                <button onclick="handleSurplus('nextMonth')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Pasar al siguiente mes</button>
+                <button onclick="handleSurplus('savings')" class="w-full bg-slate-700 p-3 rounded-lg text-xs sm:text-sm hover:bg-slate-600 active:bg-slate-500 transition text-white min-h-[42px]">Mover a Caja de Ahorro</button>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 text-xs py-1">Cancelar</button>
+        </div>
+    </div>
+
+     <!-- Enlace al archivo de JavaScript externo -->
+    <script src="scrip.js"></script>
+
+</body>
+</html>
