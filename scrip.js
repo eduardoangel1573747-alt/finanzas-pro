@@ -244,7 +244,7 @@ function addCategory(e) {
     const name = document.getElementById('catName').value.trim();
     const limit = parseFloat(document.getElementById('catLimit').value);
     if (name && !isNaN(limit)) {
-        state.categories.push({ id: Date.now(), name, limit, spent: 0, pendingLogs: [] });
+        state.categories.push({ id: Date.now(), name, limit, spent: 0, cycleSpent: 0, pendingLogs: [] });
         document.getElementById('budgetForm').reset();
         saveData();
     }
@@ -313,12 +313,25 @@ function addSpentManual(id, inputElement) {
     if (!isNaN(val) && val > 0) {
         const cat = state.categories.find(c => c.id === id);
         if (cat) {
+            const previousCycleSpent = Number.isFinite(cat.cycleSpent) ? cat.cycleSpent : cat.spent;
             cat.spent += val;
+            cat.cycleSpent = previousCycleSpent + val;
+            if (cat.limit > 0 && cat.cycleSpent >= cat.limit) {
+                cat.cycleSpent %= cat.limit;
+            }
             if (!cat.pendingLogs) cat.pendingLogs = [];
             cat.pendingLogs.push({ desc: `Consumo Presupuesto: ${cat.name}`, amount: val, date: today, category: cat.name });
             inputElement.value = '';
             saveData();
         }
+    }
+}
+
+function resetCategory(id) {
+    const cat = state.categories.find(c => c.id === id);
+    if (cat) {
+        cat.cycleSpent = 0;
+        saveData();
     }
 }
 
@@ -406,7 +419,10 @@ function handleSurplus(option) {
     if (option === 'nextMonth') {
         state.transactions = [];
         state.incomes = [];
-        state.categories.forEach(c => c.spent = 0);
+        state.categories.forEach(c => {
+            c.spent = 0;
+            c.cycleSpent = 0;
+        });
         if (surplus > 0) {
             state.incomes.push({ id: Date.now(), desc: "Mes anterior", amount: surplus, date: formattedPrevMonthDate, category: "Sobrante Mes Anterior" });
             logGlobalHistory('income', "Mes anterior", surplus, formattedPrevMonthDate, "Sobrante Mes Anterior");
@@ -423,7 +439,10 @@ function handleSurplus(option) {
         }
         state.transactions = [];
         state.incomes = [];
-        state.categories.forEach(c => c.spent = 0);
+        state.categories.forEach(c => {
+            c.spent = 0;
+            c.cycleSpent = 0;
+        });
     }
     closeCloseMonthModal();
     saveData();
@@ -459,12 +478,15 @@ function render() {
 
     const catList = document.getElementById('categoryList');
     if (catList) {
-        catList.innerHTML = state.categories.map(c => `
+        catList.innerHTML = state.categories.map(c => {
+            const cycleSpent = Number.isFinite(c.cycleSpent) ? c.cycleSpent : c.spent;
+            return `
             <div class="bg-slate-700/50 p-3 rounded-lg border border-slate-600 space-y-2">
-                <div class="flex justify-between items-center text-xs font-medium"><span>${c.name}</span><div class="flex items-center gap-2"><span>${currencySymbol}${c.spent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span><button onclick="removeItem('categories', ${c.id})" class="text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button></div></div>
-                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-purple-500 h-full rounded-full transition-all duration-300" style="width:${Math.min(100, (c.spent / c.limit) * 100)}%"></div></div>
+                <div class="flex justify-between items-center text-xs font-medium"><span>${c.name}</span><div class="flex items-center gap-2"><span>${currencySymbol}${cycleSpent.toFixed(2)} / ${currencySymbol}${c.limit.toFixed(2)}</span><button onclick="resetCategory(${c.id})" class="text-amber-400 hover:text-amber-300 p-1" title="Reiniciar consumo de categoría" aria-label="Reiniciar consumo de categoría"><i class="fa-solid fa-rotate-right"></i></button><button onclick="removeItem('categories', ${c.id})" class="text-rose-400 p-1" title="Eliminar categoría" aria-label="Eliminar categoría"><i class="fa-solid fa-trash"></i></button></div></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-purple-500 h-full rounded-full transition-all duration-300" style="width:${c.limit > 0 ? Math.min(100, (cycleSpent / c.limit) * 100) : 0}%"></div></div>
                 <div class="flex items-center gap-2 pt-1"><input type="number" id="manualSpentInput_${c.id}" placeholder="+ Gastado" step="1" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-purple-400"><button onclick="addSpentManual(${c.id}, document.getElementById('manualSpentInput_${c.id}'))" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-2.5 py-1 rounded transition shrink-0"><i class="fa-solid fa-plus"></i> Consumir</button></div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     const incList = document.getElementById('incomeList');
@@ -569,4 +591,3 @@ function renderHistoryPage() {
             </tr>`;
     }).join('');
 }
-
