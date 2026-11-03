@@ -1,4 +1,6 @@
 window.currencySymbol = window.currencySymbol || '$';
+let historyStorage = 'dailyExpenses';
+let historyLoadError = '';
 
 // ============================================================
 // ESPERAR Y CARGAR DESDE FIRESTORE
@@ -47,11 +49,20 @@ function waitForAuthenticatedUser(timeout = 10000) {
 // INICIALIZACIÓN DE PÁGINA
 // ============================================================
 async function initDailyHistoryPage() {
-    await waitForFirebase();
+    const firebaseReady = await waitForFirebase();
+    if (!firebaseReady) {
+        historyLoadError = 'No se pudo conectar con Firebase. Recarga la página para intentarlo de nuevo.';
+        console.error(historyLoadError);
+        renderDailyHistoryPage();
+        return;
+    }
+
     const user = await waitForAuthenticatedUser();
 
     if (!user) {
-        console.warn("Usuario no autenticado en Historial de Gastos Diarios.");
+        historyLoadError = 'No hay una sesión activa. Inicia sesión para consultar tus gastos.';
+        console.warn(historyLoadError);
+        renderDailyHistoryPage();
         return;
     }
 
@@ -61,13 +72,27 @@ async function initDailyHistoryPage() {
 
         if (snapshot.exists()) {
             const data = snapshot.data();
-            window.state = data.state || { transactions: [] };
+            window.state = data.state && typeof data.state === 'object' ? data.state : {};
+
+            if (Array.isArray(data.dailyExpenses)) {
+                window.dailyExpenses = data.dailyExpenses;
+                historyStorage = 'dailyExpenses';
+            } else if (Array.isArray(window.state.transactions)) {
+                window.dailyExpenses = window.state.transactions;
+                historyStorage = 'state.transactions';
+            } else {
+                window.dailyExpenses = [];
+                historyStorage = 'dailyExpenses';
+            }
         } else {
-            window.state = { transactions: [] };
+            window.state = {};
+            window.dailyExpenses = [];
+            historyStorage = 'dailyExpenses';
         }
     } catch (error) {
         console.error("Error al leer de Firestore:", error);
-        window.state = { transactions: [] };
+        historyLoadError = 'No se pudieron cargar tus gastos. Revisa tu conexión e inténtalo de nuevo.';
+        window.dailyExpenses = [];
     }
 
     populateMonthSelector();
@@ -106,13 +131,14 @@ function renderDailyHistoryPage() {
     const monthSelector = document.getElementById('monthSelector');
     const searchInput = document.getElementById('searchInput');
 
-    if (!tableBody || !window.state || !Array.isArray(window.state.transactions)) return;
+    if (!tableBody) return;
 
     const selectedMonth = monthSelector ? monthSelector.value : '';
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const transactions = Array.isArray(window.dailyExpenses) ? window.dailyExpenses : [];
 
     // Filtrar solo las transacciones del módulo de gastos diarios
-    const expenses = window.state.transactions.filter(t => {
+    const expenses = transactions.filter(t => {
         if (!t || t.type !== 'expense') return false;
         
         const matchCategory = !t.category || t.category === 'Gastos Diarios' || t.category === 'General';
@@ -147,10 +173,11 @@ function renderDailyHistoryPage() {
 
     // Dibujar Tabla
     if (expenses.length === 0) {
+        const message = historyLoadError || 'No se encontraron gastos registrados para los criterios seleccionados.';
         tableBody.innerHTML = `
             <tr>
                 <td colspan="6" class="py-8 text-center text-slate-500 italic">
-                    No se encontraron gastos registrados para los criterios seleccionados.
+                    ${escapeHtml(message)}
                 </td>
             </tr>
         `;
@@ -185,18 +212,23 @@ function renderDailyHistoryPage() {
 async function deleteDailyExpense(id) {
     if (!confirm("¿Estás seguro de que deseas eliminar este gasto del historial?")) return;
 
-    if (!window.state || !Array.isArray(window.state.transactions)) return;
-
-    // Filtrar localmente
-    window.state.transactions = window.state.transactions.filter(t => t.id !== id);
+    if (!Array.isArray(window.dailyExpenses)) return;
 
     try {
         const user = window.auth ? window.auth.currentUser : null;
-        if (user) {
-            const userDocRef = window.dbMethods.doc(window.db, "users", user.uid);
-            await window.dbMethods.setDoc(userDocRef, { state: window.state }, { merge: true });
-        }
+        if (!user) throw new Error('No hay una sesión activa.');
 
+        const updatedExpenses = window.dailyExpenses.filter(t => t.id !== id);
+        const userDocRef = window.dbMethods.doc(window.db, "users", user.uid);
+        const update = historyStorage === 'state.transactions'
+            ? { state: { ...window.state, transactions: updatedExpenses } }
+            : { dailyExpenses: updatedExpenses };
+
+        await window.dbMethods.setDoc(userDocRef, update, { merge: true });
+        window.dailyExpenses = updatedExpenses;
+        if (historyStorage === 'state.transactions') {
+            window.state = { ...window.state, transactions: updatedExpenses };
+        }
         renderDailyHistoryPage();
         alert("Gasto eliminado exitosamente.");
     } catch (err) {
