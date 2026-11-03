@@ -110,16 +110,17 @@ function logoutUser() {
 }
 
 function toggleSidebar() {
-    const sidebar = document.getElementById('slidingSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    
-    if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
-    } else {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-    }
+   const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (!sidebar || !backdrop) return;
+
+    const isOpen = sidebar.classList.contains('translate-x-0');
+    sidebar.classList.toggle('translate-x-0', !isOpen);
+    sidebar.classList.toggle('-translate-x-full', isOpen);
+    backdrop.classList.toggle('hidden', isOpen);
+    backdrop.classList.toggle('opacity-0', isOpen);
+    backdrop.classList.toggle('opacity-100', !isOpen);
+    document.body.classList.toggle('overflow-hidden', !isOpen);
 }
 
 // CREAR CARTERA

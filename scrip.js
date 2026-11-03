@@ -166,6 +166,7 @@ function toggleSidebar() {
     backdrop.classList.toggle('opacity-0', isOpen);
     backdrop.classList.toggle('opacity-100', !isOpen);
     document.body.classList.toggle('overflow-hidden', !isOpen);
+    
 }
 
 document.addEventListener('keydown', (event) => {
