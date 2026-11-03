@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex items-center justify-center px-4 transition-colors duration-300">
     <div id="authSection" class="w-full">
@@ -200,11 +200,11 @@
     </div>
     
     <script type="module">
-    import "./config/firebase.js";
+    import "../config/firebase.js";
 
     // Cargar dinámicamente scriptL.js una vez que window.dbMethods está listo
     const scriptL = document.createElement('script');
-    scriptL.src = "scriptL.js";
+    scriptL.src = "../js/scriptL.js";
     document.head.appendChild(scriptL);
     </script>
 </body>

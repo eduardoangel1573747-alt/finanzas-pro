@@ -52,7 +52,7 @@ function initFirebaseListener() {
             currentUser = null;
             const emailSpan = document.getElementById('userEmailDisplay');
             if (emailSpan) emailSpan.textContent = "No autenticado";
-            window.location.href = '../login.html';
+            window.location.href = '../pages/login.html';
         }
     });
 }

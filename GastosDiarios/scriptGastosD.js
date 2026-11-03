@@ -6,7 +6,7 @@ let dailyExpensesLoading = false;
 function logout() {
     if (window.auth && window.dbMethods?.signOut) {
         window.dbMethods.signOut(window.auth).then(() => {
-            window.location.href = '../login.html';
+            window.location.href = '../pages/login.html';
         });
     }
 }
@@ -97,7 +97,7 @@ async function initializeDailyExpenses() {
                 'No hay usuario autenticado para cargar los gastos.'
             );
 
-            window.location.href = '../login.html';
+            window.location.href = '../pages/login.html';
 
             ensureDailyState();
             renderDailyView();

@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fin Flow FPR - Dashboard</title>
+
+    <link rel="icon" type="image/png" href="img/grafico-de-barras.png">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,7 +42,7 @@
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-0 transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 
     <!-- Navegacion lateral -->
     <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
@@ -653,7 +656,7 @@
                     <div class="space-y-2">
                         <h4 class="font-bold text-slate-100 uppercase tracking-wider text-xs mb-2" data-i18n="ftSupport">Soporte</h4>
                         <ul class="space-y-2 text-slate-400">
-                            <li><a href="PreguntasFPR.html" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink7">Centro de Asistencia</a></li>
+                            <li><a href="pages/PreguntasFPR.html" target="_blank" class="hover:text-emerald-400 transition" data-i18n="ftLink7">Centro de Asistencia</a></li>
                         </ul>
                     </div>
                 </div>
@@ -790,7 +793,7 @@
     <script type="module" src="config/firebase.js"></script>
 
      <!-- Enlace al archivo de JavaScript externo -->
-    <script src="scrip.js"></script>
+    <script src="js/scrip.js"></script>
 
 </body>
 </html>

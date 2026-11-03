@@ -6,7 +6,7 @@ function checkExistingAuth() {
     if (window.dbMethods && window.dbMethods.onAuthStateChanged && window.auth) {
         window.dbMethods.onAuthStateChanged(window.auth, (user) => {
             if (user && (window.location.pathname.includes('login.html') || window.location.pathname.endsWith('/') || window.location.pathname === '')) {
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
             }
         });
     }
@@ -45,7 +45,7 @@ async function handleLogin(e) {
     }
     try {
         await window.dbMethods.signInWithEmailAndPassword(window.auth, email, password);
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
     } catch (error) {
         if (err) {
             let msg = 'Correo o contraseña incorrectos.';
@@ -113,7 +113,7 @@ async function handleRegister(e) {
             email: email,
             state: defaultState
         });
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
     } catch (error) {
         if (err) {
             let msg = 'Error al registrar: ' + error.message;

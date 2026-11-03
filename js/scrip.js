@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             changeCurrency(currencySymbol);
 
         } else if (!window.location.pathname.includes('login.html')) {
-            window.location.href = 'login.html';
+            window.location.href = 'pages/login.html';
         }
     });
 });
@@ -83,7 +83,7 @@ async function saveData() {
 
 function logout() {
     window.dbMethods.signOut(window.auth).then(() => {
-        window.location.href = 'login.html';
+        window.location.href = 'pages/login.html';
     });
 }
 
