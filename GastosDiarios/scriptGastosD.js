@@ -1316,3 +1316,31 @@ window.renderDailyView =
 
 window.initializeDailyExpenses =
     initializeDailyExpenses;
+
+// Funcion de scroll to top
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Lógica para mostrar u ocultar el botón según el scroll
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('scrollTopBtn');
+    
+    // Distancia actual desde la arriba
+    const scrollPosition = window.scrollY;
+    
+    // Altura total que se puede desplazar la página
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    // Condición: Si bajas más de 300 píxeles o estás cerca del final (por ejemplo, a 50px del final)
+    // Puedes ajustar el valor '300' si quieres que aparezca antes o después.
+    if (scrollPosition > 300) {
+        // Mostrar botón
+        btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        btn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+    } else {
+        // Ocultar botón
+        btn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+    }
+});

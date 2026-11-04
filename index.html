@@ -76,7 +76,7 @@
 
             <a href="Historial.html" onclick="toggleSidebar()" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700/70 transition">
                 <i class="fa-solid fa-clock-rotate-left text-teal-400"></i>
-                <span class="text-sm font-medium">Historial Mes a Mes</span>
+                <span class="text-sm font-medium">Historial Del Mes</span>
             </a>
 
             <div class="pt-3 pb-1">
@@ -666,7 +666,9 @@
                     <p data-i18n="secureData">100% Privado y Seguro. Respaldado en la nube con Firebase.</p>
                 </div>
             </div>
-            <button onclick="scrollToTop()" class="fixed bottom-5 right-5 z-40 bg-emerald-600 active:bg-emerald-700 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition transform active:scale-95"><i class="fa-solid fa-arrow-up text-sm"></i></button>
+            <button id="scrollTopBtn" onclick="scrollToTop()" class="fixed bottom-5 right-5 z-40 bg-emerald-600 active:bg-emerald-700 hover:bg-emerald-500 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 transform opacity-0 translate-y-4 pointer-events-none active:scale-95">
+                <i class="fa-solid fa-arrow-up text-sm"></i>
+            </button>
         </footer>
     </div>
 
