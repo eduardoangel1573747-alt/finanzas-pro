@@ -129,7 +129,6 @@ Proyecto-Finanzas/
 ├── index.html                          # Dashboard principal
 ├── README.md                           # Documentación principal del proyecto
 ├── README.txt                          # Nota de derechos de autor y licencia
-└── workflow.html                       # Diagrama interactivo autocontenido
 ```
 
 ---
@@ -183,6 +182,6 @@ El artefacto [`workflow.html`](workflow.html) cuenta con verificación criptogr�
 
 ## 👤 Autor
 
-- **Angel Eduardo Carias Blanco**
+- **CariasSSJ**
 - Proyecto: *Fin Flow FPR* (`Proyecto-Finanzas`)
 - Copyright (c) 2026. Todos los derechos reservados.
